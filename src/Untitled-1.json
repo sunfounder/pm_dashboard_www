@@ -1,0 +1,68 @@
+{
+  "data": {
+    // "battery_voltage": [
+    //   8328,
+    //   "mV"
+    // ],
+    // "battery_current": [
+    //   -2,
+    //   "mA"
+    // ],
+    // "usb_voltage": [
+    //   5060,
+    //   "mV"
+    // ],
+    // "output_voltage": [
+    //   5056,
+    //   "mV"
+    // ],
+    // "output_current": [
+    //   986,
+    //   "mA"
+    // ],
+    "ref_voltage": [
+      3344,
+      "mV"
+    ],
+    "power_source": [
+      0,
+      ""
+    ],
+    // "is_usb_plugged_in": [
+    //   1,
+    //   ""
+    // ],
+    "is_charging": [
+      0,
+      ""
+    ],
+    // "fan_speed": [
+    //   75,
+    //   ""
+    // ],
+    // "battery_percentage": [
+    //   96,
+    //   ""
+    // ],
+    "board_id": [
+      0,
+      ""
+    ],
+    "shutdown_request": [
+      18,
+      ""
+    ],
+    "pid_out": [
+      12,
+      ""
+    ],
+    "dac_vol": [
+      0,
+      ""
+    ],
+    "test": [
+      7424,
+      ""
+    ]
+  }
+}

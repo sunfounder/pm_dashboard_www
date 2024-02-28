@@ -1,0 +1,41 @@
+.home {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chartPopups {
+  width: 92vw;
+  min-height: 86vh;
+  position: fixed;
+  /* top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); */
+  background-color: rgb(33, 33, 33);
+}
+
+.cloture {
+  width: 4vh;
+  height: 4vh;
+  position: absolute;
+  right: 1vh;
+  z-index: 1;
+}
+
+.titleBar {
+  display: flex;
+  margin: 4vh 7vh 0vh 7vh;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.homeTitle {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.processorCores {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

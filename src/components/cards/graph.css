@@ -1,0 +1,11 @@
+.chartBox {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 150px;
+  min-height: 150px;
+  /* background-color: black; */
+  border-radius: 20px;
+  right: -20px;
+  bottom: -15px;
+  margin: 0 10px;
+}
