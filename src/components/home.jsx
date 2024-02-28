@@ -9,8 +9,8 @@ import LogPanel from './panels/log.jsx';
 import "./home.css";
 
 const ip = window.location.hostname;
-// const HOST = `http://${ip}:34001/api/v1.0/`;
-const HOST = `http://192.168.100.176:34001/api/v1.0/`;
+const HOST = `http://${ip}:34001/api/v1.0/`;
+// const HOST = `http://192.168.100.176:34001/api/v1.0/`;
 // const HOST = `http://homeassistant.local:34001/api/v1.0/`;
 
 const defaultConfigData = {
@@ -41,34 +41,6 @@ const defaultConfigData = {
     "ssl_cert": ""
   },
 }
-
-const PRODUCT = [
-  {
-    'name': 'Pironman U1',
-    'id': 'pironman_u1',
-    "address": 0x00,
-    "peripherals": [
-      'battery',
-      'usb_in',
-      'output',
-      'fan',
-      'power_source_sensor',
-      'ir',
-    ],
-  },
-  {
-    'name': 'Pironman 4',
-    'id': 'pironman_4',
-    "address": 0x01,
-    "peripherals": [
-      'usb_in',
-      'fan',
-      'oled',
-      'ws2812', // RGB
-      'ir',
-    ],
-  }
-]
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
