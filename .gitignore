@@ -23,6 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /dist
-/pm_dashboard
-/pm_dashboard.zip
-/pm_dashboard_back.zip
+/www
+/www.zip
