@@ -22,8 +22,6 @@ const FanCard = (props) => {
   }
   let newData = props.data.map(obj => ({
     timestamp: timeFormatting(obj.time),
-    state: obj.fan_state ? "ON" : "OFF",
-    mode: firstUpperCase(obj.fan_mode),
     power: obj.fan_power,
     cpu_temperature: obj.cpu_temperature,
   }));
