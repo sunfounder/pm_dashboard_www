@@ -1,72 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
-import FanControl from './fanControl.jsx';
 import { timeFormatting, firstUpperCase } from '../../js/utils.js';
 import { useTheme } from '@mui/material/styles';
-
-const fanModes = [
-  'quiet',
-  'normal',
-  'performance',
-  'auto',
-];
 
 const FanCard = (props) => {
   const theme = useTheme();
 
-  const [fanModeValue, setFanModeValue] = useState(null);
-  const [fanState, setFanState] = useState(null);
-
-  useEffect(() => {
-    if (fanModeValue === null) {
-      if (props.data.length > 0) {
-        let _fanModeValue = 0;
-        let fanModesData = props.data[props.data.length - 1].fan_mode;
-        _fanModeValue = fanModes.indexOf(fanModesData);
-        setFanModeValue(_fanModeValue);
-      }
-    }
-    if (fanState === null) {
-      if (props.data.length > 0) {
-        let _fanState = false;
-        _fanState = props.data[props.data.length - 1].fan_state;
-        setFanState(_fanState);
-      }
-    }
-  }, [props.data, fanModeValue, fanState]);
-
-  const sendFanMode = async (mode) => {
-    let payload = { data: mode }
-    await props.request("set-fan-mode", "POST", payload);
-  }
-
-  const sendFanState = async (state) => {
-    let payload = { data: state }
-    await props.request("set-fan-state", "POST", payload);
-  }
-
-  // 设置风扇模式
-  const handleFanModeChange = (index) => {
-    let mode = fanModes[index];
-    console.log(mode)
-    sendFanMode(mode);
-    setFanModeValue(index);
-    if (!fanState) {
-      handleFanStateChange(true);
-    }
-  };
-  // 设置风扇开关
-  const handleFanStateChange = (checked) => {
-    sendFanState(checked);
-    setFanState(checked);
-  };
-
   const detail = {
-    state: {
-      title: "State",
-      unit: "",
-    },
     power: {
       title: "Percentage",
       unit: "%",
@@ -86,7 +27,6 @@ const FanCard = (props) => {
     power: obj.fan_power,
     cpu_temperature: obj.cpu_temperature,
   }));
-
 
   let chartData = newData.map(({ state, mode, power, ...rest }) => rest)
   return (
