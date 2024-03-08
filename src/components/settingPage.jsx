@@ -108,7 +108,7 @@ const SettingPage = (props) => {
               { value: 'F', name: 'Fahrenheit' },
             ]} />
           <List subheader={<ListSubheader>AUTO</ListSubheader>}>
-            {props.peripherals.includes("power_switch") &&
+            {props.peripherals.includes("battery") &&
               <SettingSliderItem
                 title="Shutdown Stratagy"
                 subtitle="Set the minimum battery level for automatic device shutdown when external power is lost."

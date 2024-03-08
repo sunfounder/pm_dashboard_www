@@ -4,11 +4,13 @@ import Paper from '@mui/material/Paper';
 import "./card.css";
 
 const Card = (props) => {
-  const { icon, width, details, title, data, chart, config } = props;
+  const { icon, width, details, title, data, chart, config, style } = props;
+  console.log("Card", style)
   return (
     <Paper className="card"
       color={props.color}
       elevation={2}
+      style={style}
       sx={{
         borderRadius: "20px",
         flexGrow: width,

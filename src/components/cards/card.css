@@ -165,12 +165,9 @@
 .multipleChartsBox {
   position: relative;
   flex: 1 1 auto;
-  /* min-width: 0px; */
   min-width: 150px;
   min-height: 150px;
   border-radius: 20px;
-  right: -15px;
-  bottom: -15px;
 }
 
 .multipleChartsBox>div {
@@ -180,23 +177,14 @@
   gap: 8px;
   place-items: stretch;
   -webkit-box-align: stretch;
-  height: 110%;
-  width: 100%;
-  position: absolute;
   bottom: -10px;
-  /* right: -10px; */
   z-index: 1;
 }
 
 .chart {
-  /* width: 20%;
-  height: 50%;
-  background-color: red; */
   position: relative;
   display: flex;
   min-width: 0px;
-  /* background-color: rgb(33, 33, 33); */
-  /* border-radius: 25px 10px 10px; */
   border-radius: 20px;
   z-index: auto;
   transition: background-color 0.3s ease 0s;

@@ -89,6 +89,7 @@ const ProcessorCard = (props) => {
       width={4}
       data={newData}
       details={detail}
+      style={processorChartAmount ? { minWidth: "700px"} : {}}
       chart={
         processorChartAmount ?
           <div className='multipleChartsBox'>

@@ -50,10 +50,10 @@ const DashboardPanel = (props) => {
   return (<Box sx={{ width: "100%", height: "100%", overflowY: "scroll", overflowX: "hidden" }}>
     <Panel title={props.deviceName} {...props}>
       <Box sx={{ display: "flex", flexFlow: "wrap", gap: "70px 40px" }}>
-        {props.peripherals.includes('usb_in') && <ExternalInputCard data={data} bytesFormatter={bytesFormatter} />}
+        {props.peripherals.includes('external_input') && <ExternalInputCard data={data} bytesFormatter={bytesFormatter} />}
         {props.peripherals.includes('fan') && <FanCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
         {props.peripherals.includes('battery') && <BatteryCard data={data} />}
-        {props.peripherals.includes('output') && <RaspberryPiPowerCard data={data} />}
+        {props.peripherals.includes('raspberry_pi_power') && <RaspberryPiPowerCard data={data} />}
 
         <StorageCard data={data} />
         <MemoryCard data={data} />
