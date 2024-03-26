@@ -450,7 +450,6 @@ const Chart = (props) => {
   const theme = useTheme();
 
   const tooltipFormatter = (value, name, props) => {
-    console.log("tooltipFormatter", value, name, props);
     return value;
   }
 

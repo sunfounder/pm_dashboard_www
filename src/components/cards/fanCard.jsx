@@ -1,17 +1,25 @@
 import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
-import { timeFormatting, firstUpperCase } from '../../js/utils.js';
+import { timeFormatting } from '../../js/utils.js';
 import { useTheme } from '@mui/material/styles';
+
+const powerDetail = {
+  title: "Percentage",
+  unit: "%",
+};
+const speedDetail = {
+  title: "PWM Fan Speed",
+  unit: "RPM",
+};
+const stateDetail = {
+  title: "GPIO Fan State",
+  unit: "",
+};
 
 const FanCard = (props) => {
   const theme = useTheme();
-
   const detail = {
-    power: {
-      title: "Percentage",
-      unit: "%",
-    },
     cpu_temperature: {
       title: "Temperature",
       unit: props.unit ? (props.unit === "C" ? "℃" : "℉") : "℃",
@@ -20,11 +28,27 @@ const FanCard = (props) => {
       max: 100,
     },
   }
-  let newData = props.data.map(obj => ({
-    timestamp: timeFormatting(obj.time),
-    power: obj.fan_power,
-    cpu_temperature: obj.cpu_temperature,
-  }));
+
+  let newData = props.data.map(obj => {
+    let tmp = {
+      timestamp: timeFormatting(obj.time),
+      cpu_temperature: obj.cpu_temperature,
+    }
+
+    if ("pwm_fan_speed" in obj) {
+      tmp.speed = obj.pwm_fan_speed;
+      detail.speed = speedDetail;
+    }
+    if ("spc_fan_power" in obj) {
+      tmp.power = obj.spc_fan_power;
+      detail.power = powerDetail;
+    }
+    if ("gpio_fan_state" in obj) {
+      tmp.state = obj.gpio_fan_state === 1 ? "ON" : "OFF";
+      detail.state = stateDetail;
+    }
+    return tmp;
+  });
 
   let chartData = newData.map(({ state, mode, power, ...rest }) => rest)
   return (

@@ -10,7 +10,7 @@ import "./home.css";
 
 const ip = window.location.hostname;
 const HOST = `http://${ip}:34001/api/v1.0/`;
-// const HOST = `http://192.168.100.176:34001/api/v1.0/`;
+// const HOST = `http://192.168.100.146:34001/api/v1.0/`;
 // const HOST = `http://homeassistant.local:34001/api/v1.0/`;
 
 const defaultConfigData = {
@@ -99,9 +99,7 @@ const Home = (props) => {
 
   const getInitData = useCallback(async () => {
     let _configData = await request("get-config", "GET");
-    console.log("getInitData, configData", _configData);
     let device_info = await request("get-device-info", "GET");
-    console.log("getInitData, device_info", device_info);
     if (_configData) {
       setPeripherals(device_info.peripherals);
       setDeviceName(device_info.name);
@@ -143,11 +141,8 @@ const Home = (props) => {
   }
 
   const handleSaveConfig = async () => {
-    // setBasicDialogShow(true);
-    console.log("set-config-data", configData);
     // 判断是否发送设置数据
     let responseData = await sendData("set-config", configData);
-    console.log(responseData)
     if (responseData.status) {
       showSnackBar("success", "Save Successfully");
       // setSettingPageDisplay(false);
@@ -156,7 +151,6 @@ const Home = (props) => {
 
   const sendData = async (path, data) => {
     let payload = { data: data };
-    console.log("sendData", payload)
     try {
       const response = await fetch(HOST + path, {
         method: "POST",
@@ -171,11 +165,10 @@ const Home = (props) => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const responseData = await response.json();
-      console.log("服务器返回的结果：", responseData);
 
       return responseData;
     } catch (error) {
-      console.error("发生错误：", error);
+      console.error("Error", error);
     }
   }
 

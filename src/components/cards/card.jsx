@@ -5,7 +5,6 @@ import "./card.css";
 
 const Card = (props) => {
   const { icon, width, details, title, data, chart, config, style } = props;
-  console.log("Card", style)
   return (
     <Paper className="card"
       color={props.color}

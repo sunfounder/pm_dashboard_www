@@ -42,6 +42,9 @@ const LogPanel = (props) => {
 
   const getLog = useCallback(async () => {
     if (!logFile) return;
+    if (!logList.includes(logFile)) {
+      setLogFile(logList[fileIndex]);
+    }
     let payload = {
       filename: logFile,
       filter: filter,
@@ -56,13 +59,16 @@ const LogPanel = (props) => {
     const index = logList.indexOf(filename);
     window.localStorage.setItem("pm-dashboard-log-fileIndex", index);
     window.localStorage.setItem("pm-dashboard-log-logFile", filename);
-    console.log("handleFileSelect", filename, index);
     setFileIndex(index);
     setLogFile(filename);
   }
 
   const getLogList = useCallback(async () => {
     let result = await props.request('get-log-list', 'GET');
+    if (!result) {
+      props.showSnackBar("error", "Failed to get log list");
+      return;
+    }
     result.sort();
     if (result.length > fileIndex) {
       setLogFile(result[fileIndex]);
@@ -72,7 +78,6 @@ const LogPanel = (props) => {
   }, [fileIndex, props]);
 
   const handleConfigChange = (config) => {
-    console.log("handleConfigChange", config);
     if (config.lines !== undefined) {
       window.localStorage.setItem("pm-dashboard-log-lines", config.lines);
       setLines(config.lines);
@@ -90,7 +95,6 @@ const LogPanel = (props) => {
       setAutoUpdate(config.autoUpdate);
     }
     if (config.autoScroll !== undefined) {
-      console.log("autoScroll", config.autoScroll);
       window.localStorage.setItem("pm-dashboard-log-autoScroll", config.autoScroll);
       setAutoScroll(config.autoScroll);
     }
@@ -101,7 +105,6 @@ const LogPanel = (props) => {
   }
 
   const handleDownload = async () => {
-    console.log("download log file", fileContent);
     let content = fileContent.join("");
     const blob = new Blob([content], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
@@ -170,7 +173,7 @@ const LogPanel = (props) => {
         <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} />
         <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "auto"} auto` }}>
           <List>
-            {fileContent.map((line, index) => {
+            {fileContent && fileContent.map((line, index) => {
               return <ListItem key={index} disablePadding>
                 <Typography sx={{ fontFamily: "Courier New", textWrap: wrap ? "wrap" : "nowrap" }}> {line} </Typography>
               </ListItem>
@@ -196,7 +199,6 @@ const Toolbox = (props) => {
 
   const handleToggleGroupChange = (event, newValues) => {
     setToggleGroupValues(newValues);
-    console.log("handleToggleGroupChange", newValues)
     props.onChange({
       wrap: newValues.includes("wrap"),
       autoScroll: newValues.includes("autoScroll"),
