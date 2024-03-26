@@ -28,7 +28,6 @@ function formatBytes(bytes) {
   return bytes.toFixed(2) + ' ' + units[unitIndex];
 }
 
-// 格式化时间
 function timeFormatting(time) {
   const timeString = time;
   const dateTime = new Date(timeString);
@@ -36,5 +35,9 @@ function timeFormatting(time) {
   return formattedTime;
 }
 
+function celciusToFahrenheit(celcius) {
+  return celcius * 9 / 5 + 32;
+}
 
-export { isNum, round, firstUpperCase, formatBytes, timeFormatting };
+
+export { isNum, round, firstUpperCase, formatBytes, timeFormatting, celciusToFahrenheit };

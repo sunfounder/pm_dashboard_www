@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
-import { timeFormatting } from '../../js/utils.js';
+import { timeFormatting, celciusToFahrenheit } from '../../js/utils.js';
 import { useTheme } from '@mui/material/styles';
 
 const powerDetail = {
@@ -32,7 +32,7 @@ const FanCard = (props) => {
   let newData = props.data.map(obj => {
     let tmp = {
       timestamp: timeFormatting(obj.time),
-      cpu_temperature: obj.cpu_temperature,
+      cpu_temperature: celciusToFahrenheit(obj.cpu_temperature),
     }
 
     if ("pwm_fan_speed" in obj) {

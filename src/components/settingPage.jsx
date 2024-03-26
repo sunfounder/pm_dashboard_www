@@ -33,6 +33,8 @@ import {
   Check,
 } from '@mui/icons-material';
 
+const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
+
 const SettingPage = (props) => {
   const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("pm-dashboard-theme") === "dark" ? true : false);
   const [hasError, setHasError] = useState({});
@@ -92,7 +94,7 @@ const SettingPage = (props) => {
             <Close />
           </IconButton>
         } />
-        <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden" }}>
+        <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden", padding: "0 12px" }}>
           <SettingSwitchItem
             title="Dark mode"
             subtitle="Whether to enable Dark Theme mode"
@@ -107,7 +109,7 @@ const SettingPage = (props) => {
               { value: 'C', name: 'Celius' },
               { value: 'F', name: 'Fahrenheit' },
             ]} />
-          <List subheader={<ListSubheader>AUTO</ListSubheader>}>
+          <List subheader={<ListSubheader sx={{ zIndex: 0 }}>AUTO</ListSubheader>}>
             {props.peripherals.includes("battery") &&
               <SettingSliderItem
                 title="Shutdown Stratagy"
@@ -119,6 +121,19 @@ const SettingPage = (props) => {
                 min={10}
                 max={100}
                 step={10}
+                marks
+              />}
+            {props.peripherals.includes("gpio_fan") &&
+              <SettingSliderItem
+                title="GPIO Fan Mode"
+                subtitle="Set GPIO fan mode"
+                valueFormat={(value) => GPIO_FAN_MODES[4 - value]}
+                onChange={(event) => props.onChange('auto', 'gpio_fan_mode', 4 - event.target.value)}
+                value={4 - props.configData.auto.gpio_fan_mode}
+                sx={{ marginBottom: 0 }}
+                min={0}
+                max={4}
+                step={1}
                 marks
               />}
             {/* rgb设置显示 */}
@@ -177,11 +192,11 @@ const SettingPage = (props) => {
               </>
             }
           </List>
-          { props.configData.mqtt &&
+          {props.configData.mqtt &&
             <MQTTSection
               config={props.configData.mqtt}
               onChange={handleMQTTChanged}
-              onError={handleError} /> }
+              onError={handleError} />}
         </Box>
         <CardActions>
           <Stack

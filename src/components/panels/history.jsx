@@ -64,6 +64,7 @@ import {
 import dayjs from 'dayjs';
 
 import Panel from './panel.jsx';
+import {celciusToFahrenheit} from '../../js/utils.js';
 
 const QuickSelect = {
   "last-5-minutes": "Last 5 minutes",
@@ -112,6 +113,15 @@ const HistoryPanel = (props) => {
       key: selectedKeys.join(","),
     }
     let data = await props.request("get-time-range", "GET", payload);
+
+    // Convert celcius to fahrenheit if unit is F
+    if (props.temperatureUnit === "F") {
+      data.forEach((row) => {
+        if ('cpu_temperature' in row) {
+          row.cpu_temperature = celciusToFahrenheit(row.cpu_temperature);
+        }
+      });
+    }
     setData(data);
   }, [props, start, end, selectedKeys]);
 

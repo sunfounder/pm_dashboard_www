@@ -194,8 +194,8 @@ const Home = (props) => {
       height: "100%",
       overflow: "hidden",
     }} >
-      {tabIndex === 0 && <DashboardPanel {...commonProps} temperatureUnit={configData.auto.temerature_unit} />}
-      {tabIndex === 1 && <HistoryPanel {...commonProps} />}
+      {tabIndex === 0 && <DashboardPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit} />}
+      {tabIndex === 1 && <HistoryPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit} />}
       {tabIndex === 2 && <LogPanel {...commonProps} />}
       <SettingPage
         open={settingPageDisplay}
