@@ -1,6 +1,6 @@
 {
   "name": "pm-dashboard-www",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "homepage": "./",
   "private": true,
   "dependencies": {
