@@ -28,7 +28,7 @@
     - [GET /test](#get-test)
     - [GET /test-mqtt](#get-test-mqtt)
     - [GET /get-history](#get-get-history)
-    - [GET /get\_data](#get-get_data)
+    - [GET /get-data](#get-get-data)
     - [GET /get-time-range](#get-get-time-range)
     - [GET /get-config](#get-get-config)
     - [GET /get-log-list](#get-get-log-list)
@@ -411,7 +411,7 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get_data
+### GET /get-data
 
 - Description: 获取数据
 - Response: 
