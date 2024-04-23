@@ -20,6 +20,7 @@
         - [手动升级](#手动升级)
       - [Wi-Fi](#wi-fi)
       - [AP](#ap)
+      - [Download History(暂缓)](#download-history暂缓)
       - [Settings](#settings)
   - [Peripherals](#peripherals)
   - [API](#api)
@@ -28,7 +29,7 @@
     - [GET /test](#get-test)
     - [GET /test-mqtt](#get-test-mqtt)
     - [GET /get-history](#get-get-history)
-    - [GET /get-data](#get-get-data)
+    - [GET /get-history-file](#get-get-history-file)
     - [GET /get-time-range](#get-get-time-range)
     - [GET /get-config](#get-get-config)
     - [GET /get-log-list](#get-get-log-list)
@@ -36,22 +37,24 @@
     - [GET /get-wifi-config](#get-get-wifi-config)
     - [GET /get-wifi-scan](#get-get-wifi-scan)
     - [GET /get-ap-config](#get-get-ap-config)
+    - [GET /get-timestamp](#get-get-timestamp)
     - [POST /set-config](#post-set-config)
     - [POST /set-output](#post-set-output)
     - [POST /set-wifi-config](#post-set-wifi-config)
     - [POST /set-ap-config](#post-set-ap-config)
     - [POST /ota-update](#post-ota-update)
+    - [POST /set-time-sync](#post-set-time-sync)
 
 
 ## 页面
 
 ### Drawer
 
-抽屉
+抽屉, 抽屉上面显示3个按钮，分别是Dashboard, History, Log。下面显示History和Log的列表。如果没有History和Log则不显示Drawer。
 
 #### Dashboard
 
-Dashboard按照peripheral显示卡片，
+Dashboard按照peripheral显示卡片，从[`/get-history`](#get-get-history)获取20个数据, 并显示在卡片上。如果获取回来的只有1个数据, 需要拼接成20个数据。
 
 ##### 输入卡片
 
@@ -90,7 +93,7 @@ Dashboard按照peripheral显示卡片，
     - 数据: `output_switch`
     - peripheral: `output_switch`
     - 控件类型: toggle 开关
-    - 点击操作: 发送API [`/set_output`](#post-set-output)
+    - 点击操作: 发送API [`/set-output`](#post-set-output)
 
 数据: 
 1. 输出电压: 
@@ -224,13 +227,13 @@ Dashboard按照peripheral显示卡片，
 - 从API[`/get_version`](#get-get-version)获取当前版本号
 - 显示当前版本号
 - 从[github](https://api.github.com/repos/sunfounder/pironman-u1-firmware/releases/latest)返回的`tag_name`获取最新版本号，判断是否需要升级。如果有则显示立即升级按钮。没有则显示当前已是最新版。
-- 升级按钮点击后，从上面返回的信息中用`assets[0].browser_download_url`下载最新文件后，发送`ota_update`请求，显示进度条，进度条走完后显示升级完成和版本号。
+- 升级按钮点击后，从上面返回的信息中用`assets[0].browser_download_url`下载最新文件后，发送[`/ota-update`](#post-ota-update)请求，显示进度条，进度条走完后显示升级完成和版本号。
 
 ##### 手动升级
 
 - 选择文件输入框
 - 立即升级按钮
-- 点击后上传文件，发送`ota_update`请求，显示进度条，进度条走完后显示升级完成和版本号。
+- 点击后上传文件，发送[`/ota-update`](#post-ota-update)请求，显示进度条，进度条走完后显示升级完成和版本号。
 
 #### Wi-Fi
 
@@ -256,6 +259,14 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 取消按钮点击取消
 - 确认按钮点击后发送API [`/set-ap-config`](#post-set-ap-config)
 
+#### Download History(暂缓)
+
+下载历史数据，打开历史数据选择页面.
+
+- peripheral: `download_history_file`
+- 选择日期范围
+- 点击下载按钮，循环发送API [`/get-history-file`](#get-get-history-file)下载文件,并打包成zip文件下载,文件名为`<device_id>-history-<start-date>-<end-date>.zip`, 例如`pironman-u1-history-2021-01-01-2021-01-31.zip`
+
 #### Settings
 
 设置弹窗，打开弹窗获取设置信息
@@ -264,65 +275,64 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 主题设置
   - toggle 开关
   - 点击切换主题
-- 温度单位设置
-  - peripheral判断: `temperature_unit`
-  - config分类: system
-  - key: temperature_unit
-  - toggle 开关
-- Shutdown Percentage
-  - peripheral判断改为: shutdown_percentage
-  - config分类: system
-  - key: shutdown_percentage
-  - 滑动条
-  - 最小10%，最大100%
-  - 描述: Without external input and if the battery voltage is below the set value, the device will send a shutdown request via I2C to protect the device and data. Note: Set the value to 100% for high current output.
-- Power Off Percentage
-  - peripheral判断: power_off_percentage
-  - config分类: system
-  - key: power_off_percentage
-  - 滑动条，类似Shutdown Percentage
-  - 最小5%，最大 100%
-  - 描述: If the battery voltage falls below the set value, the device will cut off the output to protect the battery.
-- 时区选择 Timezone: 
-  - peripheral: timezone
-  - config分类: system
-  - key: timezone
-  - 下拉框选择
-- 自动设置时间 Auto Time Setting: 
-  - peripheral: auto_time_enable
-  - config分类: system
-  - key: auto_time_enable
-  - toggle 开关
-- 立即同步 Sync Now: 
-  - 如果自动设置时间是true才显示
-  - peripheral: auto_time_enable
-  - config分类: system
-  - 子标题按照用户所在地区格式显示当前时间
-  - 时间
+- System分类
+  - 温度单位设置
+    - peripheral判断: `temperature_unit`
+    - config分类: `system`
+    - key: `temperature_unit`
+    - toggle 开关
+  - Shutdown Percentage
+    - peripheral判断改为: `shutdown_percentage`
+    - config分类: `system`
+    - key: `shutdown_percentage`
+    - 滑动条
+    - 最小10%，最大100%
+    - 描述: Without external input and if the battery voltage is below the set value, the device will send a shutdown request via I2C to protect the device and data. Note: Set the value to 100% for high current output.
+  - Power Off Percentage
+    - peripheral判断: `power_off_percentage`
+    - config分类: `system`
+    - key: `power_off_percentage`
+    - 滑动条，类似Shutdown Percentage
+    - 最小5%，最大 100%
+    - 描述: If the battery voltage falls below the set value, the device will cut off the output to protect the battery.
+  - 当前日期时间 Current Datetime
+    - peripheral: `time`
+    - config分类: `system`
+    - key: `timestamp`
+    - 显示当前时间日期
+    - 手动设置时间按钮 Edit
+      - 如果`auto_time_enable`peripheral是false或者`auto_time_enable`的值是false,才可用,否则变灰,无法点击.
+      - 点击显示日期时间选择框
+    - 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
+  - 时区选择 Timezone: 
+    - peripheral: `timezone`
+    - config分类: `system`
+    - key: `timezone`
+    - 下拉框选择,使用UTC时区格式如`UTC+8:00`
+  - 自动设置时间 Auto Time Setting: 
+    - peripheral: `auto_time_enable`
+    - config分类: `system`
+    - key: `auto_time_enable`
+    - toggle 开关
+  - NTP Server: 
+    - 如果`auto_time_enable`的值是`true`才显示
+    - peripheral: `auto_time_enable`
+    - config分类: `system`
+    - 子标题按照用户所在地区格式显示当前时间
+    - 输入框加Sync Now按钮
+      - 输入框填写ntp_server地址
+      - 按键按下调api [`/set-time-sync`](#post-set-time-sync)
+  - Mac地址
+    - peripheral: mac_address
     - config分类: system
-    - key: timestamp
-  - 输入框加Sync Now按钮
-    - 输入框填写 url
-    - 按键按下调api set_auto_time_sync_now
-- 时间设置Set Time Manually: 
-  - 如果auto_time_enable是false或者自动设置时间是false才显示
-  - peripheral: time
-  - config分类: system
-  - key: timestamp
-  - 日期时间选择框
-  - 显示当前时间日期
-    - 下拉选择时间和日期
-- Mac地址
-  - peripheral: mac_address
-  - config分类: system
-  - key: mac_address
-  - 显示Mac地址
-- IP地址
-  - peripheral: ip_address
-  - config分类: system
-  - key: ip_address
-  - 显示IP地址
-- SD卡容量占用
+    - key: mac_address
+    - 显示Mac地址
+  - IP地址
+    - peripheral: ip_address
+    - config分类: system
+    - key: ip_address
+    - 显示IP地址
+  - SD卡容量占用
   - peripheral: sd_card_usage
   - config分类: system
   - key: sd_card_usage
@@ -369,6 +379,7 @@ AP 设置弹窗，打开弹窗获取AP信息
 36. mac_address: Mac地址
 37. ip_address: IP地址
 38. sd_card_usage: SD卡容量占用
+39. download_history_file: 下载历史数据文件
 
 ## API
 
@@ -430,11 +441,13 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-data
+### GET /get-history-file
 
-- Description: 获取数据
-- Response: 
-  - `{"status": true, "data": []}`
+- Description: Get day history file
+- Data:
+  - `date` - Date in format `YYYY-MM-DD`
+- Response:
+  - file
 
 ### GET /get-time-range
 
@@ -474,7 +487,7 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Description: Get Wi-Fi configuration
 - Response:
-  - `{"status": true, "data": {"sta_switch": true, "sta_ssid_scan": "SSID","sta_psk": "password"}}`
+  - `{"status": true, "data": {"sta_switch": true, "sta_ssid": "SSID","sta_psk": "password"}}`
 
 ### GET /get-wifi-scan
 
@@ -487,6 +500,12 @@ api地址: `http://ip:34001/api/v1.0`
 - Description: Get AP configuration
 - Response:
   - `{"status": true, "data": {"ap_ssid": "SSID", "ap_psk": "password"}}`
+
+### GET /get-timestamp
+
+- Description: Get current timestamp
+- Response:
+  - `{"status": true, "data": "1612137600"}`
 
 ### POST /set-config
 
@@ -530,3 +549,9 @@ api地址: `http://ip:34001/api/v1.0`
   - `file` - OTA file
 - Response:
   - `{"status": true, "data": "OK"}`
+
+### POST /set-time-sync
+
+- Description: Set time sync
+- Data:
+  - `ntp_server` - NTP Server
