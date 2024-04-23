@@ -312,6 +312,22 @@ AP 设置弹窗，打开弹窗获取AP信息
   - 日期时间选择框
   - 显示当前时间日期
     - 下拉选择时间和日期
+- Mac地址
+  - peripheral: mac_address
+  - config分类: system
+  - key: mac_address
+  - 显示Mac地址
+- IP地址
+  - peripheral: ip_address
+  - config分类: system
+  - key: ip_address
+  - 显示IP地址
+- SD卡容量占用
+  - peripheral: sd_card_usage
+  - config分类: system
+  - key: sd_card_usage
+  - 条装图显示SD卡容量占用
+
 
 ## Peripherals
 
@@ -350,6 +366,9 @@ AP 设置弹窗，打开弹窗获取AP信息
 33. ap_psk: AP密码
 34. ota_auto: 自动升级
 35. ota_manual: 手动升级
+36. mac_address: Mac地址
+37. ip_address: IP地址
+38. sd_card_usage: SD卡容量占用
 
 ## API
 
