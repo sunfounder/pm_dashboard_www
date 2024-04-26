@@ -247,6 +247,7 @@ Wi-Fi 设置弹窗，打开弹窗获取WiFi信息
 - STA 密码输入框（密码，最小8位）, peripheral 判断: `sta_psk`
 - 取消按钮点击取消
 - 确认按钮点击后发送API [`/set-wifi-config`](#post-set-wifi-config)
+- 前端发送数据格式: `"STA": {"sta_ssid": "sta_ssid", "sta_psk": "sta_psk","sta_switch":"true"}`
 
 #### AP
 
@@ -258,6 +259,7 @@ AP 设置弹窗，打开弹窗获取AP信息
 - AP 密码输入框（密码，最小8位）, peripheral 判断: `ap_psk`
 - 取消按钮点击取消
 - 确认按钮点击后发送API [`/set-ap-config`](#post-set-ap-config)
+- 前端发送数据格式: `"AP": {"ap_ssid": "ap_ssid", "ap_psk": "ap_psk""}`
 
 #### Download History(暂缓)
 
