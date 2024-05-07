@@ -37,7 +37,7 @@ const Card = (props) => {
                 if (!newData)
                   return null;
                 if (!Object.keys(newData).includes(key)) {
-                  console.warn("key not found: ", title, key);
+                  // console.warn("key not found: ", title, key);
                   return null;
                 }
                 let _data = newData[key];

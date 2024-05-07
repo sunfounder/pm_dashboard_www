@@ -8,6 +8,7 @@ import {
   Typography
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ButtonGroup from './buttonGroup';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import HistoryIcon from '@mui/icons-material/InsertChart'
 import LogIcon from '@mui/icons-material/Article.js';
@@ -18,18 +19,24 @@ const Navbar = (props) => {
       display: "flex", borderRadius: "20px", justifyContent: "space-between", padding: "10px 20px", height: "60px", alignItems: "center"
     }}>
       <Box sx={{ display: "flex", gap: "30px" }}>
-        <Typography variant="h5" sx={{ margin: "auto", width: "150px" }}> {props.title}</Typography>
-        <Tabs value={props.tabIndex} onChange={props.onTabChange}>
-          <Tooltip title="Dashboard" placement="bottom">
-            <Tab icon={<DashboardIcon />} />
-          </Tooltip>
-          <Tooltip title="History" placement="bottom">
-            <Tab icon={<HistoryIcon />} />
-          </Tooltip>
-          <Tooltip title="Log" placement="bottom">
-            <Tab icon={<LogIcon />} />
-          </Tooltip>
-        </Tabs>
+        {
+          !props.isMobile && <Typography variant="h5" sx={{ margin: "auto", width: "150px" }}> {props.title}</Typography>
+        }
+        {
+          !props.isMobile ?
+            <Tabs value={props.tabIndex} onChange={props.onTabChange}>
+              <Tooltip title="Dashboard" placement="bottom">
+                <Tab icon={<DashboardIcon />} />
+              </Tooltip>
+              <Tooltip title="History" placement="bottom">
+                <Tab icon={<HistoryIcon />} />
+              </Tooltip>
+              <Tooltip title="Log" placement="bottom">
+                <Tab icon={<LogIcon />} />
+              </Tooltip>
+            </Tabs> :
+            <ButtonGroup onMenuItemClick={props.onTabChange} />
+        }
       </Box>
       <Box sx={{ display: "flex", justifyContent: "end" }}>
         {props.children}

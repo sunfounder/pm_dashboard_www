@@ -5,7 +5,7 @@ import "./graph.css"
 const Graph = (props) => {
 
   const chartBoxRef = useRef();
-  const { children } = props
+  const { children, isMobile } = props
 
   return (
     <Paper
@@ -13,14 +13,8 @@ const Graph = (props) => {
       ref={chartBoxRef}
       elevation={10}
       sx={{
-        position: "relative",
-        flex: "1 1 auto",
         minWidth: "150px",
         minHeight: "150px",
-        borderRadius: "20px",
-        right: "-20px",
-        bottom: "-15px",
-        margin: "0 10px",
       }}
     >
       {children}

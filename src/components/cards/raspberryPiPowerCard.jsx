@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
-import { Box } from '@mui/material';
+import {
+  Switch,
+  Typography,
+  Box
+} from '@mui/material'
 import { timeFormatting } from '../../js/utils.js';
 import { useTheme } from '@mui/material/styles';
 
@@ -12,6 +16,13 @@ const POWER_SOURCE = [
 
 const RaspberryPiPowerCard = (props) => {
   const theme = useTheme();
+  const [enable, setEnabke] = useState(false);
+  const handleEnable = (e) => {
+    // localStorage.setItem("multiCore", e.target.checked);
+    console.log(e.target.checked);
+    setEnabke(e.target.checked);
+    props.sendData("/set-output", { switch: e.target.checked })
+  }
   const detail = {
     source: {
       title: "Source",
@@ -33,13 +44,30 @@ const RaspberryPiPowerCard = (props) => {
       color: theme.palette.power.main,
     }
   };
-  let newData = props.data.map(obj => ({
-    timestamp: timeFormatting(obj.time),
-    source: POWER_SOURCE[obj.power_source],
-    voltage: obj.raspberry_pi_voltage / 1000,
-    current: obj.raspberry_pi_current / 1000,
-    power: obj.raspberry_pi_voltage / 1000 * obj.raspberry_pi_current / 1000,
-  }));
+  let newData = props.data.map(obj => {
+    let tmp = {
+      timestamp: timeFormatting(obj.time),
+    }
+    if (obj.power_source) {
+      tmp.source = POWER_SOURCE[obj.power_source];
+    }
+
+    if (obj.output_voltage || obj.raspberry_pi_voltage) {
+      tmp.voltage = (obj.output_voltage || obj.raspberry_pi_voltage) / 1000;
+    }
+    if (obj.raspberry_pi_current || obj.output_current) {
+      tmp.current = (obj.raspberry_pi_current || obj.output_current) / 1000;
+      tmp.power = tmp.voltage * tmp.current;
+    }
+    return tmp;
+  })
+  //   ({
+  //   timestamp: timeFormatting(obj.time),
+  //   source: POWER_SOURCE[obj.power_source],
+  //   voltage: obj.raspberry_pi_voltage / 1000,
+  //   current: obj.raspberry_pi_current / 1000,
+  //   power: obj.raspberry_pi_voltage / 1000 * obj.raspberry_pi_current / 1000,
+  // }));
   let chartData = newData.map(({ source, ...rest }) => rest);
   return (
     <Card
@@ -74,6 +102,11 @@ const RaspberryPiPowerCard = (props) => {
           </Box>
         </Box >
       }
+      config={props.peripherals.includes("output_switch") &&
+        <div className='cardConfig'>
+          <Typography>Enable</Typography>
+          <Switch checked={enable} onChange={handleEnable} color="processor" />
+        </div>}
     />
   )
 }

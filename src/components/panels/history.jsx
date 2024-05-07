@@ -64,7 +64,7 @@ import {
 import dayjs from 'dayjs';
 
 import Panel from './panel.jsx';
-import {celciusToFahrenheit} from '../../js/utils.js';
+import { celciusToFahrenheit } from '../../js/utils.js';
 
 const QuickSelect = {
   "last-5-minutes": "Last 5 minutes",
@@ -102,7 +102,8 @@ const HistoryPanel = (props) => {
   const [end, setEnd] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-history-selected-keys")) || []);
   const [colors, setColors] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-history-colors")) || {});
-
+  const [element, setElement] = useState(null);
+  const [downloadElement, setDownloadElement] = useState(null);
   const updateData = useCallback(async () => {
     if (selectedKeys.length === 0) {
       return;
@@ -130,13 +131,41 @@ const HistoryPanel = (props) => {
   }, [start, end, selectedKeys, updateData]);
 
   useEffect(() => {
-    props.request("get-history", "GET", { n: 1 }).then(data => {
+    props.request("get-history-data", "GET", { n: 1 }).then(data => {
       let keys = Object.keys(data);
       // 删除时间
       keys.splice(keys.indexOf("time"), 1);
       setKeys(keys);
     });
   }, [props]);
+
+  useEffect(() => {
+    let newElement = <Card sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden scroll", padding: "0 10px" }}>
+      <List dense sx={{ height: "fit-content" }}>
+        {keys.map((key, index) => {
+          return (
+            <DataListItem key={key} name={key}
+              checked={selectedKeys.includes(key)}
+              color={colors[key]}
+              onClick={handleKeyChange}
+              onColorChange={handleColorChange}
+            />);
+        })}
+      </List>
+    </Card >
+    setElement(newElement);
+    props.onElementChange(element); // 组件加载时调用父组件的回调函数，并传递元素
+  }, [element, props.onElementChange]);
+
+  useEffect(() => {
+    let newDownloadElement = <IconButton id="download" aria-label="download" color="red" onClick={handleDownloadCSV}>
+      <MuiToolTip title="Download CSV">
+        <DownloadIcon />
+      </MuiToolTip>
+    </IconButton>;
+    setDownloadElement(newDownloadElement);
+    props.onDownloadElementChange(downloadElement); // 组件加载时调用父组件的回调函数，并传递元素
+  }, [downloadElement, props.onDownloadElementChange]);
 
   const handleKeyChange = (key, checked) => {
     let temp = [];
@@ -192,17 +221,19 @@ const HistoryPanel = (props) => {
 
   return (
     <Panel title="History" {...props} sx={{ height: "100%", overflow: "hidden" }} navActions={
-      <>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: 'center' }}>
         <DateTimeRangePicker onChange={handleTimeRangeChange} onError={(msg) => props.showSnackBar("error", msg)} />
-        <IconButton id="download" aria-label="download" color="primary" onClick={handleDownloadCSV}>
+        {/* <IconButton id="download" aria-label="download" color="primary" onClick={handleDownloadCSV}>
           <MuiToolTip title="Download CSV">
             <DownloadIcon />
           </MuiToolTip>
-        </IconButton>
-      </>
+        </IconButton> */}
+      </Box>
     }>
       <Box sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden", gap: "2rem" }}>
-        <Card sx={{ display: "flex", width: "320px", height: "100%", overflow: "hidden scroll", padding: "0 10px" }}>
+
+
+        {/* <Card sx={{ display: "flex", width: "320px", height: "100%", overflow: "hidden scroll", padding: "0 10px" }}>
           <List dense sx={{ height: "fit-content" }}>
             {keys.map((key, index) => {
               return (
@@ -214,7 +245,8 @@ const HistoryPanel = (props) => {
                 />);
             })}
           </List>
-        </Card >
+        </Card > */}
+
         <Card sx={{ width: "100%" }}>
           <Chart data={data} keys={selectedKeys} colors={colors} />
         </Card>
@@ -310,7 +342,8 @@ const DateTimeRangePicker = (props) => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [quickSelect, props]);
+  }, [quickSelect]);
+  // }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

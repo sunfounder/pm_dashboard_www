@@ -1,6 +1,5 @@
 .setting {
   position: absolute;
-  width: 50vw;
   display: flex;
   flex-direction: column;
 }
@@ -59,4 +58,10 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem
+}
+
+@media (max-width: 767px) {
+  .setting {
+    width: 90vw;
+  }
 }

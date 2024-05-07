@@ -19,7 +19,7 @@ const stateDetail = {
 
 const FanCard = (props) => {
   const theme = useTheme();
-  const detail = {
+  let detail = {
     cpu_temperature: {
       title: "Temperature",
       unit: props.unit ? (props.unit === "C" ? "℃" : "℉") : "℃",
@@ -28,16 +28,15 @@ const FanCard = (props) => {
       max: 100,
     },
   }
-
   let newData = props.data.map(obj => {
     let tmp = {
       timestamp: timeFormatting(obj.time),
     }
     let temperature = obj.cpu_temperature;
-    if (props.unit === "F") {
+    if (props.unit === "F" && obj.cpu_temperature) {
       temperature = celciusToFahrenheit(obj.cpu_temperature);
+      tmp.cpu_temperature = temperature;
     }
-    tmp.cpu_temperature = temperature;
 
     if ("pwm_fan_speed" in obj) {
       tmp.speed = obj.pwm_fan_speed;
@@ -47,6 +46,10 @@ const FanCard = (props) => {
       tmp.power = obj.spc_fan_power;
       detail.power = powerDetail;
     }
+    if ("fan_power" in obj) {
+      tmp.power = obj.fan_power;
+      detail.power = powerDetail;
+    }
     if ("gpio_fan_state" in obj) {
       tmp.state = obj.gpio_fan_state === 1 ? "ON" : "OFF";
       detail.state = stateDetail;
@@ -54,7 +57,22 @@ const FanCard = (props) => {
     return tmp;
   });
 
-  let chartData = newData.map(({ state, mode, power, ...rest }) => rest)
+  let chartData = newData;
+  // let chartData = newData.map(({ state, mode, power, ...rest }) => rest)
+  if (newData.length > 0 && !newData[0].cpu_temperature) {
+    detail.cpu_temperature = {
+      title: "Power",
+      unit: "%",
+      color: theme.palette.temperature.main,
+      min: 0,
+      max: 100,
+    }
+    chartData = newData.map(({ state, mode, ...rest }) => rest)
+  } else {
+    chartData = newData.map(({ state, mode, power, ...rest }) => rest)
+  }
+
+
   return (
     <Card
       color="fan"

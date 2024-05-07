@@ -37,6 +37,8 @@ const LogPanel = (props) => {
   const [level, setLevel] = useState(window.localStorage.getItem("pm-dashboard-log-level") || "INFO");
   const [autoScroll, setAutoScroll] = useState(window.localStorage.getItem("pm-dashboard-log-autoScroll") === "true");
   const [wrap, setWrap] = useState(window.localStorage.getItem("pm-dashboard-log-wrap") === "true");
+  const [element, setElement] = useState(null);
+  const [downloadElement, setDownloadElement] = useState(null);
 
   const contentRef = useRef(null);
 
@@ -142,16 +144,50 @@ const LogPanel = (props) => {
     }
   }, [fileContent, autoScroll]);
 
+  useEffect(() => {
+    let newElement = <Card id="log-list" sx={{ width: '100%', overflow: "auto", height: '100%' }}>
+      <List component="nav" dense>
+        {logList.map((filename, index) => {
+          let logName = filename.replace(".log", "");
+          let moduleName = '';
+          if (logName.includes('.')) {
+            moduleName = logName.split('.')[0];
+            logName = logName.split('.')[1];
+          }
+          return <ListItemButton key={index} selected={index === fileIndex} onClick={(event) => handleFileSelect(event, filename)}>
+            <ListItemIcon>
+              <DescriptionIcon />
+            </ListItemIcon>
+            <ListItemText primary={logName} secondary={moduleName} />
+          </ListItemButton>
+        })}
+      </List>
+    </Card >;
+    setElement(newElement);
+    props.onElementChange(element); // 组件加载时调用父组件的回调函数，并传递元素
+  }, [element, props.onElementChange]);
 
-  return (<Panel id="log-panel" title="Log" {...props} sx={{ height: "100%", overflow: "hidden" }}
-    navActions={<Tooltip title="Download log file">
-      <IconButton aria-label="download" color="primary" onClick={handleDownload}>
+  useEffect(() => {
+    let newDownloadElement = <Tooltip title="Download log file">
+      <IconButton aria-label="download" color="red" onClick={handleDownload}>
         <DownloadIcon />
       </IconButton>
-    </Tooltip>}
+    </Tooltip>;
+    setDownloadElement(newDownloadElement);
+    props.onDownloadElementChange(downloadElement); // 组件加载时调用父组件的回调函数，并传递元素
+  }, [downloadElement, props.onDownloadElementChange]);
+
+  return (<Panel id="log-panel" title="Log" {...props} sx={{ height: "100%", overflow: "hidden" }}
+  // navActions={<Tooltip title="Download log file">
+  //   <IconButton aria-label="download" color="primary" onClick={handleDownload}>
+  //     <DownloadIcon />
+  //   </IconButton>
+  // </Tooltip>}
   >
     <Box sx={{ display: "flex", width: "100%", height: "90%", gap: "2rem" }}>
-      <Card id="log-list" sx={{ width: '300px', overflow: "auto" }}>
+
+
+      {/* <Card id="log-list" sx={{ width: '300px', overflow: "auto" }}>
         <List component="nav" dense>
           {logList.map((filename, index) => {
             let logName = filename.replace(".log", "");
@@ -168,7 +204,9 @@ const LogPanel = (props) => {
             </ListItemButton>
           })}
         </List>
-      </Card >
+      </Card > */}
+
+
       <Card id="log-content" sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
         <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} />
         <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "auto"} auto` }}>
@@ -225,6 +263,8 @@ const Toolbox = (props) => {
   // const handleAutoScrollChanges = (event) => {
   //   props.onChange({ autoScroll: event.target.checked });
   // }
+
+
 
   return (
     <Box sx={{ width: "100%", display: "flex", margin: "10px 0", gap: "10px" }}>

@@ -27,14 +27,31 @@ const ExternalInputCard = (props) => {
       color: theme.palette.power.main,
     }
   };
-  let newData = props.data.map(obj => ({
-    timestamp: timeFormatting(obj.time),
-    isPluggedIn: obj.is_plugged_in ? "Plugged in" : "Unplugged",
-    voltage: obj.external_input_voltage / 1000,
-    current: obj.external_input_current / 1000,
-    power: obj.external_input_voltage / 1000 * obj.external_input_current / 1000,
-  }))
-  let chartData = newData.map(({ isPluggedIn, ...rest }) => rest)
+  let newData = props.data.map(obj => {
+    let tmp = {
+      timestamp: timeFormatting(obj.time),
+    }
+    if (obj.is_plugged_in || obj.is_input_plugged_in) {
+      tmp.isPluggedIn = (obj.is_plugged_in || obj.is_input_plugged_in) ? "Plugged in" : "Unplugged";
+    }
+    if (obj.external_input_voltage || obj.input_voltage) {
+      tmp.voltage = (obj.external_input_voltage || obj.input_voltage) / 1000;
+    }
+    if (obj.external_input_current || obj.input_current) {
+      tmp.current = (obj.external_input_current || obj.input_current) / 1000;
+      tmp.power = tmp.voltage * tmp.current;
+    }
+    return tmp;
+  });
+
+  // ({
+  //     timestamp: timeFormatting(obj.time),
+  //     isPluggedIn: (obj.is_plugged_in || obj.is_input_plugged_in) ? "Plugged in" : "Unplugged",
+  //     voltage: (obj.external_input_voltage || obj.input_voltage) / 1000,
+  //     current: (obj.external_input_current || obj.input_current) / 1000,
+  //     power: obj.external_input_voltage / 1000 * obj.external_input_current / 1000,
+  //   }))
+  let chartData = newData.map(({ isPluggedIn, ...rest }) => rest);
   return (
     <Card
       title="External"

@@ -37,14 +37,34 @@ const BatteryCard = (props) => {
       max: 45,
     }
   };
-  let newData = props.data.map(obj => ({
-    timestamp: timeFormatting(obj.time),
-    percentage: obj.battery_percentage,
-    isCharging: obj.is_charging ? "Charging" : "Not charging",
-    voltage: obj.battery_voltage / 1000,
-    current: obj.battery_current / 1000,
-    power: obj.battery_voltage / 1000 * obj.battery_current / 1000,
-  }));
+  let newData = props.data.map(obj => {
+    let tmp = {
+      timestamp: timeFormatting(obj.time),
+    }
+    if (obj.battery_percentage) {
+      tmp.percentage = obj.battery_percentage;
+    }
+    if (obj.is_charging) {
+      tmp.isCharging = obj.is_charging ? "Charging" : "Not charging";
+    }
+    if (obj.battery_voltage) {
+      tmp.voltage = obj.battery_voltage / 1000;
+    }
+    if (obj.battery_current) {
+      tmp.current = obj.battery_current / 1000;
+      tmp.power = tmp.voltage * tmp.current;
+    }
+    return tmp;
+  })
+
+  // ({
+  //   timestamp: timeFormatting(obj.time),
+  //   percentage: obj.battery_percentage,
+  //   isCharging: obj.is_charging ? "Charging" : "Not charging",
+  //   voltage: obj.battery_voltage / 1000,
+  //   current: obj.battery_current / 1000,
+  //   power: obj.battery_voltage / 1000 * obj.battery_current / 1000,
+  // }));
   let chartData = newData.map(({ percentage, isCharging, ...rest }) => rest)
   return (
     <Card

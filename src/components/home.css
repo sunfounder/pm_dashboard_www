@@ -33,9 +33,3 @@
   font-size: x-large;
   font-weight: bold;
 }
-
-.processorCores {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}

@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import SettingPage from './settingPage.jsx';
+import OTAPage from './otaPage.jsx';
+import WifiSettingPage from './wifiSettingPage.jsx';
+import ApSettingPage from './apSettingPage.jsx';
 import Snackbars from './snackbar.jsx';
 import { Box } from '@mui/material';
-import DashboardPanel from './panels/dashboard.jsx';
-import HistoryPanel from './panels/history.jsx';
-import LogPanel from './panels/log.jsx';
-
+import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 import "./home.css";
 
 const ip = window.location.hostname;
-const HOST = `http://${ip}:34001/api/v1.0/`;
+// const HOST = `http://${ip}:34001/api/v1.0/`;
 // const HOST = `http://192.168.100.146:34001/api/v1.0/`;
-// const HOST = `http://homeassistant.local:34001/api/v1.0/`;
+const HOST = `http://pironman-u1.local:34001/api/v1.0/`;
+// const HOST = `http://192.168.4.1:34001/api/v1.0/`;
 
 const defaultConfigData = {
   "auto": {
@@ -20,14 +21,12 @@ const defaultConfigData = {
     "fan_mode": "auto",
     "fan_state": true,
     "fan_speed": 65,
-    "temperature_unit": "C",
     "rgb_switch": true,
     "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
     "rgb_color": "#0a1aff",
     "rgb_speed": 50, //速度
     "rgb_pwm_frequency": 1000, //频率
     "rgb_pin": 10,  // 10,12,21
-    "shutdown_battery_pct": 100
   },
   "mqtt": {
     "host": "core-mosquitto",
@@ -40,14 +39,86 @@ const defaultConfigData = {
     "ssl_ca_cert": "",
     "ssl_cert": ""
   },
+  "wifi": {
+    "sta_switch": false,
+    "sta_ssid": "",
+    "sta_psk": "12345678",
+  },
+  "ap": {
+    "ap_ssid": "",
+    "ap_psk": "12345678",
+  },
+  "mqtt": {
+    "host": "core-mosquitto",
+    "port": 1883,
+    "username": "mqtt",
+    "password": "mqtt"
+  },
+  "system": {
+    "temperature_unit": "C",
+    "shutdown_percentage": 100,  //关机策略
+    "power_off_percentage": 100,  //电池保护策略
+    "timestamp": "16552455",
+    "timezone": "UTC-08:00",
+    "auto_time_enable": false,
+    "ntp_server": "",
+    "mac_address": "",
+    "ip_address": "",
+    "sd_card_usage": 0,
+    "sd_card_total": 0,
+  }
 }
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
-  const [peripherals, setPeripherals] = useState([]);
+  const [peripherals, setPeripherals] = useState([
+    "storage",
+    "cpu",
+    "network",
+    "memory",
+    "history",
+    "log",
+    "input_voltage",
+    "input_current",
+    "output_switch",
+    "output_voltage",
+    "output_current",
+    "battery_voltage",
+    "battery_current",
+    "battery_capacity",
+    "battery_percentage",
+    "power_source",
+    "is_input_plugged_in",
+    "is_battery_plugged_in",
+    "is_charging",
+    "spc_fan_power",
+    "pwm_fan_speed",
+    "gpio_fan_state",
+    "shutdown_percentage",
+    "power_off_percentage",
+    "timezone",
+    "auto_time_enable",
+    "time",
+    "sta_switch",
+    "sta_ssid_scan",
+    "sta_ssid",
+    "sta_psk",
+    "ap_ssid",
+    "ap_psk",
+    "ota_auto",
+    "ota_manual",
+    "mac_address",
+    "ip_address",
+    "sd_card_usage",
+    "download_history_file",
+  ]);
+  const [configData, setConfigData] = useState(defaultConfigData);
+  const [newConfigData, setNewConfigData] = useState({});
   //设置页面的显示状态
   const [settingPageDisplay, setSettingPageDisplay] = useState(false);
-  const [configData, setConfigData] = useState(defaultConfigData);
+  const [OTAPageDisplay, setOTAPageDisplay] = useState(false);
+  const [wifiSettingPageDisplay, setWifiSettingPageDisplay] = useState(false);
+  const [apSettingPageDisplay, setApSettingPageDisplay] = useState(false);
   //全局提示框显示内容
   const [snackbarText, setSnackbarText] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -59,6 +130,7 @@ const Home = (props) => {
     try {
       const requestOptions = {
         method: method,
+        mode: "cors",
         headers: {
           'Content-Type': 'application/json',
         },
@@ -83,7 +155,10 @@ const Home = (props) => {
       const status = result.status;
 
       if (status) {
-        const data = result.data;
+        let data = result.data;
+        if (!data) {
+          data = result;
+        }
         return data;
       } else {
         console.error(`Error: ${result.error}`);
@@ -100,11 +175,15 @@ const Home = (props) => {
   const getInitData = useCallback(async () => {
     let _configData = await request("get-config", "GET");
     let device_info = await request("get-device-info", "GET");
-    if (_configData) {
+    let currentWiFiSet = await request("get-ap-config", "GET",);
+    console.log("_configData", _configData);
+    console.log("device_info", device_info);
+    if (device_info) {
       setPeripherals(device_info.peripherals);
       setDeviceName(device_info.name);
     }
     if (_configData) {
+      _configData.ap = currentWiFiSet
       setConfigData(_configData);
     }
   }, [request])
@@ -120,6 +199,18 @@ const Home = (props) => {
 
   const handleSettingPage = () => {
     setSettingPageDisplay(!settingPageDisplay);
+  }
+
+  const handleWifiSettingPage = () => {
+    setWifiSettingPageDisplay(!wifiSettingPageDisplay);
+  }
+
+  const handleApSettingPage = () => {
+    setApSettingPageDisplay(!apSettingPageDisplay);
+  }
+
+  const handleOTAPage = () => {
+    setOTAPageDisplay(!OTAPageDisplay);
   }
 
   const showSnackBar = (severity, text) => {
@@ -141,16 +232,25 @@ const Home = (props) => {
   }
 
   const handleSaveConfig = async () => {
+    console.log("newConfigData", newConfigData);
+
     // 判断是否发送设置数据
-    let responseData = await sendData("set-config", configData);
+    let responseData = await sendData("set-config", newConfigData);
     if (responseData.status) {
       showSnackBar("success", "Save Successfully");
       // setSettingPageDisplay(false);
+      let tmp = { ...configData };
+      for (let field in newConfigData) {
+        for (let key in newConfigData[field]) {
+          tmp[field][key] = newConfigData[field][key];
+        }
+      }
+      setConfigData(tmp);
+      setNewConfigData({});
     }
   }
 
-  const sendData = async (path, data) => {
-    let payload = { data: data };
+  const sendData = async (path, payload) => {
     try {
       const response = await fetch(HOST + path, {
         method: "POST",
@@ -173,10 +273,26 @@ const Home = (props) => {
   }
 
   const handleChangeConfig = (field, name, value) => {
-    let newData = { ...configData };
+    console.log("handleChangeConfig field", field, "name", name, "value", value);
+    // 密码最少8位数
+    if (name === "sta_password" || name === "ap_password") {
+      if (value.length < 8) {
+        showSnackBar("error", "Password must be at least 8 characters long");
+      }
+    }
+    let newData = { ...newConfigData };
+    if (!Object.keys(newData).includes(field)) {
+      newData[field] = {};
+    }
     newData[field][name] = value;
-    setConfigData(newData);
+    setNewConfigData(newData);
   };
+
+  const handleStaMode = (e) => {
+    let newData = { ...configData };
+    newData.wifi.sta_switch = e.target.checked;
+    setConfigData(newData)
+  }
 
   const commonProps = {
     deviceName: deviceName,
@@ -186,6 +302,7 @@ const Home = (props) => {
     onTabChange: handleTabChange,
     onSettingPage: handleSettingPage,
     showSnackBar: showSnackBar,
+    sendData: sendData,
   }
 
   return (
@@ -194,9 +311,22 @@ const Home = (props) => {
       height: "100%",
       overflow: "hidden",
     }} >
-      {tabIndex === 0 && <DashboardPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit} />}
-      {tabIndex === 1 && <HistoryPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit} />}
-      {tabIndex === 2 && <LogPanel {...commonProps} />}
+      {/* {tabIndex === 0 && <DashboardPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit}  />}
+      {tabIndex === 1 && <HistoryPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit}  />}
+      {tabIndex === 2 && <LogPanel {...commonProps}  />} */}
+      {/* <PersistentDrawerLeft commonProps={commonProps} temperatureUnit={configData.auto.temperature_unit}  /> */}
+      <PersistentDrawerLeft
+        {...commonProps}
+        // commonProps={commonProps}
+        configData={configData}
+        temperatureUnit={configData.temperature_unit ? configData.temperature_unit : "C"}
+        onChange={handleChangeConfig}
+        sendData={sendData}
+        onSave={handleSaveConfig}
+        onWifiSettingPage={handleWifiSettingPage}
+        onApSettingPage={handleApSettingPage}
+        onOTAPage={handleOTAPage}
+      />
       <SettingPage
         open={settingPageDisplay}
         onCancel={handleCancel}
@@ -205,7 +335,34 @@ const Home = (props) => {
         onModeChange={props.onModeChange}
         configData={configData}
         peripherals={peripherals}
-        getRequest={request}
+        commonProps={commonProps}
+      />
+      <OTAPage
+        open={OTAPageDisplay}
+        onCancel={handleOTAPage}
+        request={request}
+        peripherals={peripherals}
+      />
+      <WifiSettingPage
+        open={wifiSettingPageDisplay}
+        onCancel={handleWifiSettingPage}
+        configData={configData}
+        peripherals={peripherals}
+        request={request}
+        onStaMode={handleStaMode}
+        onChange={handleChangeConfig}
+        sendData={sendData}
+        onSave={handleSaveConfig}
+      />
+      <ApSettingPage
+        open={apSettingPageDisplay}
+        onCancel={handleApSettingPage}
+        request={request}
+        configData={configData}
+        peripherals={peripherals}
+        onChange={handleChangeConfig}
+        sendData={sendData}
+        onSave={handleSaveConfig}
       />
       <Snackbars
         open={snackbarShow}

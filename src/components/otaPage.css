@@ -1,0 +1,42 @@
+.loaderBox {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+}
+
+.upgradeBox,
+.upload {
+  width: 50%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.latestVersion,
+.currentVersion {
+  list-style-type: none;
+}
+
+.latestVersion {
+  /* padding: 20px 0; */
+  margin: 4px 0;
+}
+
+@media (max-width: 767px) {
+  .otaSetting {
+    width: 62vw;
+    height: 36vh;
+  }
+
+  .main {
+    width: 100%;
+    margin-left: -280px;
+  }
+
+  .chartBos {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

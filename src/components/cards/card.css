@@ -49,6 +49,12 @@
   transition: background-color 0.5s ease 0s;
 }
 
+.cardConfig {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .detailBox {
   display: flex;
   flex-direction: row;
