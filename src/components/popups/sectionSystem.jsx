@@ -1,12 +1,5 @@
 
 import {
-  List,
-  ListSubheader,
-  Box,
-  Typography,
-} from '@mui/material';
-
-import {
   SettingItemToggleButton,
   SettingItemSlider,
   SettingItemSwitch,
@@ -21,37 +14,37 @@ import SectionFrame from "./sectionFrame.jsx";
 const SectionSystem = (props) => {
   const handleShutdownPercentageChange = async (event) => {
     let result = await props.sendData('set-shutdown-percentage', { 'shutdown-percentage': event.target.value });
-    if (result == "OK") {
+    if (result === "OK") {
       props.onChange('system', 'shutdown_percentage', event.target.value);
     }
   }
   const handlePowerOffPercentageChange = async (event) => {
     let result = await props.sendData('set-poweroff-percentage', { 'power-off-percentage': event.target.value });
-    if (result == "OK") {
+    if (result === "OK") {
       props.onChange('system', 'poweroff_percentage', event.target.value);
     }
   }
   const handleTimeChange = async (event) => {
     let result = await props.sendData('set-time', { 'timestamp': event.target.value });
-    if (result == "OK") {
+    if (result === "OK") {
       props.onChange('system', 'time', event.target.value);
     }
   }
   const handleTimezoneChange = async (event) => {
     let result = await props.sendData('set-timezone', { 'timezone': event.target.value });
-    if (result == "OK") {
+    if (result === "OK") {
       props.onChange('system', 'timezone', event.target.value);
     }
   }
   const handleAutoTimeSwitchChange = async (event) => {
     let result = await props.sendData('set-auto-time', { 'enable': event.target.value });
-    if (result == "OK") {
+    if (result === "OK") {
       props.onChange('system', 'auto_time', event.target.value);
     }
   }
   const handleNTPServerChange = async (event) => {
     let result = await props.sendData('set-ntp-server', { 'ntp_server': event.target.value });
-    if (result == "OK") {
+    if (result === "OK") {
       props.onChange('system', 'ntp_server', event.target.value);
     }
   }

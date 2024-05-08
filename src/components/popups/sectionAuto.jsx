@@ -1,14 +1,4 @@
-import React, { useState } from "react";
-import {
-  List,
-  ListSubheader,
-  CircularProgress,
-  Box,
-  Check,
-  Typography,
-  Button,
-} from "@mui/material";
-
+import React from "react";
 import {
   SettingItemText,
   SettingItemSlider,
@@ -20,21 +10,6 @@ import SectionFrame from "./sectionFrame.jsx";
 const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 
 const SectionMQTT = (props) => {
-  const [mqttTestState, setMqttTestState] = useState("idle");
-  const [mqttTestErrorMsg, setMqttTestErrorMsg] = useState("");
-
-  const handleTestMQTT = async () => {
-    let sendData = props.config;
-    setMqttTestState("loading");
-    let data = await props.request("test-mqtt", "GET", sendData);
-    if (data && data.status) {
-      setMqttTestState("success");
-    } else {
-      setMqttTestState("failed");
-      setMqttTestErrorMsg(data.error);
-    }
-  }
-
   return (
     <SectionFrame title='AUTO'>
       {/* 风扇模式 */}

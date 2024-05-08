@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
 
-import {
-  List,
-  ListItem,
-  ListItemText,
-  ListSubheader,
-  MenuItem,
-  FormControl,
-  Select,
-} from '@mui/material';
-
 import PopupFrame from './popupFrame.jsx';
 import SectionSystem from './sectionSystem.jsx';
 import SectionMQTT from './sectionMQTT.jsx';

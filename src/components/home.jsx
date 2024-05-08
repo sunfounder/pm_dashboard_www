@@ -48,12 +48,6 @@ const defaultConfigData = {
     "ap_ssid": "",
     "ap_psk": "12345678",
   },
-  "mqtt": {
-    "host": "core-mosquitto",
-    "port": 1883,
-    "username": "mqtt",
-    "password": "mqtt"
-  },
   "system": {
     "temperature_unit": "C",
     "shutdown_percentage": 100,  //关机策略

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
@@ -16,11 +16,12 @@ import {
   IconButton,
   Slider,
   Stack,
-  Button,
   Autocomplete,
   FormControl,
   Select,
   MenuItem,
+  CircularProgress,
+  Button,
 } from '@mui/material';
 
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -34,6 +35,15 @@ import {
   VisibilityOff,
   Check,
 } from '@mui/icons-material';
+
+import SignalWifi1BarIcon from '@mui/icons-material/SignalWifi1Bar';
+import SignalWifi2BarIcon from '@mui/icons-material/SignalWifi2Bar';
+import SignalWifi3BarIcon from '@mui/icons-material/SignalWifi3Bar';
+import SignalWifi4BarIcon from '@mui/icons-material/SignalWifi4Bar';
+import SignalWifi1BarLockIcon from '@mui/icons-material/SignalWifi1BarLock';
+import SignalWifi2BarLockIcon from '@mui/icons-material/SignalWifi2BarLock';
+import SignalWifi3BarLockIcon from '@mui/icons-material/SignalWifi3BarLock';
+import SignalWifi4BarLockIcon from '@mui/icons-material/SignalWifi4BarLock';
 
 import { formatBytes } from '../../js/utils';
 
@@ -319,10 +329,10 @@ const SettingItemMenu = (props) => {
 const SettingItemCurrentTime = (props) => {
   const [currentTime, setCurrentTime] = useState('');
 
-  const getCurrentTime = async () => {
+  const getCurrentTime = useCallback(async () => {
     const newCurrentTime = await props.request("get-timestamp");
     setCurrentTime(newCurrentTime * 1000);
-  }
+  }, [props])
 
   const handleTimeChanged = (newTime) => {
     console.log(newTime);
@@ -333,7 +343,7 @@ const SettingItemCurrentTime = (props) => {
       getCurrentTime();
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [getCurrentTime]);
 
   return (
     <SettingItem
@@ -354,7 +364,7 @@ const SettingItemCurrentTime = (props) => {
 const SettingItemTimezone = (props) => {
 
   // data 如 "UTC-8:00" 转为 "(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei"
-  let option = TIMEZONE_MAP.find(timezone => timezone.data == props.value);
+  let option = TIMEZONE_MAP.find(timezone => timezone.data === props.value);
 
   const handleChange = (event, option) => {
     props.onChange(option.data)
@@ -445,8 +455,122 @@ const SettingItemSDCardUsage = (props) => {
   )
 }
 
+const SettingItemSSIDList = (props) => {
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [ssidList, setSsidList] = useState([]);
+  const [timerId, setTimerId] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const getWiFiStrengthIcon = (rssi, secure) => {
+    if (rssi >= -60) {
+      if (secure) return <SignalWifi4BarLockIcon />;
+      else return <SignalWifi4BarIcon />;
+    } else if (rssi >= -80) {
+      if (secure) return <SignalWifi3BarLockIcon />;
+      else return <SignalWifi3BarIcon />;
+    } else if (rssi >= -90) {
+      if (secure) return <SignalWifi2BarLockIcon />;
+      else return <SignalWifi2BarIcon />;
+    } else {
+      if (secure) return <SignalWifi1BarLockIcon />;
+      else return <SignalWifi1BarIcon />;
+    }
+  }
+
+  const startWiFiScan = async (rssi) => {
+    let status = await props.request("start-wifi-scan", "GET",);
+    console.log("status", status);
+    setLoading(true);
+    setTimerId(setTimeout(getSsidList, 1000));
+  }
+
+  const getSsidList = async () => {
+    let ssidList = await props.request("get-wifi-scan", "GET",);
+    console.log("ssidList", ssidList);
+    if (typeof ssidList === "object") {
+      setSsidList(ssidList);
+      let options = ssidList.map((ssid) => ssid.ssid);
+      setOptions(options);
+      setLoading(false);
+      stopGetSsidList();
+    } else if (ssidList === -2) {
+      setLoading(false);
+      stopGetSsidList();
+    } else {
+      setTimerId(setTimeout(getSsidList, 1000));
+    }
+  }
+
+  const stopGetSsidList = () => {
+    setLoading(false);
+    setTimerId(clearTimeout(timerId));
+  }
+
+  return (
+    <SettingItem
+      title={props.title}
+      subtitle={props.subtitle}
+    >
+      <Autocomplete
+        id="asynchronous-demo"
+        sx={{ width: "60%" }}
+        open={open}
+        value={props.value}
+        onOpen={() => {
+          setOpen(true);
+          startWiFiScan();
+        }}
+        onClose={() => {
+          setOpen(false);
+          stopGetSsidList();
+        }}
+        onChange={(event, newValue) => {
+          props.onChange('wifi', 'sta_ssid', newValue);
+        }}
+        options={options}
+        loading={loading}
+        renderOption={(props, ssid) => {
+          let ssidData = ssidList.find((item) => item.ssid === ssid);
+          return (<Box component="li" sx={{ display: "flex", alignItems: 'space-between', '& > img': { flexShrink: 0 } }} {...props}>
+            {getWiFiStrengthIcon(ssidData.rssi, ssidData.secure)}
+            <Typography sx={{ flexGrow: 1, padding: "0 8px" }}>{ssidData.ssid}</Typography>
+          </Box>)
+        }}
+        renderInput={(params) => (
+          <TextField
+            variant="standard"
+            {...params}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
+        )}
+      />
+    </SettingItem>
+  );
+}
+
+const SettingItemButton = (props) => {
+  <SettingItem title={props.title} subtitle={props.subtitle}>
+    <Button
+      onClick={props.onClick}
+      startIcon={props.loading && <CircularProgress size={30} />}
+    >
+      {props.buttonText}
+    </Button>
+  </SettingItem>
+}
+
 export {
   SettingItem,
+  SettingItemButton,
   SettingItemToggleButton,
   SettingItemNumber,
   SettingItemText,
@@ -458,4 +582,5 @@ export {
   SettingItemTimezone,
   SettingItemNTPServer,
   SettingItemSDCardUsage,
+  SettingItemSSIDList,
 }

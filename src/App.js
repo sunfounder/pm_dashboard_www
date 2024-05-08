@@ -151,7 +151,7 @@ const lightTheme = createTheme({
 });
 
 const App = () => {
-  const [theme, setTheme] = useState(null);
+  const [theme, setTheme] = useState(lightTheme);
 
   const changeTheme = (themeName) => {
     if (themeName === 'dark')
