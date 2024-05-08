@@ -14,59 +14,11 @@ const ip = window.location.hostname;
 // const HOST = `http://pironman-u1-002.local:34001/api/v1.0/`;
 const HOST = `http://192.168.4.1:34001/api/v1.0/`;
 
-const defaultConfigData = {
-  "auto": {
-    "reflash_interval": 1, //刷新间隔
-    "retry_interval": 3, //刷新
-    "fan_mode": "auto",
-    "fan_state": true,
-    "fan_speed": 65,
-    "rgb_switch": true,
-    "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
-    "rgb_color": "#0a1aff",
-    "rgb_speed": 50, //速度
-    "rgb_pwm_frequency": 1000, //频率
-    "rgb_pin": 10,  // 10,12,21
-  },
-  "mqtt": {
-    "host": "core-mosquitto",
-    "port": 1883,
-    "username": "mqtt",
-    "password": "mqtt"
-  },
-  "dashboard": {
-    "ssl": false,
-    "ssl_ca_cert": "",
-    "ssl_cert": ""
-  },
-  "wifi": {
-    "sta_switch": false,
-    "sta_ssid": "",
-    "sta_psk": "12345678",
-  },
-  "ap": {
-    "ap_ssid": "",
-    "ap_psk": "12345678",
-  },
-  "system": {
-    "temperature_unit": "C",
-    "shutdown_percentage": 100,  //关机策略
-    "power_off_percentage": 100,  //电池保护策略
-    "timestamp": "16552455",
-    "timezone": "UTC-08:00",
-    "auto_time_enable": false,
-    "ntp_server": "",
-    "mac_address": "",
-    "ip_address": "",
-    "sd_card_usage": 0,
-    "sd_card_total": 0,
-  }
-}
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
   const [peripherals, setPeripherals] = useState([]);
-  const [configData, setConfigData] = useState(defaultConfigData);
+  const [temperatureUnit, setTemperatureUnit] = useState("C");
   //设置页面的显示状态
   const [settingPageDisplay, setSettingPageDisplay] = useState(false);
   const [PopupOTADisplay, setPopupOTADisplay] = useState(false);
@@ -125,25 +77,18 @@ const Home = (props) => {
     }
   }, []);
 
-  const getInitData = useCallback(async () => {
-    let _configData = await request("get-config", "GET");
-    let device_info = await request("get-device-info", "GET");
-    let currentWiFiSet = await request("get-ap-config", "GET",);
-    console.log("_configData", _configData);
-    console.log("device_info", device_info);
-    if (device_info) {
-      setPeripherals(device_info.peripherals);
-      setDeviceName(device_info.name);
-    }
-    if (_configData) {
-      _configData.ap = currentWiFiSet
-      setConfigData(_configData);
+  const getDeviceInfo = useCallback(async () => {
+    let deviceInfo = await request("get-device-info", "GET");
+    console.log("deviceInfo", deviceInfo);
+    if (deviceInfo) {
+      setPeripherals(deviceInfo.peripherals);
+      setDeviceName(deviceInfo.name);
     }
   }, [request])
 
   useEffect(() => {
-    getInitData();
-  }, [getInitData]);
+    getDeviceInfo();
+  }, [getDeviceInfo]);
 
   const handleTabChange = (event, newValue) => {
     window.localStorage.setItem("pm-dashboard-tabIndex", newValue);
@@ -219,23 +164,8 @@ const Home = (props) => {
     }
   }
 
-  const handleChangeConfig = (field, name, value) => {
-    console.log("handleChangeConfig field", field, "name", name, "value", value);
-    // 密码最少8位数
-    if (name === "sta_password" || name === "ap_password") {
-      if (value.length < 8) {
-        showSnackBar("error", "Password must be at least 8 characters long");
-      }
-    }
-    let newData = { ...configData };
-    newData[field][name] = value;
-    setConfigData(newData);
-  };
-
-  const handleStaMode = (e) => {
-    let newData = { ...configData };
-    newData.wifi.sta_switch = e.target.checked;
-    setConfigData(newData)
+  const handleTemperatureUnitChanged = (temperatureUnit) => {
+    setTemperatureUnit(temperatureUnit);
   }
 
   const commonProps = {
@@ -255,16 +185,9 @@ const Home = (props) => {
       height: "100%",
       overflow: "hidden",
     }} >
-      {/* {tabIndex === 0 && <DashboardPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit}  />}
-      {tabIndex === 1 && <HistoryPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit}  />}
-      {tabIndex === 2 && <LogPanel {...commonProps}  />} */}
-      {/* <PersistentDrawerLeft commonProps={commonProps} temperatureUnit={configData.auto.temperature_unit}  /> */}
       <PersistentDrawerLeft
         {...commonProps}
-        // commonProps={commonProps}
-        configData={configData}
-        temperatureUnit={configData.temperature_unit ? configData.temperature_unit : "C"}
-        onChange={handleChangeConfig}
+        temperatureUnit={temperatureUnit}
         sendData={sendData}
         onPopupWiFi={handlePopupWiFi}
         onPopupAP={handlePopupAP}
@@ -272,37 +195,36 @@ const Home = (props) => {
       />
       <PopupSettings
         open={settingPageDisplay}
+        request={request}
         onCancel={handleCancel}
-        onChange={handleChangeConfig}
         onModeChange={props.onModeChange}
-        configData={configData}
+        onTemperatureUnitChanged={handleTemperatureUnitChanged}
         peripherals={peripherals}
         commonProps={commonProps}
+        showSnackBar={showSnackBar}
       />
       <PopupOTA
         open={PopupOTADisplay}
         onCancel={handlePopupOTA}
         request={request}
         peripherals={peripherals}
+        showSnackBar={showSnackBar}
       />
       <PopupWiFi
         open={wifiSettingPageDisplay}
         onCancel={handlePopupWiFi}
-        configData={configData}
         peripherals={peripherals}
         request={request}
-        onStaMode={handleStaMode}
-        onChange={handleChangeConfig}
         sendData={sendData}
+        showSnackBar={showSnackBar}
       />
       <PopupAP
         open={apSettingPageDisplay}
         onCancel={handlePopupAP}
         request={request}
-        configData={configData}
         peripherals={peripherals}
-        onChange={handleChangeConfig}
         sendData={sendData}
+        showSnackBar={showSnackBar}
       />
       <Snackbars
         open={snackbarShow}

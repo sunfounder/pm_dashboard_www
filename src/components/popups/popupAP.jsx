@@ -11,29 +11,52 @@ import {
   SettingItemPassword,
 } from './settingItems.jsx';
 
-const PopupAP = (props) => {
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(false);
+const DEFAULT_CONFIG = {
+  "ap_ssid": "",
+  "ap_psk": "",
+};
 
-  const getData = useCallback(async () => {
-    let data = await props.request("get-ap-config", "GET",);
+const PopupAP = (props) => {
+  const [data, setData] = useState(DEFAULT_CONFIG);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const getData = async () => {
+    let data = await props.request("get-ap-config", "GET");
     setData(data);
-  }, [props])
+  }
+
+  const handleSSIDChanged = (event) => {
+    setData({ ...data, "ap_ssid": event.target.value })
+  }
+
+  const handlePasswordChanged = (event) => {
+    const password = event.target.value;
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+    } else {
+      setError('');
+    }
+    setData({ ...data, "ap_psk": password })
+  }
 
   const handleSave = async () => {
-    console.log(props)
-    setLoading(true);
-    const sendData = {
-      ap_ssid: data.ap_ssid,
-      ap_password: data.ap_psk,
+    if (error !== '') {
+      props.showSnackBar("error", error);
+      return;
     }
-    let result = await props.sendData("set-ap-config", sendData);
+    setLoading(true);
+    console.log("data", data);
+    const payload = {
+      ap_ssid: data.ap_ssid,
+      ap_psk: data.ap_psk,
+    }
+    console.log("payload", payload);
+    let result = await props.sendData("set-ap-config", payload);
     if (result === "OK") {
       props.showSnackBar("success", "Save Successfully");
     }
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -41,7 +64,7 @@ const PopupAP = (props) => {
     return () => {
       setLoading(false);
     }
-  }, [getData])
+  }, [props.open])
 
   return (
     <PopupFrame title="AP Setting" open={props.open} onClose={props.onCancel} actions={
@@ -59,15 +82,15 @@ const PopupAP = (props) => {
         {props.peripherals.includes("ap_ssid") &&
           <SettingItemText
             title="AP SSID"
-            value={props.configData.ap.ap_ssid}
-            onChange={(event) => props.onChange('ap', 'ap_ssid', event.target.value)}
+            value={data.ap_ssid}
+            onChange={handleSSIDChanged}
           />}
         {props.peripherals.includes("ap_psk") &&
           <SettingItemPassword
             title="AP Password"
             secondary="Password to login to WIFI broker"
-            value={props.configData.ap.ap_psk}
-            onChange={(event) => props.onChange('ap', 'ap_psk', event.target.value)}
+            value={data.ap_psk}
+            onChange={handlePasswordChanged}
           />}
       </List>
     </PopupFrame>

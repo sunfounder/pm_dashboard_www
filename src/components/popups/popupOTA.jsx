@@ -1,40 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Paper,
-  CardHeader,
-  Modal,
   Button,
   Box,
-  IconButton,
-  CircularProgress,
   LinearProgress,
   Typography,
-  ListItem,
-  ListItemText,
 } from '@mui/material';
 
 import PopupFrame from './popupFrame.jsx';
+import {
+  SettingItem,
+  SettingItemButton,
+} from './settingItems.jsx';
 
 const PopupOTA = (props) => {
   const [loading, setLoading] = useState(false);
   const [linearWithValueLabel, setLinearWithValueLabel] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [latestVersion, setLatestVersion] = useState({ versiov: "", time: "", log: "", url: "" });
-  const [fileName, setFileName] = useState('选择文件');
+  const [fileName, setFileName] = useState('Select firmware');
   const [progress, setProgress] = useState(0);
   const [downloadButton, setDownloadButton] = useState(false);
   const [currentVersion, setCurrentVersion] = useState("");
-  useEffect(() => {
-    getCurrentVersion();
-    return () => {
-      setLinearWithValueLabel(false);
-      setLoading(false);
-      setDownloadButton(false);
-      setSelectedFile(null);
-      setFileName('选择文件');
-    };
-  }, [props.open]);
-
 
   const handleUpgrade = async () => {
     console.log("手动升级");
@@ -42,12 +28,12 @@ const PopupOTA = (props) => {
     setLinearWithValueLabel(true);
   }
 
-  const getCurrentVersion = async () => {
+  const getCurrentVersion = useCallback(async () => {
     let currentVersion = await props.request("get-version", "GET");
     setCurrentVersion(currentVersion);
-  }
+  }, [props])
 
-  const handleAutoUpgrade = async () => {
+  const checkUpdate = async () => {
     let latestVersion = await getLatestVersion();
     if (latestVersion) {
       let result = compareVersions(latestVersion.versiov, currentVersion);
@@ -61,7 +47,6 @@ const PopupOTA = (props) => {
         setDownloadButton(false);
       }
     }
-
   }
 
   const sendFile = async () => {
@@ -76,7 +61,7 @@ const PopupOTA = (props) => {
           let progress = e.loaded / e.total * 100;
           console.log("progress", progress);
           setProgress(progress);
-          if (progress == 100) {
+          if (progress === 100) {
             console.log('update success');
             props.showSnackBar("success", "Upgrade Success");
             setProgress(0);
@@ -138,28 +123,21 @@ const PopupOTA = (props) => {
     return 0;
   }
 
+  useEffect(() => {
+    getCurrentVersion();
+  }, [props.open]);
+
+
   return (
     <PopupFrame title="OTA" open={props.open} onClose={props.onCancel}>
-      <SettingItem
+      <SettingItemButton
         title="Current Version"
-        subtitle=""
-      >
-        <Typography >{currentVersion}</Typography>
-      </SettingItem>
-      <SettingItem
-        title="Check Updates"
-        subtitle=""
-      >
-        <Button onClick={handleAutoUpgrade}>检查更新</Button>
-        {
-          loading &&
-          <CircularProgress size={30} />
-        }
-      </SettingItem>
-
+        subtitle={currentVersion}
+        buttonText="Check Updates"
+        onClick={checkUpdate}
+      />
       {
         latestVersion.versiov !== "" &&
-
         <Box>
           <Typography >{latestVersion.versiov}</Typography>
           <Typography >{latestVersion.log}</Typography>
@@ -220,22 +198,13 @@ const LinearWithValueLabel = (props) => {
         props.setLinearWithValueLabel(false);
       }, 3000);
     }
-  }, [props.progress]);
+  }, [props]);
+
   return (
     <Box sx={{ width: '90%', margin: "10px" }}>
       <LinearProgressWithLabel value={props.progress} sx={{ height: "36px", borderRadius: "4px" }} />
     </Box>
   );
-}
-
-const SettingItem = (props) => {
-  return (<>
-    <ListItem>
-      <ListItemText primary={props.title} secondary={props.subtitle} />
-      {props.children}
-    </ListItem>
-  </>
-  )
 }
 
 export default PopupOTA;
