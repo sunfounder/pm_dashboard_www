@@ -80,7 +80,6 @@ const RaspberryPiPowerCard = (props) => {
   };
   if (props.data.length > 0) {
     let output_state = props.data[props.data.length - 1].output_state;
-    console.log(output_state);
     if (output_state === SWITCH_STATE.OFF) {
       enable = false;
       shuttingDown = false;

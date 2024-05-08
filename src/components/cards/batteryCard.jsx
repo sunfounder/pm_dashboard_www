@@ -37,7 +37,6 @@ const BatteryCard = (props) => {
       unit: "",
     },
   };
-  console.log("data", props.data);
   let newData = props.data.map(obj => {
     let tmp = {
       timestamp: timeFormatting(obj.time),
@@ -57,7 +56,6 @@ const BatteryCard = (props) => {
     }
     return tmp;
   })
-  console.log("newData", newData);
   let chartData = newData.map(({ percentage, isCharging, ...rest }) => rest)
   return (
     <Card
