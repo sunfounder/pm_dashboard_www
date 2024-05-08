@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   List,
   Button,
@@ -21,70 +21,108 @@ const WIFI_STATUS = {
   DISCONNECTED: 6,
 }
 
+const DEFAULT_CONFIG = {
+  "sta_switch": false,
+  "sta_ssid": "",
+  "sta_psk": "",
+};
+
 const TIMEOUT = 10; // 秒
 
 const PopupWiFi = (props) => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(false);
   const [timeoutCounter, setTimeoutCounter] = useState(0);
+  // 检查连接状态的标志，取反一次就会触发一次检查
+  const [error, setError] = useState('Password must be at least 8 characters long');
 
-  const getWifSetting = useCallback(async () => {
-    let data = await props.request("get-wifi-config", "GET",);
+  const timeoutCounterRef = useRef(timeoutCounter);
+
+  const getData = async () => {
+    let data = await props.request("get-wifi-config", "GET");
     setData(data);
-  }, [props]);
+  }
+
+  const handleSwitchChange = (event) => {
+    setData({ ...data, "sta_switch": event.target.checked });
+  }
+
+  const handlePasswordChange = (event) => {
+    if (event.target.value.length < 8) {
+      setError("Password must be at least 8 characters long");
+    } else {
+      setError('');
+    }
+    setData({ ...data, "sta_psk": event.target.value });
+  }
+
+  const handleSSIDChange = (ssid) => {
+    setData({ ...data, "sta_ssid": ssid });
+  }
 
   const checkConnection = async () => {
-    let responseData = await props.request("get-sta-status", "GET",);
-    if (responseData.data === WIFI_STATUS.CONNECTED) {
+    let status = await props.request("get-wifi-status", "GET",);
+    if (status === WIFI_STATUS.CONNECTED) {
       props.showSnackBar("success", "Connection Successfully");
       setLoading(false);
-    } else if (responseData.data === WIFI_STATUS.NO_SSID_AVAIL) {
+    } else if (status === WIFI_STATUS.NO_SSID_AVAIL) {
       props.showSnackBar("error", "No SSID available");
       setLoading(false);
-    } else if (responseData.data === WIFI_STATUS.CONNECT_FAILED) {
+    } else if (status === WIFI_STATUS.CONNECT_FAILED) {
       props.showSnackBar("error", "Connection Failed");
       setLoading(false);
     } else {
-      if (timeoutCounter >= TIMEOUT) {
+      if (timeoutCounterRef.current >= TIMEOUT) {
         props.showSnackBar("error", "Connection Timeout");
         setLoading(false);
       } else {
-        setTimeoutCounter(timeoutCounter + 1);
+        setTimeoutCounter(timeoutCounter => timeoutCounter + 1);
+        // 延时1秒后再次检查连接状态
         setTimeout(checkConnection, 1000);
-        props.onChange('wifi', 'sta_psk', "");
       }
     }
   }
 
   const handleSave = async () => {
-    setLoading(true);
-    const sendData = {
-      sta_ssid: props.configData.wifi.sta_ssid,
-      sta_psk: props.configData.wifi.sta_psk || "",
-      sta_switch: props.configData.wifi.sta_switch,
+    if (error !== '') {
+      props.showSnackBar("error", error);
+      return;
     }
-    console.log(sendData);
-    await props.sendData("set-wifi-config", sendData);
-    setTimeoutCounter(0);
-    setTimeout(checkConnection, 1000);
+    setLoading(true);
+    console.log(data);
+    const result = await props.sendData("set-wifi-config", data);
+    if (result === 'OK') {
+      if (data.sta_switch) {
+        setTimeoutCounter(0);
+        setTimeout(checkConnection, 1000);
+      } else {
+        props.showSnackBar("success", "Saved Successfully");
+        setLoading(false);
+      }
+    }
+  }
+
+  const handleCancel = () => {
+    setData({ ...data, "sta_psk": "" });
+    props.onCancel();
   }
 
   useEffect(() => {
-    getWifSetting();
-    return () => {
-      setLoading(false);
-    }
-  }, [props.open, getWifSetting])
+    getData();
+  }, [props.open])
+
+  useEffect(() => {
+    timeoutCounterRef.current = timeoutCounter;
+  }, [timeoutCounter]);
 
   return (
     <PopupFrame
       title="WIFI Setting"
       open={props.open}
-      onClose={props.onCancel}
+      onClose={handleCancel}
       actions={
         <Button
           onClick={handleSave}
-          justifyContent="center"
           disabled={loading}
         >
           {loading ? <CircularProgress size={20} /> : "Save"}
@@ -95,22 +133,24 @@ const PopupWiFi = (props) => {
         {props.peripherals.includes("sta_switch") &&
           <SettingItemSwitch
             title="STA mode"
-            onChange={props.onStaMode}
+            onChange={handleSwitchChange}
             value={data.sta_switch}
           />}
         {props.peripherals.includes("sta_ssid_scan") &&
           <SettingItemSSIDList
             title="STA SSID"
+            disabled={!data.sta_switch}
             value={data.sta_ssid}
             request={props.request}
-            onChange={props.onChange}
+            onChange={handleSSIDChange}
           />}
         {props.peripherals.includes("sta_psk") &&
           <SettingItemPassword
             title="STA Password"
+            disabled={!data.sta_switch}
             secondary="Password to login to WIFI broker"
             value={data.sta_psk}
-            onChange={(event) => props.onChange('wifi', 'sta_psk', event.target.value)}
+            onChange={handlePasswordChange}
           />}
       </List>
     </PopupFrame >
