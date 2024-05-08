@@ -32,6 +32,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
   Visibility,
   VisibilityOff,
+  Check,
 } from '@mui/icons-material';
 
 import { formatBytes } from '../../js/utils';
@@ -316,49 +317,15 @@ const SettingItemMenu = (props) => {
 }
 
 const SettingItemCurrentTime = (props) => {
-  let disabled = !props.peripherals.includes("auto_time_enable") || props.config.auto_time_switch;
   const [currentTime, setCurrentTime] = useState('');
-  const [anchorElUser, setAnchorElUser] = useState(null);
-  const [start, setStart] = useState(null);
-  const [end, setEnd] = useState(null);
-  // const [updateDataInterval, setUpdateDataInterval] = useState(1000);
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const handleTimeRangeChange = (data) => {
-    console.log("handleTimeRangeChange", data);
-    if (data.start !== undefined) {
-      setStart(data.start);
-    }
-    if (data.end !== undefined) {
-      setEnd(data.end);
-    }
-  }
 
   const getCurrentTime = async () => {
     const newCurrentTime = await props.request("get-timestamp");
     setCurrentTime(newCurrentTime * 1000);
-    // if (newCurrentTime) {
-    //   let date = new Date(newCurrentTime * 1000);
-    //   const year = date.getFullYear();
-    //   const month = String(date.getMonth() + 1).padStart(2, '0');
-    //   const day = String(date.getDate()).padStart(2, '0');
-    //   const hours = String(date.getHours()).padStart(2, '0');
-    //   const minutes = String(date.getMinutes()).padStart(2, '0');
-    //   const seconds = String(date.getSeconds()).padStart(2, '0');
-    //   const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    //   setCurrentTime(formattedTime);
-    // }
-    // dayjs.extend(utc);
-    // dayjs.extend(timezone);
-    // const offset = parseInt(props.config.timezone.replace('UTC', '')); // 提取偏移量
-    // const formattedTime = dayjs(newCurrentTime).utcOffset(offset).format('YYYY-MM-DD HH:mm:ss');
-    // console.log("getCurrentTime", formattedTime)
+  }
 
+  const handleTimeChanged = (newTime) => {
+    console.log(newTime);
   }
 
   useEffect(() => {
@@ -376,39 +343,8 @@ const SettingItemCurrentTime = (props) => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateTimePicker
           value={dayjs(currentTime)}
-          onChange={handleTimeRangeChange}
-          // timezone="UTC-8"
-          disableOpenPicker={disabled} />
-        {/* <Box sx={{ display: "flex", justifyContent: "space-between", alignContent: "center" }}>
-        <Typography >{currentTime}</Typography>
-
-        <Box sx={{ flexGrow: 0 }}>
-          <Button sx={{ padding: "0 0" }} disabled={disabled} onClick={handleOpenUserMenu}>Edit</Button>
-          <Menu
-            sx={{ mt: '35px' }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            <DateTimePicker
-              title="Timing"
-              subtitle=""
-              onChange={handleTimeRangeChange}
-              onError={(msg) => props.commonProps.showSnackBar("error", msg)}
-            />
-          </Menu>
-        </Box>
-      </Box> */}
+          onChange={handleTimeChanged}
+          disableOpenPicker={props.editable} />
       </LocalizationProvider>
     </SettingItem>
   )
@@ -416,50 +352,33 @@ const SettingItemCurrentTime = (props) => {
 
 // 时区选择
 const SettingItemTimezone = (props) => {
-  let data = props.config.timezone;
 
   // data 如 "UTC-8:00" 转为 "(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei"
-  let option = TIMEZONE_MAP.find(timezone => timezone.data == data);
+  let option = TIMEZONE_MAP.find(timezone => timezone.data == props.value);
 
   const handleChange = (event, option) => {
-    props.onChange('system', "timezone", option.data)
-    // alert(event.target.value)
+    props.onChange(option.data)
   };
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem title={props.title} subtitle={props.subtitle} >
       <Autocomplete
         disablePortal
-        id="combo-box-demo"
+        id="timezone-select"
         options={TIMEZONE_MAP}
         sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="SettingItemTimezone" />}
-        // value={props.config.timezone}
+        renderInput={(params) => <TextField {...params} label={props.title} />}
         value={option}
         onChange={handleChange}
       />
     </SettingItem>
   )
-
 }
 
 const SettingItemNTPServer = (props) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(props.value);
   const handleChange = (event) => {
-    props.onChange('system', "ntp_server", event.target.value);
     setValue(event.target.value);
-    // alert(event.target.value)
-  }
-  const handleSyncNow = async () => {
-    const ntpServerIp = value;
-    console.log(ntpServerIp);
-    let responseData = await props.sendData("set-time-sync", ntpServerIp);
-    // if (responseData.status) {
-    //   showSnackBar("success", "Save Successfully");
-    // }
   }
   return (
     <SettingItem
@@ -470,21 +389,25 @@ const SettingItemNTPServer = (props) => {
         <Input
           id="standard-adornment-password"
           type='text'
-          value={props.value}
+          value={value}
           disabled={props.disabled}
           onChange={handleChange}
           endAdornment={
             !props.disabled &&
             <InputAdornment position="end">
-              <Button variant="text" onClick={handleSyncNow} disabled={props.disabled}>Sync Now</Button>
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={props.onChange}
+                disabled={props.disabled}
+              >
+                <Check />
+              </IconButton>
             </InputAdornment>
           }
         />
       </FormControl>
     </SettingItem>
-
-
-
   )
 }
 

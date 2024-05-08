@@ -7,14 +7,6 @@ import { useTheme } from '@mui/material/styles';
 const BatteryCard = (props) => {
   const theme = useTheme();
   const detail = {
-    percentage: {
-      title: "Percentage",
-      unit: "%",
-    },
-    isCharging: {
-      title: "Charging",
-      unit: "",
-    },
     voltage: {
       title: "Voltage",
       unit: "V",
@@ -35,36 +27,37 @@ const BatteryCard = (props) => {
       color: theme.palette.power.main,
       min: -45,
       max: 45,
-    }
+    },
+    percentage: {
+      title: "Percentage",
+      unit: "%",
+    },
+    isCharging: {
+      title: "Charging",
+      unit: "",
+    },
   };
+  console.log("data", props.data);
   let newData = props.data.map(obj => {
     let tmp = {
       timestamp: timeFormatting(obj.time),
     }
-    if (obj.battery_percentage) {
+    if ('battery_percentage' in obj) {
       tmp.percentage = obj.battery_percentage;
     }
-    if (obj.is_charging) {
+    if ('is_charging' in obj) {
       tmp.isCharging = obj.is_charging ? "Charging" : "Not charging";
     }
-    if (obj.battery_voltage) {
+    if ('battery_voltage' in obj) {
       tmp.voltage = obj.battery_voltage / 1000;
     }
-    if (obj.battery_current) {
+    if ('battery_current' in obj) {
       tmp.current = obj.battery_current / 1000;
       tmp.power = tmp.voltage * tmp.current;
     }
     return tmp;
   })
-
-  // ({
-  //   timestamp: timeFormatting(obj.time),
-  //   percentage: obj.battery_percentage,
-  //   isCharging: obj.is_charging ? "Charging" : "Not charging",
-  //   voltage: obj.battery_voltage / 1000,
-  //   current: obj.battery_current / 1000,
-  //   power: obj.battery_voltage / 1000 * obj.battery_current / 1000,
-  // }));
+  console.log("newData", newData);
   let chartData = newData.map(({ percentage, isCharging, ...rest }) => rest)
   return (
     <Card

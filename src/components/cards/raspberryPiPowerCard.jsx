@@ -58,10 +58,6 @@ const RaspberryPiPowerCard = (props) => {
   }
 
   const detail = {
-    source: {
-      title: "Source",
-      unit: "",
-    },
     voltage: {
       title: "Voltage",
       unit: "V",
@@ -76,7 +72,11 @@ const RaspberryPiPowerCard = (props) => {
       title: "Power",
       unit: "W",
       color: theme.palette.power.main,
-    }
+    },
+    source: {
+      title: "Source",
+      unit: "",
+    },
   };
   if (props.data.length > 0) {
     let output_state = props.data[props.data.length - 1].output_state;
@@ -96,14 +96,13 @@ const RaspberryPiPowerCard = (props) => {
     let tmp = {
       timestamp: timeFormatting(obj.time),
     }
-    if (obj.power_source) {
+    if ('power_source' in obj) {
       tmp.source = POWER_SOURCE[obj.power_source];
     }
-
-    if (obj.output_voltage || obj.raspberry_pi_voltage) {
+    if ('output_voltage' in obj || 'raspberry_pi_voltage' in obj) {
       tmp.voltage = (obj.output_voltage || obj.raspberry_pi_voltage) / 1000;
     }
-    if (obj.raspberry_pi_current || obj.output_current) {
+    if ('raspberry_pi_current' in obj || 'output_current' in obj) {
       tmp.current = (obj.raspberry_pi_current || obj.output_current) / 1000;
       tmp.power = tmp.voltage * tmp.current;
     }

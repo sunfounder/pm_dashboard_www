@@ -7,10 +7,6 @@ import { useTheme } from '@mui/material/styles';
 const ExternalInputCard = (props) => {
   const theme = useTheme();
   const detail = {
-    isPluggedIn: {
-      title: "Status",
-      unit: "",
-    },
     voltage: {
       title: "Voltage",
       unit: "V",
@@ -25,20 +21,24 @@ const ExternalInputCard = (props) => {
       title: "Power",
       unit: "W",
       color: theme.palette.power.main,
-    }
+    },
+    isPluggedIn: {
+      title: "Status",
+      unit: "",
+    },
   };
   let newData = props.data.map(obj => {
     let tmp = {
       timestamp: timeFormatting(obj.time),
     }
-    if (obj.is_plugged_in || obj.is_input_plugged_in) {
-      tmp.isPluggedIn = (obj.is_plugged_in || obj.is_input_plugged_in) ? "Plugged in" : "Unplugged";
+    if ('is_input_plugged_in' in obj) {
+      tmp.isPluggedIn = obj.is_input_plugged_in ? "Plugged in" : "Unplugged";
     }
-    if (obj.external_input_voltage || obj.input_voltage) {
-      tmp.voltage = (obj.external_input_voltage || obj.input_voltage) / 1000;
+    if ('input_voltage' in obj) {
+      tmp.voltage = obj.input_voltage / 1000;
     }
-    if (obj.external_input_current || obj.input_current) {
-      tmp.current = (obj.external_input_current || obj.input_current) / 1000;
+    if ('input_current' in obj) {
+      tmp.current = obj.input_current / 1000;
       tmp.power = tmp.voltage * tmp.current;
     }
     return tmp;
