@@ -108,17 +108,17 @@ const PersistentDrawerLeft = (props) => {
     handleCloseUserMenu();
     props.onSettingPage();
   }
-  const handleWifiSettingPage = () => {
+  const handlePopupWiFi = () => {
     handleCloseUserMenu();
-    props.onWifiSettingPage();
+    props.onPopupWiFi();
   }
-  const handleApSettingPage = () => {
+  const handlePopupAP = () => {
     handleCloseUserMenu();
-    props.onApSettingPage();
+    props.onPopupAP();
   }
-  const handleOTAPage = () => {
+  const handlePopupOTA = () => {
     handleCloseUserMenu();
-    props.handleOTAPage();
+    props.onPopupOTA();
   }
 
   const handleDrawerOpen = () => {
@@ -207,7 +207,7 @@ const PersistentDrawerLeft = (props) => {
             >
               {
                 (props.peripherals.includes('ota_auto') || props.peripherals.includes('ota_manual')) &&
-                <MenuItem onClick={handleOTAPage} disableRipple>
+                <MenuItem onClick={handlePopupOTA} disableRipple>
                   <UpgradeIcon sx={{ marginRight: '10px' }} />
                   OTA
                 </MenuItem>
@@ -219,7 +219,7 @@ const PersistentDrawerLeft = (props) => {
                   props.peripherals.includes('sta_ssid') ||
                   props.peripherals.includes('sta_psk')
                 ) &&
-                <MenuItem onClick={handleWifiSettingPage} disableRipple>
+                <MenuItem onClick={handlePopupWiFi} disableRipple>
                   <WifiIcon sx={{ marginRight: '10px' }} />
                   Wi-Fi
                 </MenuItem>
@@ -227,7 +227,7 @@ const PersistentDrawerLeft = (props) => {
               {
                 (props.peripherals.includes('ap_ssid') ||
                   props.peripherals.includes('ap_psk')) &&
-                <MenuItem onClick={handleApSettingPage} disableRipple>
+                <MenuItem onClick={handlePopupAP} disableRipple>
                   <WifiTetheringOutlinedIcon sx={{ marginRight: '10px' }} />
                   AP
                 </MenuItem>

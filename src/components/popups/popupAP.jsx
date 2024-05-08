@@ -1,31 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import "./settingPage.css";
 import {
-  Paper,
-  CardHeader,
-  CardActions,
   List,
   ListItem,
   ListItemText,
-  Modal,
   Button,
-  Stack,
   InputAdornment,
-  Box,
   TextField,
-  Switch,
   Input,
   IconButton,
   CircularProgress,
-  Slider,
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
-  Close,
 } from '@mui/icons-material';
 
-const WifiSettingPage = (props) => {
+import PopupFrame from './popupFrame.jsx';
+
+const PopupAP = (props) => {
   const [hasError, setHasError] = useState({});
   const [currentWiFiSet, setCurrentWiFiSet] = useState({});
   const [loading, setLoading] = useState(false);
@@ -63,83 +55,44 @@ const WifiSettingPage = (props) => {
   }
 
   return (
-    <Modal
-      open={props.open}
-      onClose={props.onCancel}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Paper className='setting'
-        elevation={3}
-        sx={{
-          width: '40vw',
-          borderRadius: "10px",
-        }}
+    <PopupFrame title="AP Setting" open={props.open} onClose={props.onCancel} actions={
+      <Button
+        disabled={(Object.keys(hasError).length !== 0) || loading}
+        onClick={handleSave}
+        justifyContent="center"
       >
-        <CardHeader title="AP" action={
-          <IconButton onClick={props.onCancel}>
-            <Close />
-          </IconButton>
-        } />
-        <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden" }}>
-          {
-            <List >
-              {
-                props.peripherals.includes("ap_ssid") &&
-                <SettingTextItem
-                  title="AP SSID"
-                  value={props.configData.ap.ap_ssid}
-                  // value={currentWiFiSet.ap_ssid}
-                  // autoComplete="username"
-                  // name="username"
-                  onChange={(event) => props.onChange('ap', 'ap_ssid', event.target.value)}
-                />
-              }
-              {
-                props.peripherals.includes("ap_psk") &&
-                <SettingPasswordItem
-                  title="AP Password"
-                  secondary="Password to login to WIFI broker"
-                  value={props.configData.ap.ap_psk}
-                  // value={currentWiFiSet.ap_psk}
-                  onChange={(event) => props.onChange('ap', 'ap_psk', event.target.value)}
-                />
-              }
-            </List>
-          }
-        </Box>
-        <CardActions>
-          <Stack
-            direction="row"
-            justifyContent="right"
-            width={"100%"}
-            spacing={12}
-          >
-            <Button
-              disabled={(Object.keys(hasError).length !== 0) || loading}
-              onClick={handleSave}
-              justifyContent="center"
-            >
-              {
-                loading ?
-                  <CircularProgress size={20} /> :
-                  "Save"
-              }
-            </Button>
-          </Stack>
-        </CardActions>
-      </Paper >
-    </Modal >
+        {
+          loading ?
+            <CircularProgress size={20} /> :
+            "Save"
+        }
+      </Button>
+    }>
+      <List >
+        {
+          props.peripherals.includes("ap_ssid") &&
+          <SettingItemText
+            title="AP SSID"
+            value={props.configData.ap.ap_ssid}
+            onChange={(event) => props.onChange('ap', 'ap_ssid', event.target.value)}
+          />
+        }
+        {
+          props.peripherals.includes("ap_psk") &&
+          <SettingItemPassword
+            title="AP Password"
+            secondary="Password to login to WIFI broker"
+            value={props.configData.ap.ap_psk}
+            onChange={(event) => props.onChange('ap', 'ap_psk', event.target.value)}
+          />
+        }
+      </List>
+    </PopupFrame>
   );
 };
 
 
-const SettingTextItem = (props) => {
+const SettingItemText = (props) => {
   let inputProps = null;
   if (props.start) {
     inputProps = {
@@ -172,17 +125,6 @@ const SettingTextItem = (props) => {
   )
 }
 
-const SettingSwitchItem = (props) => {
-  return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
-      <Switch onChange={props.onChange} checked={props.value} />
-    </SettingItem>
-  )
-}
-
 const SettingItem = (props) => {
   return (<>
     <ListItem>
@@ -193,7 +135,7 @@ const SettingItem = (props) => {
   )
 }
 
-const SettingPasswordItem = (props) => {
+const SettingItemPassword = (props) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowPassword = () => {
@@ -228,4 +170,4 @@ const SettingPasswordItem = (props) => {
   )
 }
 
-export default WifiSettingPage;
+export default PopupAP;

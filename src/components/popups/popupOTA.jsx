@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import "./otaPage.css";
-import { styled } from '@mui/material/styles';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   Paper,
   CardHeader,
@@ -12,18 +9,13 @@ import {
   CircularProgress,
   LinearProgress,
   Typography,
-  Tabs,
-  Tab,
   ListItem,
   ListItemText,
 } from '@mui/material';
 
-import {
-  Close,
-} from '@mui/icons-material';
+import PopupFrame from './popupFrame.jsx';
 
-
-const OTAPage = (props) => {
+const PopupOTA = (props) => {
   const [loading, setLoading] = useState(false);
   const [linearWithValueLabel, setLinearWithValueLabel] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -35,7 +27,6 @@ const OTAPage = (props) => {
   useEffect(() => {
     getCurrentVersion();
     return () => {
-      console.log("组件卸载执行的事情");
       setLinearWithValueLabel(false);
       setLoading(false);
       setDownloadButton(false);
@@ -148,125 +139,66 @@ const OTAPage = (props) => {
   }
 
   return (
-    <Modal
-      open={props.open}
-      onClose={props.onCancel}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Paper className='otaSetting'
-        elevation={3}
-        sx={{
-          width: '40vw',
-          borderRadius: "10px",
-        }}
+    <PopupFrame title="OTA" open={props.open} onClose={props.onCancel}>
+      <SettingItem
+        title="Current Version"
+        subtitle=""
       >
-        <CardHeader title="OTA" action={
-          <IconButton onClick={props.onCancel}>
-            <Close />
-          </IconButton>
-        } />
-        <Box className='loaderBox' sx={{ display: 'flex' }}>
-          <Box sx={{ width: '100%', height: '50%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'column' }}>
-            {
-              <>
-                <SettingItem
-                  title="Current Version"
-                  subtitle=""
-                >
-                  <Typography >{currentVersion}</Typography>
-                </SettingItem>
-                <SettingItem
-                  title="Check Updates"
-                  subtitle=""
-                >
-                  <Button onClick={handleAutoUpgrade}>检查更新</Button>
-                  {
-                    loading &&
-                    <CircularProgress size={30} />
-                  }
-                </SettingItem>
+        <Typography >{currentVersion}</Typography>
+      </SettingItem>
+      <SettingItem
+        title="Check Updates"
+        subtitle=""
+      >
+        <Button onClick={handleAutoUpgrade}>检查更新</Button>
+        {
+          loading &&
+          <CircularProgress size={30} />
+        }
+      </SettingItem>
 
-                {
-                  latestVersion.versiov !== "" &&
+      {
+        latestVersion.versiov !== "" &&
 
-                  <Box>
-                    <Typography >{latestVersion.versiov}</Typography>
-                    <Typography >{latestVersion.log}</Typography>
-                    <a href={latestVersion.url}>
-                      <Button>Download</Button>
-                    </a>
-                  </Box>
-
-
-
-                  // <>
-                  //   <SettingItem
-                  //     title="Latest Lersion"
-                  //     subtitle=""
-                  //   >
-                  //     <Typography >{latestVersion.versiov}</Typography>
-                  //   </SettingItem>
-                  //   <SettingItem
-                  //     title="Log"
-                  //     subtitle=""
-                  //   >
-                  //     <Typography >{latestVersion.log}</Typography>
-                  //   </SettingItem>
-                  //   <a href={latestVersion.url}>
-                  //     <Button>Download</Button>
-                  //   </a>
-                  // </>
-                }
-
-                <SettingItem
-                  title="Firmware"
-                  subtitle=""
-                >
-                  <Box sx={{ width: "50%" }}>
-                    <form>
-                      <label htmlFor="fileInput">{fileName}</label>
-                      <input
-                        type="file"
-                        id="fileInput"
-                        accept=".bin"
-                        style={{ display: "none" }}
-                        onChange={handleFileSelect}
-                      />
-                    </form>
-                  </Box>
-                </SettingItem>
-              </>
-            }
-            {
-              !linearWithValueLabel &&
-              <Button variant="contained"
-                disabled={selectedFile == null ? true : false}
-                sx={{ margin: '10px ', width: "90%" }}
-                onClick={handleUpgrade}>
-                Upgrade
-              </Button>
-            }
-            {
-
-            }
-            {
-              linearWithValueLabel &&
-              <LinearWithValueLabel
-                sx={{ margin: '10px ' }}
-                progress={progress}
-                setLinearWithValueLabel={setLinearWithValueLabel}
-              />
-            }
-          </Box>
+        <Box>
+          <Typography >{latestVersion.versiov}</Typography>
+          <Typography >{latestVersion.log}</Typography>
+          <a href={latestVersion.url}>
+            <Button>Download</Button>
+          </a>
         </Box>
-      </Paper >
-    </Modal >
+      }
+      <SettingItem
+        title="Firmware"
+        subtitle=""
+      >
+        <Box sx={{ width: "50%" }}>
+          <form>
+            <label htmlFor="fileInput">{fileName}</label>
+            <input
+              type="file"
+              id="fileInput"
+              accept=".bin"
+              style={{ display: "none" }}
+              onChange={handleFileSelect}
+            />
+          </form>
+        </Box>
+      </SettingItem>
+      {!linearWithValueLabel &&
+        <Button variant="contained"
+          disabled={selectedFile == null ? true : false}
+          sx={{ margin: '10px', width: "90%" }}
+          onClick={handleUpgrade}>
+          Upgrade
+        </Button>}
+      {linearWithValueLabel &&
+        <LinearWithValueLabel
+          sx={{ margin: '10px ' }}
+          progress={progress}
+          setLinearWithValueLabel={setLinearWithValueLabel}
+        />}
+    </PopupFrame >
   );
 };
 
@@ -276,11 +208,6 @@ const LinearProgressWithLabel = (props) => {
       <Box sx={{ width: '100%', mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
-      {/* <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">
-          {`${Math.round(props.value,)}%`}
-        </Typography>
-      </Box> */}
     </Box>
   );
 }
@@ -311,4 +238,4 @@ const SettingItem = (props) => {
   )
 }
 
-export default OTAPage;
+export default PopupOTA;

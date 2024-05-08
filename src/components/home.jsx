@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SettingPage from './settingPage.jsx';
-import OTAPage from './otaPage.jsx';
-import WifiSettingPage from './wifiSettingPage.jsx';
-import ApSettingPage from './apSettingPage.jsx';
+import PopupSettings from './popups/popupSettings.jsx';
+import PopupOTA from './popups/popupOTA.jsx';
+import PopupWiFi from './popups/popupWiFi.jsx';
+import PopupAP from './popups/popupAP.jsx';
 import Snackbars from './snackbar.jsx';
 import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
@@ -11,8 +11,8 @@ import "./home.css";
 const ip = window.location.hostname;
 // const HOST = `http://${ip}:34001/api/v1.0/`;
 // const HOST = `http://192.168.100.146:34001/api/v1.0/`;
-const HOST = `http://pironman-u1.local:34001/api/v1.0/`;
-// const HOST = `http://192.168.4.1:34001/api/v1.0/`;
+// const HOST = `http://pironman-u1-002.local:34001/api/v1.0/`;
+const HOST = `http://192.168.4.1:34001/api/v1.0/`;
 
 const defaultConfigData = {
   "auto": {
@@ -116,9 +116,9 @@ const Home = (props) => {
   const [newConfigData, setNewConfigData] = useState({});
   //设置页面的显示状态
   const [settingPageDisplay, setSettingPageDisplay] = useState(false);
-  const [OTAPageDisplay, setOTAPageDisplay] = useState(false);
-  const [wifiSettingPageDisplay, setWifiSettingPageDisplay] = useState(false);
-  const [apSettingPageDisplay, setApSettingPageDisplay] = useState(false);
+  const [PopupOTADisplay, setPopupOTADisplay] = useState(false);
+  const [wifiSettingPageDisplay, setPopupWiFiDisplay] = useState(false);
+  const [apSettingPageDisplay, setPopupAPDisplay] = useState(false);
   //全局提示框显示内容
   const [snackbarText, setSnackbarText] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -201,16 +201,16 @@ const Home = (props) => {
     setSettingPageDisplay(!settingPageDisplay);
   }
 
-  const handleWifiSettingPage = () => {
-    setWifiSettingPageDisplay(!wifiSettingPageDisplay);
+  const handlePopupWiFi = () => {
+    setPopupWiFiDisplay(!wifiSettingPageDisplay);
   }
 
-  const handleApSettingPage = () => {
-    setApSettingPageDisplay(!apSettingPageDisplay);
+  const handlePopupAP = () => {
+    setPopupAPDisplay(!apSettingPageDisplay);
   }
 
-  const handleOTAPage = () => {
-    setOTAPageDisplay(!OTAPageDisplay);
+  const handlePopupOTA = () => {
+    setPopupOTADisplay(!PopupOTADisplay);
   }
 
   const showSnackBar = (severity, text) => {
@@ -323,11 +323,11 @@ const Home = (props) => {
         onChange={handleChangeConfig}
         sendData={sendData}
         onSave={handleSaveConfig}
-        onWifiSettingPage={handleWifiSettingPage}
-        onApSettingPage={handleApSettingPage}
-        onOTAPage={handleOTAPage}
+        onPopupWiFi={handlePopupWiFi}
+        onPopupAP={handlePopupAP}
+        onPopupOTA={handlePopupOTA}
       />
-      <SettingPage
+      <PopupSettings
         open={settingPageDisplay}
         onCancel={handleCancel}
         onSave={handleSaveConfig}
@@ -337,15 +337,15 @@ const Home = (props) => {
         peripherals={peripherals}
         commonProps={commonProps}
       />
-      <OTAPage
-        open={OTAPageDisplay}
-        onCancel={handleOTAPage}
+      <PopupOTA
+        open={PopupOTADisplay}
+        onCancel={handlePopupOTA}
         request={request}
         peripherals={peripherals}
       />
-      <WifiSettingPage
+      <PopupWiFi
         open={wifiSettingPageDisplay}
-        onCancel={handleWifiSettingPage}
+        onCancel={handlePopupWiFi}
         configData={configData}
         peripherals={peripherals}
         request={request}
@@ -354,9 +354,9 @@ const Home = (props) => {
         sendData={sendData}
         onSave={handleSaveConfig}
       />
-      <ApSettingPage
+      <PopupAP
         open={apSettingPageDisplay}
-        onCancel={handleApSettingPage}
+        onCancel={handlePopupAP}
         request={request}
         configData={configData}
         peripherals={peripherals}

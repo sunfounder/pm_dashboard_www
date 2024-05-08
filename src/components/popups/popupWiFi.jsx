@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import "./settingPage.css";
 import {
-  Paper,
-  CardHeader,
-  CardActions,
   List,
   ListItem,
   ListItemText,
-  Modal,
   Button,
   Stack,
   InputAdornment,
@@ -23,7 +18,6 @@ import {
 import {
   Visibility,
   VisibilityOff,
-  Close,
 } from '@mui/icons-material';
 import SignalWifi1BarIcon from '@mui/icons-material/SignalWifi1Bar';
 import SignalWifi2BarIcon from '@mui/icons-material/SignalWifi2Bar';
@@ -34,6 +28,7 @@ import SignalWifi2BarLockIcon from '@mui/icons-material/SignalWifi2BarLock';
 import SignalWifi3BarLockIcon from '@mui/icons-material/SignalWifi3BarLock';
 import SignalWifi4BarLockIcon from '@mui/icons-material/SignalWifi4BarLock';
 
+import PopupFrame from './popupFrame.jsx';
 
 const WIFI_STATUS = {
   IDLE_STATUS: 0,
@@ -47,7 +42,7 @@ const WIFI_STATUS = {
 
 const TIMEOUT = 10; // 秒
 
-const WifiSettingPage = (props) => {
+const PopupWiFi = (props) => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [timeoutCounter, setTimeoutCounter] = useState(0);
@@ -104,82 +99,53 @@ const WifiSettingPage = (props) => {
 
 
   return (
-    <Modal
+    <PopupFrame
+      title="WIFI Setting"
       open={props.open}
       onClose={props.onCancel}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      actions={
+        <Button
+          onClick={handleSave}
+          justifyContent="center"
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={20} /> : "Save"}
+        </Button>
+      }
     >
-      <Paper className='setting'
-        elevation={3}
-        sx={{
-          width: '40vw',
-          borderRadius: "10px",
-        }}
-      >
-        <CardHeader title="Wi-Fi" action={
-          <IconButton onClick={props.onCancel}>
-            <Close />
-          </IconButton>
-        } />
-        <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden" }}>
-          {/* WIFI设置 */}
+      {/* WIFI设置 */}
+      {
+        <List >
           {
-            <List >
-              {
-                props.peripherals.includes("sta_switch") &&
-                <SettingSwitchItem
-                  title="STA mode"
-                  onChange={props.onStaMode}
-                  value={props.configData.wifi.sta_switch}
-                />
-              }
-              {
-                props.peripherals.includes("sta_ssid_scan") &&
-                <SsidList
-                  title="STA SSID"
-                  value={props.configData.wifi.sta_ssid}
-                  request={props.request}
-                  onChange={props.onChange}
-                />
-              }
-              {
-                props.peripherals.includes("sta_psk") &&
-                <SettingPasswordItem
-                  title="STA Password"
-                  secondary="Password to login to WIFI broker"
-                  value={props.configData.wifi.sta_psk}
-                  onChange={(event) => props.onChange('wifi', 'sta_psk', event.target.value)}
-                />
-              }
-
-            </List>
+            props.peripherals.includes("sta_switch") &&
+            <SettingItemSwitch
+              title="STA mode"
+              onChange={props.onStaMode}
+              value={props.configData.wifi.sta_switch}
+            />
           }
-        </Box>
-        <CardActions>
-          <Stack
-            direction="row"
-            justifyContent="right"
-            width={"100%"}
-            spacing={12}
-          >
-            <Button
-              onClick={handleSave}
-              justifyContent="center"
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={20} /> : "Save"}
-            </Button>
+          {
+            props.peripherals.includes("sta_ssid_scan") &&
+            <SsidList
+              title="STA SSID"
+              value={props.configData.wifi.sta_ssid}
+              request={props.request}
+              onChange={props.onChange}
+            />
+          }
+          {
+            props.peripherals.includes("sta_psk") &&
+            <SettingItemPassword
+              title="STA Password"
+              secondary="Password to login to WIFI broker"
+              value={props.configData.wifi.sta_psk}
+              onChange={(event) => props.onChange('wifi', 'sta_psk', event.target.value)}
+            />
+          }
 
-          </Stack>
-        </CardActions>
-      </Paper >
-    </Modal >
+        </List>
+      }
+    </PopupFrame >
   );
 };
 
@@ -285,7 +251,7 @@ const SsidList = (props) => {
   );
 }
 
-const SettingTextItem = (props) => {
+const SettingItemText = (props) => {
   let inputProps = null;
   if (props.start) {
     inputProps = {
@@ -326,7 +292,7 @@ const SettingTextItem = (props) => {
   )
 }
 
-const SettingSwitchItem = (props) => {
+const SettingItemSwitch = (props) => {
   return (
     <SettingItem
       title={props.title}
@@ -347,7 +313,7 @@ const SettingItem = (props) => {
   )
 }
 
-const SettingPasswordItem = (props) => {
+const SettingItemPassword = (props) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowPassword = () => {
@@ -381,4 +347,4 @@ const SettingPasswordItem = (props) => {
     </SettingItem>
   )
 }
-export default WifiSettingPage;
+export default PopupWiFi;
