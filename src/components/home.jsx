@@ -71,49 +71,8 @@ const defaultConfigData = {
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
-  const [peripherals, setPeripherals] = useState([
-    "storage",
-    "cpu",
-    "network",
-    "memory",
-    "history",
-    "log",
-    "input_voltage",
-    "input_current",
-    "output_switch",
-    "output_voltage",
-    "output_current",
-    "battery_voltage",
-    "battery_current",
-    "battery_capacity",
-    "battery_percentage",
-    "power_source",
-    "is_input_plugged_in",
-    "is_battery_plugged_in",
-    "is_charging",
-    "spc_fan_power",
-    "pwm_fan_speed",
-    "gpio_fan_state",
-    "shutdown_percentage",
-    "power_off_percentage",
-    "timezone",
-    "auto_time_enable",
-    "time",
-    "sta_switch",
-    "sta_ssid_scan",
-    "sta_ssid",
-    "sta_psk",
-    "ap_ssid",
-    "ap_psk",
-    "ota_auto",
-    "ota_manual",
-    "mac_address",
-    "ip_address",
-    "sd_card_usage",
-    "download_history_file",
-  ]);
+  const [peripherals, setPeripherals] = useState([]);
   const [configData, setConfigData] = useState(defaultConfigData);
-  const [newConfigData, setNewConfigData] = useState({});
   //设置页面的显示状态
   const [settingPageDisplay, setSettingPageDisplay] = useState(false);
   const [PopupOTADisplay, setPopupOTADisplay] = useState(false);
@@ -231,25 +190,6 @@ const Home = (props) => {
     setSettingPageDisplay(false);
   }
 
-  const handleSaveConfig = async () => {
-    console.log("newConfigData", newConfigData);
-
-    // 判断是否发送设置数据
-    let responseData = await sendData("set-config", newConfigData);
-    if (responseData.status) {
-      showSnackBar("success", "Save Successfully");
-      // setSettingPageDisplay(false);
-      let tmp = { ...configData };
-      for (let field in newConfigData) {
-        for (let key in newConfigData[field]) {
-          tmp[field][key] = newConfigData[field][key];
-        }
-      }
-      setConfigData(tmp);
-      setNewConfigData({});
-    }
-  }
-
   const sendData = async (path, payload) => {
     try {
       const response = await fetch(HOST + path, {
@@ -293,12 +233,9 @@ const Home = (props) => {
         showSnackBar("error", "Password must be at least 8 characters long");
       }
     }
-    let newData = { ...newConfigData };
-    if (!Object.keys(newData).includes(field)) {
-      newData[field] = {};
-    }
+    let newData = { ...configData };
     newData[field][name] = value;
-    setNewConfigData(newData);
+    setConfigData(newData);
   };
 
   const handleStaMode = (e) => {
@@ -335,7 +272,6 @@ const Home = (props) => {
         temperatureUnit={configData.temperature_unit ? configData.temperature_unit : "C"}
         onChange={handleChangeConfig}
         sendData={sendData}
-        onSave={handleSaveConfig}
         onPopupWiFi={handlePopupWiFi}
         onPopupAP={handlePopupAP}
         onPopupOTA={handlePopupOTA}
@@ -343,7 +279,6 @@ const Home = (props) => {
       <PopupSettings
         open={settingPageDisplay}
         onCancel={handleCancel}
-        onSave={handleSaveConfig}
         onChange={handleChangeConfig}
         onModeChange={props.onModeChange}
         configData={configData}
@@ -365,7 +300,6 @@ const Home = (props) => {
         onStaMode={handleStaMode}
         onChange={handleChangeConfig}
         sendData={sendData}
-        onSave={handleSaveConfig}
       />
       <PopupAP
         open={apSettingPageDisplay}
@@ -375,7 +309,6 @@ const Home = (props) => {
         peripherals={peripherals}
         onChange={handleChangeConfig}
         sendData={sendData}
-        onSave={handleSaveConfig}
       />
       <Snackbars
         open={snackbarShow}
