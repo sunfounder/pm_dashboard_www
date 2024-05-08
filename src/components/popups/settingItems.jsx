@@ -263,12 +263,14 @@ const SettingItemPassword = (props) => {
         type={showPassword ? 'text' : 'password'}
         onChange={props.onChange}
         value={props.value}
+        disabled={props.disabled}
         autoComplete={props.autoComplete || "password"}
         endAdornment={
           <InputAdornment position="end" >
             <IconButton
               aria-label="toggle password visibility"
               onClick={handleShowPassword}
+              disabled={props.disabled}
               onMouseDown={handleShowPassword}
             >
               {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -517,6 +519,7 @@ const SettingItemSSIDList = (props) => {
         sx={{ width: "60%" }}
         open={open}
         value={props.value}
+        disabled={props.disabled}
         onOpen={() => {
           setOpen(true);
           startWiFiScan();
@@ -526,7 +529,7 @@ const SettingItemSSIDList = (props) => {
           stopGetSsidList();
         }}
         onChange={(event, newValue) => {
-          props.onChange('wifi', 'sta_ssid', newValue);
+          props.onChange(newValue);
         }}
         options={options}
         loading={loading}
