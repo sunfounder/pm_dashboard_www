@@ -529,7 +529,8 @@ api地址: `http://ip:34001/api/v1.0`
 ### POST /set-output 设置输出
 
 - Data:
-  - `switch` - Output switch 0/1
+  - `switch` - Output switch 0/1/2: Power off 断电/shutdown 关机/Power on 开机
+
 - Response:
   - `{"status": true, "data": "OK"}`
 

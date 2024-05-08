@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Card from './card.jsx';
 import Chart from './chart.jsx';
 import {
-  Switch,
-  Typography,
   CircularProgress,
+  Button,
+  Menu,
+  MenuItem,
   Box,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material'
 import { timeFormatting } from '../../js/utils.js';
 import { useTheme } from '@mui/material/styles';
+import PowerOffIcon from '@mui/icons-material/PowerOff';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 
 const POWER_SOURCE = [
   "External",
@@ -29,15 +34,27 @@ const SWITCH_STATE = {
 
 const RaspberryPiPowerCard = (props) => {
   const theme = useTheme();
-  // const [enable, setEnable] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const menuOpen = Boolean(anchorEl);
+
   let shuttingDown = false;
   let enable = false;
 
-  const handleEnable = (e) => {
-    // localStorage.setItem("multiCore", e.target.checked);
-    console.log(e.target.checked);
-    // setEnable(e.target.checked);
-    props.sendData("set-output", { switch: e.target.checked })
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handlePowerOff = () => {
+    props.sendData("set-output", { switch: SWITCH_COMMAND.POWER_OFF })
+  }
+  const handleShutdown = () => {
+    props.sendData("set-output", { switch: SWITCH_COMMAND.SHUTDOWN })
+  }
+  const handlePowerOn = () => {
+    props.sendData("set-output", { switch: SWITCH_COMMAND.POWER_ON })
   }
 
   const detail = {
@@ -71,6 +88,7 @@ const RaspberryPiPowerCard = (props) => {
       enable = true;
       shuttingDown = false;
     } else if (output_state === SWITCH_STATE.SHUTTING_DOWN) {
+      enable = true;
       shuttingDown = true;
     }
   }
@@ -127,10 +145,44 @@ const RaspberryPiPowerCard = (props) => {
       }
       config={props.peripherals.includes("output_switch") &&
         <div className='cardConfig'>
-          <Typography>Enable</Typography>
-          <Switch checked={enable} disabled={shuttingDown} onChange={handleEnable} color="processor" />
-          {shuttingDown && <CircularProgress color="inherit" size={20} />}
-        </div>}
+          <Button
+            id="basic-button"
+            variant="outlined"
+            startIcon={<PowerSettingsNewIcon />}
+            aria-controls={menuOpen ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={menuOpen ? 'true' : undefined}
+            onClick={handleMenuClick}
+          >
+            Power
+          </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={menuOpen}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handlePowerOn} disabled={enable}>
+              <ListItemIcon>
+                <PowerSettingsNewIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Power On</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleShutdown} disabled={!enable || shuttingDown}>
+              <ListItemIcon>
+                {shuttingDown ?
+                  <CircularProgress color="inherit" size={20} /> :
+                  <PowerSettingsNewIcon fontSize="small" />}
+              </ListItemIcon>
+              <ListItemText>Shutdown</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handlePowerOff} disabled={!enable}>
+              <ListItemIcon>
+                <PowerOffIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Power Off</ListItemText>
+            </MenuItem>
+          </Menu>
+        </div >}
     />
   )
 }
