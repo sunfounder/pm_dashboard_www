@@ -262,13 +262,26 @@ const Home = (props) => {
 
       // 确保请求成功
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        showSnackBar("error", `HTTP error! Status: : ${response.status}`);
+        return;
       }
-      const responseData = await response.json();
+      let result;
+      result = await response.json();
+      const status = result.status;
 
-      return responseData;
+      if (status) {
+        let data = result.data;
+        if (!data) {
+          data = result;
+        }
+        return data;
+      } else {
+        console.error(`Error: ${result.error}`);
+        showSnackBar("error", `Error: ${result.error}`);
+        return false;
+      }
     } catch (error) {
-      console.error("Error", error);
+      showSnackBar("error", `Error: ${error}`);
     }
   }
 
