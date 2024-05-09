@@ -74,16 +74,22 @@ const RaspberryPiPowerCard = (props) => {
     voltage: {
       title: "Voltage",
       unit: "V",
+      min: 0,
+      max: 6,
       color: theme.palette.voltage.main,
     },
     current: {
       title: "Current",
       unit: "A",
+      min: 0,
+      max: 5,
       color: theme.palette.current.main,
     },
     power: {
       title: "Power",
       unit: "W",
+      min: 0,
+      max: 27,
       color: theme.palette.power.main,
     },
     source: {
