@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PopupSettings from './popups/popupSettings.jsx';
 import PopupOTA from './popups/popupOTA.jsx';
 import PopupWiFi from './popups/popupWiFi.jsx';
 import PopupAP from './popups/popupAP.jsx';
 import Snackbars from './snackbar.jsx';
+import Alert from './alert';
 import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 import "./home.css";
@@ -14,10 +15,13 @@ const ip = window.location.hostname;
 // const HOST = `http://pironman-u1-002.local:34001/api/v1.0/`;
 const HOST = `http://192.168.4.1:34001/api/v1.0/`;
 
+const DEFAULT_PERIPHERALS = [
+  'output_switch',
+]
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
-  const [peripherals, setPeripherals] = useState([]);
+  const [peripherals, setPeripherals] = useState(DEFAULT_PERIPHERALS);
   const [temperatureUnit, setTemperatureUnit] = useState("C");
   //设置页面的显示状态
   const [settingPageDisplay, setSettingPageDisplay] = useState(false);
@@ -27,11 +31,17 @@ const Home = (props) => {
   //全局提示框显示内容
   const [snackbarText, setSnackbarText] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  //全局提示框显示状态
   const [snackbarShow, setSnackbarShow] = useState(false);
+  //警告框显示
+  const [alertShow, setAlertShow] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertContent, setAlertContent] = useState("");
+  const [alertConfirmCallback, setAlertConfirmCallback] = useState(null);
+  const [alertCancelCallback, setAlertCancelCallback] = useState(null);
+  //全局提示框显示状态
   const [tabIndex, setTabIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
 
-  const request = useCallback(async (url, method, payload) => {
+  const request = async (url, method, payload) => {
     try {
       const requestOptions = {
         method: method,
@@ -75,20 +85,20 @@ const Home = (props) => {
       showSnackBar("error", `Request Error: ${error}`);
       return false;
     }
-  }, []);
+  }
 
-  const getDeviceInfo = useCallback(async () => {
+  const getDeviceInfo = async () => {
     let deviceInfo = await request("get-device-info", "GET");
     console.log("deviceInfo", deviceInfo);
     if (deviceInfo) {
       setPeripherals(deviceInfo.peripherals);
       setDeviceName(deviceInfo.name);
     }
-  }, [request])
+  }
 
   useEffect(() => {
     getDeviceInfo();
-  }, [getDeviceInfo]);
+  }, [])
 
   const handleTabChange = (event, newValue) => {
     window.localStorage.setItem("pm-dashboard-tabIndex", newValue);
@@ -164,6 +174,36 @@ const Home = (props) => {
     }
   }
 
+  const handleAlertClose = () => {
+    setAlertShow(false);
+  }
+
+  const handleAlertCancel = async () => {
+    await alertCancelCallback();
+    setAlertShow(false);
+  }
+
+  const handleAlertConfirm = async () => {
+    await alertConfirmCallback();
+    setAlertShow(false);
+  }
+
+  const showAlert = (title, content, onConfirm, onCancel) => {
+    if (title !== undefined) {
+      setAlertTitle(title);
+    }
+    if (content !== undefined) {
+      setAlertContent(content);
+    }
+    if (onConfirm !== undefined) {
+      setAlertConfirmCallback(() => onConfirm);
+    }
+    if (onCancel !== undefined) {
+      setAlertCancelCallback(() => onCancel);
+    }
+    setAlertShow(true);
+  }
+
   const handleTemperatureUnitChanged = (temperatureUnit) => {
     setTemperatureUnit(temperatureUnit);
   }
@@ -189,6 +229,7 @@ const Home = (props) => {
         {...commonProps}
         temperatureUnit={temperatureUnit}
         sendData={sendData}
+        showAlert={showAlert}
         onPopupWiFi={handlePopupWiFi}
         onPopupAP={handlePopupAP}
         onPopupOTA={handlePopupOTA}
@@ -231,6 +272,14 @@ const Home = (props) => {
         text={snackbarText}
         severity={snackbarSeverity}
         handleClose={handleSnackbarClose}
+      />
+      <Alert
+        open={alertShow}
+        title={alertTitle}
+        content={alertContent}
+        onClose={handleAlertClose}
+        onCancel={alertCancelCallback ? handleAlertCancel : undefined}
+        onConfirm={alertConfirmCallback ? handleAlertConfirm : undefined}
       />
     </Box >
   );

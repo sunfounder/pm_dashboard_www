@@ -47,14 +47,28 @@ const RaspberryPiPowerCard = (props) => {
     setAnchorEl(null);
   };
 
+
   const handlePowerOff = () => {
-    props.sendData("set-output", { switch: SWITCH_COMMAND.POWER_OFF })
+    props.showAlert(
+      "Power off",
+      "Do you want to power off the Raspberry Pi? This will cut off the power immediately! And may cause data loss.",
+      () => props.sendData("set-output", { switch: SWITCH_COMMAND.POWER_OFF })
+    );
   }
   const handleShutdown = () => {
+    props.showAlert(
+      "Shutdown",
+      "Do you want to shutdown the Raspberry Pi? This may take a few minutes",
+      () => props.sendData("set-output", { switch: SWITCH_COMMAND.SHUTDOWN })
+    )
     props.sendData("set-output", { switch: SWITCH_COMMAND.SHUTDOWN })
   }
   const handlePowerOn = () => {
-    props.sendData("set-output", { switch: SWITCH_COMMAND.POWER_ON })
+    props.showAlert(
+      "Power on",
+      "Do you want to power on the Raspberry Pi?",
+      () => props.sendData("set-output", { switch: SWITCH_COMMAND.POWER_ON })
+    );
   }
 
   const detail = {

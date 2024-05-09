@@ -105,8 +105,9 @@ const DashboardPanel = (props) => {
           <BatteryCard data={data} />}
         {(props.peripherals.includes('raspberry_pi_power') ||
           props.peripherals.includes('output_voltage') ||
-          props.peripherals.includes('output_current')) &&
-          <RaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} />}
+          props.peripherals.includes('output_current') ||
+          props.peripherals.includes('output_switch')) &&
+          <RaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} />}
 
         {props.peripherals.includes('storage') && <StorageCard data={data} />}
         {props.peripherals.includes('memory') && <MemoryCard data={data} />}
