@@ -250,6 +250,7 @@ const Home = (props) => {
         request={request}
         peripherals={peripherals}
         showSnackBar={showSnackBar}
+        showAlert={showAlert}
       />
       <PopupWiFi
         open={wifiSettingPageDisplay}
@@ -258,6 +259,7 @@ const Home = (props) => {
         request={request}
         sendData={sendData}
         showSnackBar={showSnackBar}
+        showAlert={showAlert}
       />
       <PopupAP
         open={apSettingPageDisplay}
@@ -266,6 +268,7 @@ const Home = (props) => {
         peripherals={peripherals}
         sendData={sendData}
         showSnackBar={showSnackBar}
+        showAlert={showAlert}
       />
       <Snackbars
         open={snackbarShow}
