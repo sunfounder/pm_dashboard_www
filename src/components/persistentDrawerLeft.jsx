@@ -18,24 +18,12 @@ import {
   Menu,
   MenuItem
 } from '@mui/material';
-// import Drawer from '@mui/material/Drawer';
-// import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
-// import Toolbar from '@mui/material/Toolbar';
-// import List from '@mui/material/List';
-// import Typography from '@mui/material/Typography';
-// import Divider from '@mui/material/Divider';
-// import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-// import ListItem from '@mui/material/ListItem';
-// import ListItemButton from '@mui/material/ListItemButton';
-// import ListItemIcon from '@mui/material/ListItemIcon';
-// import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import HistoryIcon from '@mui/icons-material/InsertChart'
 import UpgradeIcon from '@mui/icons-material/Upgrade';
 import LogIcon from '@mui/icons-material/Article.js';
-import DownloadIcon from '@mui/icons-material/Download';
 import SettingsIcon from '@mui/icons-material/Settings';
 import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
 import WifiIcon from '@mui/icons-material/Wifi';
@@ -86,13 +74,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
 }));
 
 const PersistentDrawerLeft = (props) => {
-  // const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [element, setelement] = useState(null);
   const [downloadElement, setDownloadElement] = useState(null);
@@ -282,7 +268,7 @@ const PersistentDrawerLeft = (props) => {
         {props.tabIndex != 0 && element}
 
       </Drawer>
-      <Main className='main' open={open} >
+      <Main className='main' open={open} sx={{ padding: 0 }}>
         <DrawerHeader />
         <Box sx={{ height: '95%' }}>
           {props.tabIndex === 0 && <DashboardPanel {...props} temperatureUnit={props.temperatureUnit} />}
