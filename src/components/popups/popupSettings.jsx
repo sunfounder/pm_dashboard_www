@@ -49,17 +49,6 @@ const defaultConfigData = {
 const PopupSettings = (props) => {
   const [config, setConfig] = useState(defaultConfigData);
   const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("pm-dashboard-theme") === "dark" ? true : false);
-  const [hasError, setHasError] = useState({});
-
-  const handleError = (name, error) => {
-    if (error) {
-      setHasError({ ...hasError, [name]: error });
-    } else {
-      let newHasError = { ...hasError };
-      delete newHasError[name];
-      setHasError(newHasError);
-    }
-  }
 
   const themeSwitching = (isDark) => {
     let theme;
@@ -81,7 +70,7 @@ const PopupSettings = (props) => {
     props.onChange('mqtt', key, value);
   }
 
-  const handleConfigChanged = (field, name, value) => {
+  const handleChanged = (field, name, value) => {
     console.log("handleChangeConfig field", field, "name", name, "value", value);
     let newConfig = { ...config };
     newConfig[field][name] = value;
@@ -113,7 +102,6 @@ const PopupSettings = (props) => {
         <SectionMQTT
           config={config.mqtt}
           onChange={handleMQTTChanged}
-          onError={handleError}
         />}
       {/* System */}
       {(props.peripherals.includes("shutdown_percentage") ||
@@ -126,8 +114,7 @@ const PopupSettings = (props) => {
         props.peripherals.includes("sd_card_usage")) &&
         <SectionSystem
           config={config.system}
-          onChange={handleConfigChanged}
-          onError={handleError}
+          onChange={handleChanged}
           sendData={props.sendData}
           request={props.request}
           peripherals={props.peripherals}

@@ -89,7 +89,6 @@ const PopupWiFi = (props) => {
       return;
     }
     setLoading(true);
-    console.log(data);
     const result = await props.sendData("set-wifi-config", data);
     if (result === 'OK') {
       if (data.sta_switch) {

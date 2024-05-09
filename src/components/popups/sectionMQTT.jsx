@@ -50,8 +50,6 @@ const SectionMQTT = (props) => {
         value={props.config ? props.config.port : ""}
         min={1}
         max={65535}
-        onError={(error) => props.onError('mqtt_port', error)}
-        onChange={(event) => props.onChange('port', event.target.value)}
       />
       <SettingItemText
         title="Username"

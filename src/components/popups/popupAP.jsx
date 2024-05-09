@@ -47,12 +47,7 @@ const PopupAP = (props) => {
     }
     setLoading(true);
     console.log("data", data);
-    const payload = {
-      ap_ssid: data.ap_ssid,
-      ap_psk: data.ap_psk,
-    }
-    console.log("payload", payload);
-    let result = await props.sendData("set-ap-config", payload);
+    let result = await props.sendData("set-ap-config", data);
     if (result === "OK") {
       props.showSnackBar("success", "Save Successfully");
     }
