@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   List,
   Button,
@@ -53,7 +53,7 @@ const PopupAP = (props) => {
       props.showAlert(
         "AP configuration saved",
         "Do you want to restart AP to apply the changes? You may need to reconnect to the divice with new AP SSID and password, and reflash the page",
-        () => props.sendData("set-ap-restart", {})
+        () => props.sendData("set-ap-restart", {}, true)
       );
     }
     setLoading(false);

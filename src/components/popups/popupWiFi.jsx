@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   List,
   Button,
@@ -10,16 +10,6 @@ import {
   SettingItemPassword,
   SettingItemSSIDList,
 } from './settingItems.jsx';
-
-const WIFI_STATUS = {
-  IDLE_STATUS: 0,
-  NO_SSID_AVAIL: 1,
-  SCAN_COMPLETED: 2,
-  CONNECTED: 3,
-  CONNECT_FAILED: 4,
-  CONNECTION_LOST: 5,
-  DISCONNECTED: 6,
-}
 
 const DEFAULT_CONFIG = {
   "sta_switch": false,
@@ -71,10 +61,13 @@ const PopupWiFi = (props) => {
         props.showAlert(
           "Wi-Fi configuration saved",
           "Do you want to restart Wi-Fi to apply the changes? You may need to change to the same Wi-Fi and reflash.",
-          () => props.sendData("set-wifi-restart", {})
+          () => {
+            props.sendData("set-wifi-restart", {}, true)
+            setLoading(false);
+          }
         );
       } else {
-        props.sendData("set-wifi-restart", {});
+        props.sendData("set-wifi-restart", {}, true);
         props.showSnackBar("success", "Wi-Fi configuration saved");
         setLoading(false);
       }
