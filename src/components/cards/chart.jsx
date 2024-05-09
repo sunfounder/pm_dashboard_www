@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { formatBytes } from '../../js/utils.js';
 import Graph from './graph.jsx';
 import { useTheme } from '@mui/material/styles';
@@ -30,15 +30,10 @@ const Chart = (props) => {
           formatter={bytesFormatter}
         />
         <XAxis dataKey="timestamp" hide={true} />
-        {Object.keys(detail).map((key, index) => {
-          let min = detail[key].min;
-          let max = detail[key].max;
-          if (min !== undefined) {
-            return <YAxis domain={[min, max]} key={index} hide={true} />;
-          }
-          return undefined;
-        })}
-
+        {/* 如果min 和max都存在 */}
+        {props.min !== undefined && props.max !== undefined && <YAxis domain={[props.min, props.max]} hide={true} />}
+        {/* 如果min存在且不等于0 */}
+        {props.min && <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" />}
         {Object.keys(detail).map((key, index) => {
           return (
             <Line
