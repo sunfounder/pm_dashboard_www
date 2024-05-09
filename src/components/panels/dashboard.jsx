@@ -14,44 +14,25 @@ import ProcessorCard from '../cards/processorCard.jsx';
 import NetworkCard from '../cards/networkCard.jsx';
 
 const DashboardPanel = (props) => {
-  const [newData, setNewData] = useState([]);
   const [data, setData] = useState([]);
   const [updateDataInterval, setUpdateDataInterval] = useState(1000);
 
-  const updateData = useCallback(async () => {
+  const updateData = async () => {
     let _data = await props.request("get-history", "GET", { n: 20 });
-    // console.log("datass:", _data)
     if (_data) {
-      let firstKey = Object.keys(_data)[0];
-      if (Array.isArray(_data[firstKey])) {
-        // console.log('第一个属性值是数组');
-      } else {
-        // console.log('第一个属性值不是数组');
+      if (!Array.isArray(_data)) {
         if (!_data.time) {
           _data.time = new Date().getTime();
         }
-        if (newData.length < 20) {
-          setNewData(newData.push(_data));
-          setData(newData);
-          setUpdateDataInterval(10000);
-        } else {
-          setNewData(newData.shift());
-          setNewData(newData.push(_data));
-          setUpdateDataInterval(1000);
-          setData(newData);
+        let newData = [...data];
+        if (newData.length >= 20) {
+          newData.shift();
         }
+        newData.push(_data);
+        setData(newData);
       }
-    } else {
-
     }
-
-    // if (!_data) {
-    //   setUpdateDataInterval(10000);
-    // } else {
-    //   setUpdateDataInterval(1000);
-    //   setData(_data.reverse());
-    // }
-  }, [props]);
+  }
 
   // 自动获取数据
   useEffect(() => {
@@ -59,8 +40,8 @@ const DashboardPanel = (props) => {
       updateData();
     }, updateDataInterval);
     return () => clearInterval(interval);
-  }, []);
-  // }, [updateDataInterval, updateData]);
+    // }, []);
+  }, [updateDataInterval, updateData]);
 
   const bytesFormatter = (value, name, props) => {
     let unit = props.unit;
