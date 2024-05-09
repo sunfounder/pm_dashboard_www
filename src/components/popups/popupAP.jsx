@@ -49,7 +49,12 @@ const PopupAP = (props) => {
     console.log("data", data);
     let result = await props.sendData("set-ap-config", data);
     if (result === "OK") {
-      props.showSnackBar("success", "Save Successfully");
+      // props.showSnackBar("success", "Save Successfully");
+      props.showAlert(
+        "AP configuration saved",
+        "Do you want to restart AP to apply the changes? You may need to reconnect to the divice with new AP SSID and password, and reflash the page",
+        () => props.sendData("set-ap-restart", {})
+      );
     }
     setLoading(false);
   }

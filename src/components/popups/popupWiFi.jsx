@@ -27,20 +27,19 @@ const DEFAULT_CONFIG = {
   "sta_psk": "",
 };
 
-const TIMEOUT = 10; // 秒
-
 const PopupWiFi = (props) => {
   const [data, setData] = useState(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(false);
-  const [timeoutCounter, setTimeoutCounter] = useState(0);
+  const [ip, setIP] = useState('');
   // 检查连接状态的标志，取反一次就会触发一次检查
   const [error, setError] = useState('Password must be at least 8 characters long');
 
-  const timeoutCounterRef = useRef(timeoutCounter);
 
   const getData = async () => {
     let data = await props.request("get-wifi-config", "GET");
     setData(data);
+    let ip = await props.request("get-wifi-ip", "GET");
+    setIP(ip);
   }
 
   const handleSwitchChange = (event) => {
@@ -60,29 +59,6 @@ const PopupWiFi = (props) => {
     setData({ ...data, "sta_ssid": ssid });
   }
 
-  const checkConnection = async () => {
-    let status = await props.request("get-wifi-status", "GET",);
-    if (status === WIFI_STATUS.CONNECTED) {
-      props.showSnackBar("success", "Connection Successfully");
-      setLoading(false);
-    } else if (status === WIFI_STATUS.NO_SSID_AVAIL) {
-      props.showSnackBar("error", "No SSID available");
-      setLoading(false);
-    } else if (status === WIFI_STATUS.CONNECT_FAILED) {
-      props.showSnackBar("error", "Connection Failed");
-      setLoading(false);
-    } else {
-      if (timeoutCounterRef.current >= TIMEOUT) {
-        props.showSnackBar("error", "Connection Timeout");
-        setLoading(false);
-      } else {
-        setTimeoutCounter(timeoutCounter => timeoutCounter + 1);
-        // 延时1秒后再次检查连接状态
-        setTimeout(checkConnection, 1000);
-      }
-    }
-  }
-
   const handleSave = async () => {
     if (error !== '') {
       props.showSnackBar("error", error);
@@ -92,10 +68,14 @@ const PopupWiFi = (props) => {
     const result = await props.sendData("set-wifi-config", data);
     if (result === 'OK') {
       if (data.sta_switch) {
-        setTimeoutCounter(0);
-        setTimeout(checkConnection, 1000);
+        props.showAlert(
+          "Wi-Fi configuration saved",
+          "Do you want to restart Wi-Fi to apply the changes? You may need to change to the same Wi-Fi and reflash.",
+          () => props.sendData("set-wifi-restart", {})
+        );
       } else {
-        props.showSnackBar("success", "Saved Successfully");
+        props.sendData("set-wifi-restart", {});
+        props.showSnackBar("success", "Wi-Fi configuration saved");
         setLoading(false);
       }
     }
@@ -109,10 +89,6 @@ const PopupWiFi = (props) => {
   useEffect(() => {
     getData();
   }, [props.open])
-
-  useEffect(() => {
-    timeoutCounterRef.current = timeoutCounter;
-  }, [timeoutCounter]);
 
   return (
     <PopupFrame
@@ -132,9 +108,17 @@ const PopupWiFi = (props) => {
         {props.peripherals.includes("sta_switch") &&
           <SettingItemSwitch
             title="STA mode"
+            subtitle={
+              data.sta_switch && (
+                ip === '' ? "Disconnected" : `Connected: ${ip}`
+              )
+            }
             onChange={handleSwitchChange}
             value={data.sta_switch}
           />}
+        {/* <SettingItem
+          title="Wi-Fi mode"
+          disabled={!data.sta_switch} */}
         {props.peripherals.includes("sta_ssid_scan") &&
           <SettingItemSSIDList
             title="STA SSID"
