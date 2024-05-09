@@ -7,7 +7,6 @@ import Snackbars from './snackbar.jsx';
 import Alert from './alert';
 import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
-import "./home.css";
 
 const ip = window.location.hostname;
 // const HOST = `http://${ip}:34001/api/v1.0/`;
@@ -139,7 +138,7 @@ const Home = (props) => {
     setSettingPageDisplay(false);
   }
 
-  const sendData = async (path, payload) => {
+  const sendData = async (path, payload, ignoreError) => {
     try {
       const response = await fetch(HOST + path, {
         method: "POST",
@@ -148,7 +147,9 @@ const Home = (props) => {
         },
         body: JSON.stringify(payload),
       });
-
+      if (ignoreError) {
+        return true;
+      }
       // 确保请求成功
       if (!response.ok) {
         showSnackBar("error", `HTTP error! Status: : ${response.status}`);
