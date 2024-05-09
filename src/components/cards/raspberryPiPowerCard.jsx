@@ -61,7 +61,6 @@ const RaspberryPiPowerCard = (props) => {
       "Do you want to shutdown the Raspberry Pi? This may take a few minutes",
       () => props.sendData("set-output", { switch: SWITCH_COMMAND.SHUTDOWN })
     )
-    props.sendData("set-output", { switch: SWITCH_COMMAND.SHUTDOWN })
   }
   const handlePowerOn = () => {
     props.showAlert(
