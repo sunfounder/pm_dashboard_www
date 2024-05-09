@@ -18,7 +18,7 @@ const BatteryCard = (props) => {
       title: "Current",
       unit: "A",
       color: theme.palette.current.main,
-      min: - 5,
+      min: -5,
       max: 5,
     },
     power: {
