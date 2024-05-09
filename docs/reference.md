@@ -43,7 +43,9 @@
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
     - [POST /set-output 设置输出](#post-set-output-设置输出)
     - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
+    - [POST /set-wifi-restart 重启Wi-Fi](#post-set-wifi-restart-重启wi-fi)
     - [POST /set-ap-config AP配置](#post-set-ap-config-ap配置)
+    - [POST /set-ap-restart 重启AP](#post-set-ap-restart-重启ap)
     - [POST /ota-update OTA 更新](#post-ota-update-ota-更新)
     - [POST /set-shutdown-percentage 设置关机电池百分比](#post-set-shutdown-percentage-设置关机电池百分比)
     - [POST /set-power-off-percentage 设置断电电池百分比](#post-set-power-off-percentage-设置断电电池百分比)
@@ -542,6 +544,10 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": "OK"}`
 
+### POST /set-wifi-restart 重启Wi-Fi
+
+- Response:　没有返回
+
 ### POST /set-ap-config AP配置
 
 - Data:
@@ -549,6 +555,10 @@ api地址: `http://ip:34001/api/v1.0`
   - `ap_psk` - AP password
 - Response:
   - `{"status": true, "data": "OK"}`
+
+### POST /set-ap-restart 重启AP
+
+- Response:　没有返回
 
 ### POST /ota-update OTA 更新
 
