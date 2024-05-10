@@ -131,7 +131,6 @@ const PowerMenu = (props) => {
     );
   }
 
-  console.log('outputState', props.outputState);
   if (props.outputState === SWITCH_STATE.OFF) {
     enable = false;
     shuttingDown = false;

@@ -79,7 +79,6 @@ const PopupSettings = (props) => {
 
   const getConfig = async () => {
     const newConfig = await props.request('get-config');
-    console.log('newConfig', newConfig);
     setConfig(newConfig);
   }
 
