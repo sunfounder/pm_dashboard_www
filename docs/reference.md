@@ -54,7 +54,6 @@
     - [POST /set-time 设置时间](#post-set-time-设置时间)
     - [POST /set-timezone 设置时区](#post-set-timezone-设置时区)
     - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
->>>>>>> d4cb4dcc8f4e3f47ebc5e34a4fd75e7245759ca8
 
 
 ## 页面
