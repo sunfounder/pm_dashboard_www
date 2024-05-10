@@ -16,6 +16,8 @@ const HOST = `http://192.168.4.1:34001/api/v1.0/`;
 
 const DEFAULT_PERIPHERALS = [
   'output_switch',
+  'ota_manual',
+  'time',
 ]
 
 const Home = (props) => {
@@ -64,8 +66,14 @@ const Home = (props) => {
         showSnackBar("error", `Request Error: ${response.status}`);
         return false;
       }
-
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (error) {
+        console.error(url, error);
+        showSnackBar("error", `Request Error: ${error}`);
+        return;
+      }
       const status = result.status;
 
       if (status) {
@@ -244,6 +252,7 @@ const Home = (props) => {
         peripherals={peripherals}
         commonProps={commonProps}
         showSnackBar={showSnackBar}
+        sendData={sendData}
       />
       <PopupOTA
         open={PopupOTADisplay}

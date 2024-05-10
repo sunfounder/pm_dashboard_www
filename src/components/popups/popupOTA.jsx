@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import {
   Button,
   Box,
   LinearProgress,
-  Typography,
+  ListItemButton,
   List,
   ListItem,
   Card,
@@ -18,20 +19,22 @@ import {
   SettingItemFileSelector,
 } from './settingItems.jsx';
 
+import './markdown.css';
+import { Download } from '@mui/icons-material';
+
 const PopupOTA = (props) => {
   const [loading, setLoading] = useState(false);
-  const [linearWithValueLabel, setLinearWithValueLabel] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [latestVersion, setLatestVersion] = useState({ version: "", time: "", log: "", url: "" });
   const [fileName, setFileName] = useState('Select firmware');
   const [progress, setProgress] = useState(0);
-  const [downloadButton, setDownloadButton] = useState(false);
   const [currentVersion, setCurrentVersion] = useState("");
+  const [downloading, setDownloading] = useState(false);
 
   const handleUpgrade = async () => {
     console.log("手动升级");
     sendFile();
-    setLinearWithValueLabel(true);
+    setDownloading(true);
   }
 
   const getCurrentVersion = useCallback(async () => {
@@ -45,12 +48,10 @@ const PopupOTA = (props) => {
       let result = compareVersions(latestVersion.version, currentVersion);
       if (result > 0) {
         console.log("有新版本");
-        setDownloadButton(true);
       } else if (result < 0) {
         console.log("新版本号比当前版本号小");
       } else {
         console.log("版本相同");
-        setDownloadButton(false);
       }
     }
   }
@@ -116,6 +117,10 @@ const PopupOTA = (props) => {
     }
   }
 
+  const handleDownload = () => {
+    window.open(latestVersion.url);
+  }
+
   const compareVersions = (latestVersion, oldVersion) => {
     const versionA = latestVersion.split('.').map(Number);
     const versionB = oldVersion.split('.').map(Number);
@@ -140,6 +145,7 @@ const PopupOTA = (props) => {
         title="Current Version"
         subtitle={currentVersion}
         buttonText="Check for updates"
+        loading={loading}
         onClick={checkUpdate}
       />
       {latestVersion.version !== "" &&
@@ -149,31 +155,37 @@ const PopupOTA = (props) => {
               <ListItemText primary="Latest version" secondary={latestVersion.version}></ListItemText>
             </ListItem>
             <ListItem>
-              <ListItemText primary="Change logs" secondary={latestVersion.log}></ListItemText>
+              <ListItemText primary="Change logs" secondary={
+                <ReactMarkdown
+                  className='markdown'>
+                  {latestVersion.log}
+                </ReactMarkdown>
+              }></ListItemText>
             </ListItem>
-            {/* <ListItem><Typography>{latestVersion.log}</Typography></ListItem> */}
           </List>
           <CardActions>
-            <Button>Download</Button>
+            <Button onClick={handleDownload}>Download</Button>
           </CardActions>
         </Card>}
       <SettingItemFileSelector
         title="Firmware"
         subtitle="Select bin file to upgrade"
+        value={fileName}
+        accept='.bin'
         onChange={handleFileSelect} />
-      {!linearWithValueLabel &&
-        <Button variant="contained"
-          disabled={selectedFile == null ? true : false}
-          sx={{ margin: '10px', width: "90%" }}
-          onClick={handleUpgrade}>
-          Upgrade
-        </Button>}
-      {linearWithValueLabel &&
-        <LinearWithValueLabel
+      <ListItemButton component="button" onClick={handleUpgrade}>
+        <ListItemText primary="Upgrade" />
+      </ListItemButton>
+      {downloading &&
+        <ListItem >
+          <LinearProgress variant="determinate" {...props} />
+        </ListItem>
+      }
+      {/* <LinearWithValueLabel
           sx={{ margin: '10px ' }}
           progress={progress}
-          setLinearWithValueLabel={setLinearWithValueLabel}
-        />}
+          setDownloading={setDownloading}
+        />} */}
     </PopupFrame >
   );
 };
@@ -193,7 +205,7 @@ const LinearWithValueLabel = (props) => {
   useEffect(() => {
     if (props.progress === 100) {
       setTimeout(() => {
-        props.setLinearWithValueLabel(false);
+        props.setDownloading(false);
       }, 3000);
     }
   }, [props]);

@@ -27,6 +27,10 @@ import {
 import { DateTimePicker } from '@mui/x-date-pickers';
 
 import dayjs from 'dayjs';
+import 'dayjs/locale/de';
+import 'dayjs/locale/en';
+import 'dayjs/locale/zh';
+
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
@@ -214,7 +218,7 @@ const SettingItemText = (props) => {
   const [value, setValue] = useState(props.value);
   const handleChange = (event) => {
     setValue(event.target.value);
-    if (props.onChange) props.onChange(event);
+    if (props.onChange) props.onChange(event.target.value);
   }
   const handleSubmit = () => {
     props.onSubmit(value);
@@ -252,7 +256,7 @@ const SettingItemText = (props) => {
         error={props.error || false}
         sx={{ width: "40%" }}
         variant={props.variant || "standard"}
-        value={props.value}
+        value={value}
         onChange={handleChange}
         InputProps={inputProps}
         type={props.type || "text"}
@@ -319,7 +323,7 @@ const SettingItemPassword = (props) => {
 }
 
 const SettingItemSlider = (props) => {
-  const [value, setValue] = useState(props.value);
+  const [value, setValue] = useState(props.value || 0);
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -331,6 +335,7 @@ const SettingItemSlider = (props) => {
       setValue(props.value);
     }
   }
+
   return (
     <SettingItem
       title={props.title}
@@ -396,16 +401,20 @@ const SettingItemTime = (props) => {
     return () => clearInterval(interval);
   }, [getCurrentTime]);
 
+
+  const adapterLocale = navigator.language.toLowerCase().split('-')[0];
+
   return (
     <SettingItem
       title={props.title}
       subtitle={props.subtitle}
     >
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={adapterLocale}>
         <DateTimePicker
           value={dayjs(currentTime)}
-          onChange={handleTimeChanged}
-          disableOpenPicker={props.editable} />
+          // onChange={handleTimeChanged}
+          onAccept={handleTimeChanged}
+          readOnly={!props.editable} />
       </LocalizationProvider>
     </SettingItem>
   )
@@ -590,15 +599,20 @@ const SettingItemFileSelector = (props) => {
   return <SettingItemText
     title={props.title}
     subtitle={props.subtitle}
+    editable={false}
     value={props.value}
-    onChange={props.onChange}
     disabled={props.disabled}
     end={
       <IconButton
         component="label"
       >
         <UploadIcon />
-        <VisuallyHiddenInput type="file" />
+        <VisuallyHiddenInput
+          type="file"
+          accept={props.accept}
+          onChange={props.onChange}
+          multiple={props.multiple}
+        />
       </IconButton>
     }
   />

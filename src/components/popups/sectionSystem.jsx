@@ -75,7 +75,7 @@ const SectionSystem = (props) => {
           subtitle="Send shutdown request, if the battery percentage falls below this and no input power."
           valueFormat={(value) => `${value}%`}
           onCommitted={handleShutdownPercentageCommitted}
-          value={props.config.shutdownPercentage}
+          value={props.config.shutdown_percentage}
           sx={{ marginTop: 2, }}
           min={10}
           max={100}
@@ -89,7 +89,7 @@ const SectionSystem = (props) => {
           subtitle="Power off if the battery percentage falls below this."
           valueFormat={(value) => `${value}%`}
           onCommitted={handlePowerOffPercentageCommitted}
-          value={props.config.powerOffPercentage}
+          value={props.config.power_off_percentage}
           sx={{ marginTop: 2, }}
           min={5}
           max={100}
@@ -101,7 +101,7 @@ const SectionSystem = (props) => {
         <SettingItemTime
           title="Time"
           subtitle=""
-          editable={!props.peripherals.includes("auto_time_enable") || props.config.auto_time_switch}
+          editable={!props.peripherals.includes("auto_time_enable") || !props.config.auto_time_switch}
           request={props.request}
           onChange={handleTimeChange}
         />}
