@@ -1,64 +1,50 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import SettingPage from './settingPage.jsx';
+import React, { useState, useEffect } from 'react';
+import PopupSettings from './popups/popupSettings.jsx';
+import PopupOTA from './popups/popupOTA.jsx';
+import PopupWiFi from './popups/popupWiFi.jsx';
+import PopupAP from './popups/popupAP.jsx';
 import Snackbars from './snackbar.jsx';
+import Alert from './alert';
 import { Box } from '@mui/material';
-import DashboardPanel from './panels/dashboard.jsx';
-import HistoryPanel from './panels/history.jsx';
-import LogPanel from './panels/log.jsx';
-
-import "./home.css";
+import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 
 const ip = window.location.hostname;
-const HOST = `http://${ip}:34001/api/v1.0/`;
+// const HOST = `http://${ip}:34001/api/v1.0/`;
 // const HOST = `http://192.168.100.146:34001/api/v1.0/`;
-// const HOST = `http://homeassistant.local:34001/api/v1.0/`;
+// const HOST = `http://pironman-u1-002.local:34001/api/v1.0/`;
+const HOST = `http://192.168.4.1:34001/api/v1.0/`;
 
-const defaultConfigData = {
-  "auto": {
-    "reflash_interval": 1, //刷新间隔
-    "retry_interval": 3, //刷新
-    "fan_mode": "auto",
-    "fan_state": true,
-    "fan_speed": 65,
-    "temperature_unit": "C",
-    "rgb_switch": true,
-    "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
-    "rgb_color": "#0a1aff",
-    "rgb_speed": 50, //速度
-    "rgb_pwm_frequency": 1000, //频率
-    "rgb_pin": 10,  // 10,12,21
-    "shutdown_battery_pct": 100
-  },
-  "mqtt": {
-    "host": "core-mosquitto",
-    "port": 1883,
-    "username": "mqtt",
-    "password": "mqtt"
-  },
-  "dashboard": {
-    "ssl": false,
-    "ssl_ca_cert": "",
-    "ssl_cert": ""
-  },
-}
+const DEFAULT_PERIPHERALS = [
+  'output_switch',
+]
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
-  const [peripherals, setPeripherals] = useState([]);
+  const [peripherals, setPeripherals] = useState(DEFAULT_PERIPHERALS);
+  const [temperatureUnit, setTemperatureUnit] = useState("C");
   //设置页面的显示状态
   const [settingPageDisplay, setSettingPageDisplay] = useState(false);
-  const [configData, setConfigData] = useState(defaultConfigData);
+  const [PopupOTADisplay, setPopupOTADisplay] = useState(false);
+  const [wifiSettingPageDisplay, setPopupWiFiDisplay] = useState(false);
+  const [apSettingPageDisplay, setPopupAPDisplay] = useState(false);
   //全局提示框显示内容
   const [snackbarText, setSnackbarText] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  //全局提示框显示状态
   const [snackbarShow, setSnackbarShow] = useState(false);
+  //警告框显示
+  const [alertShow, setAlertShow] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertContent, setAlertContent] = useState("");
+  const [alertConfirmCallback, setAlertConfirmCallback] = useState(null);
+  const [alertCancelCallback, setAlertCancelCallback] = useState(null);
+  //全局提示框显示状态
   const [tabIndex, setTabIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
 
-  const request = useCallback(async (url, method, payload) => {
+  const request = async (url, method, payload) => {
     try {
       const requestOptions = {
         method: method,
+        mode: "cors",
         headers: {
           'Content-Type': 'application/json',
         },
@@ -83,7 +69,10 @@ const Home = (props) => {
       const status = result.status;
 
       if (status) {
-        const data = result.data;
+        let data = result.data;
+        if (!data) {
+          data = result;
+        }
         return data;
       } else {
         console.error(`Error: ${result.error}`);
@@ -95,23 +84,20 @@ const Home = (props) => {
       showSnackBar("error", `Request Error: ${error}`);
       return false;
     }
-  }, []);
+  }
 
-  const getInitData = useCallback(async () => {
-    let _configData = await request("get-config", "GET");
-    let device_info = await request("get-device-info", "GET");
-    if (_configData) {
-      setPeripherals(device_info.peripherals);
-      setDeviceName(device_info.name);
+  const getDeviceInfo = async () => {
+    let deviceInfo = await request("get-device-info", "GET");
+    console.log("deviceInfo", deviceInfo);
+    if (deviceInfo) {
+      setPeripherals(deviceInfo.peripherals);
+      setDeviceName(deviceInfo.name);
     }
-    if (_configData) {
-      setConfigData(_configData);
-    }
-  }, [request])
+  }
 
   useEffect(() => {
-    getInitData();
-  }, [getInitData]);
+    getDeviceInfo();
+  }, [])
 
   const handleTabChange = (event, newValue) => {
     window.localStorage.setItem("pm-dashboard-tabIndex", newValue);
@@ -120,6 +106,18 @@ const Home = (props) => {
 
   const handleSettingPage = () => {
     setSettingPageDisplay(!settingPageDisplay);
+  }
+
+  const handlePopupWiFi = () => {
+    setPopupWiFiDisplay(!wifiSettingPageDisplay);
+  }
+
+  const handlePopupAP = () => {
+    setPopupAPDisplay(!apSettingPageDisplay);
+  }
+
+  const handlePopupOTA = () => {
+    setPopupOTADisplay(!PopupOTADisplay);
   }
 
   const showSnackBar = (severity, text) => {
@@ -140,17 +138,7 @@ const Home = (props) => {
     setSettingPageDisplay(false);
   }
 
-  const handleSaveConfig = async () => {
-    // 判断是否发送设置数据
-    let responseData = await sendData("set-config", configData);
-    if (responseData.status) {
-      showSnackBar("success", "Save Successfully");
-      // setSettingPageDisplay(false);
-    }
-  }
-
-  const sendData = async (path, data) => {
-    let payload = { data: data };
+  const sendData = async (path, payload, ignoreError) => {
     try {
       const response = await fetch(HOST + path, {
         method: "POST",
@@ -159,24 +147,67 @@ const Home = (props) => {
         },
         body: JSON.stringify(payload),
       });
-
+      if (ignoreError) {
+        return true;
+      }
       // 确保请求成功
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        showSnackBar("error", `HTTP error! Status: : ${response.status}`);
+        return;
       }
-      const responseData = await response.json();
+      let result;
+      result = await response.json();
+      const status = result.status;
 
-      return responseData;
+      if (status) {
+        let data = result.data;
+        if (!data) {
+          data = result;
+        }
+        return data;
+      } else {
+        console.error(`Error: ${result.error}`);
+        showSnackBar("error", `Error: ${result.error}`);
+        return false;
+      }
     } catch (error) {
-      console.error("Error", error);
+      showSnackBar("error", `Error: ${error}`);
     }
   }
 
-  const handleChangeConfig = (field, name, value) => {
-    let newData = { ...configData };
-    newData[field][name] = value;
-    setConfigData(newData);
-  };
+  const handleAlertClose = () => {
+    setAlertShow(false);
+  }
+
+  const handleAlertCancel = async () => {
+    await alertCancelCallback();
+    setAlertShow(false);
+  }
+
+  const handleAlertConfirm = async () => {
+    await alertConfirmCallback();
+    setAlertShow(false);
+  }
+
+  const showAlert = (title, content, onConfirm, onCancel) => {
+    if (title !== undefined) {
+      setAlertTitle(title);
+    }
+    if (content !== undefined) {
+      setAlertContent(content);
+    }
+    if (onConfirm !== undefined) {
+      setAlertConfirmCallback(() => onConfirm);
+    }
+    if (onCancel !== undefined) {
+      setAlertCancelCallback(() => onCancel);
+    }
+    setAlertShow(true);
+  }
+
+  const handleTemperatureUnitChanged = (temperatureUnit) => {
+    setTemperatureUnit(temperatureUnit);
+  }
 
   const commonProps = {
     deviceName: deviceName,
@@ -186,6 +217,7 @@ const Home = (props) => {
     onTabChange: handleTabChange,
     onSettingPage: handleSettingPage,
     showSnackBar: showSnackBar,
+    sendData: sendData,
   }
 
   return (
@@ -194,24 +226,64 @@ const Home = (props) => {
       height: "100%",
       overflow: "hidden",
     }} >
-      {tabIndex === 0 && <DashboardPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit} />}
-      {tabIndex === 1 && <HistoryPanel {...commonProps} temperatureUnit={configData.auto.temperature_unit} />}
-      {tabIndex === 2 && <LogPanel {...commonProps} />}
-      <SettingPage
+      <PersistentDrawerLeft
+        {...commonProps}
+        temperatureUnit={temperatureUnit}
+        sendData={sendData}
+        showAlert={showAlert}
+        onPopupWiFi={handlePopupWiFi}
+        onPopupAP={handlePopupAP}
+        onPopupOTA={handlePopupOTA}
+      />
+      <PopupSettings
         open={settingPageDisplay}
+        request={request}
         onCancel={handleCancel}
-        onSave={handleSaveConfig}
-        onChange={handleChangeConfig}
         onModeChange={props.onModeChange}
-        configData={configData}
+        onTemperatureUnitChanged={handleTemperatureUnitChanged}
         peripherals={peripherals}
-        getRequest={request}
+        commonProps={commonProps}
+        showSnackBar={showSnackBar}
+      />
+      <PopupOTA
+        open={PopupOTADisplay}
+        onCancel={handlePopupOTA}
+        request={request}
+        peripherals={peripherals}
+        showSnackBar={showSnackBar}
+        showAlert={showAlert}
+      />
+      <PopupWiFi
+        open={wifiSettingPageDisplay}
+        onCancel={handlePopupWiFi}
+        peripherals={peripherals}
+        request={request}
+        sendData={sendData}
+        showSnackBar={showSnackBar}
+        showAlert={showAlert}
+      />
+      <PopupAP
+        open={apSettingPageDisplay}
+        onCancel={handlePopupAP}
+        request={request}
+        peripherals={peripherals}
+        sendData={sendData}
+        showSnackBar={showSnackBar}
+        showAlert={showAlert}
       />
       <Snackbars
         open={snackbarShow}
         text={snackbarText}
         severity={snackbarSeverity}
         handleClose={handleSnackbarClose}
+      />
+      <Alert
+        open={alertShow}
+        title={alertTitle}
+        content={alertContent}
+        onClose={handleAlertClose}
+        onCancel={alertCancelCallback ? handleAlertCancel : undefined}
+        onConfirm={alertConfirmCallback ? handleAlertConfirm : undefined}
       />
     </Box >
   );

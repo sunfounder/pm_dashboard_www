@@ -4,9 +4,10 @@ import Navbar from './navbar.jsx';
 const Panel = (props) => {
   return (
     <Box id={props.id} sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "2rem", padding: "30px", ...props.sx }}>
-      <Navbar title={props.title} {...props}>
+      {/* <Navbar title={props.title} {...props}>
         {props.navActions}
-      </Navbar>
+      </Navbar> */}
+      {props.navActions}
       {props.children}
     </Box>
   )

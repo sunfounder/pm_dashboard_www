@@ -16,10 +16,10 @@ function firstUpperCase(string) {
   return string;
 }
 
-function formatBytes(bytes) {
+function formatBytes(bytes, originalUnit = '') {
   if (typeof bytes !== 'number') return '0';
   var units = ['', 'K', 'M', 'G', 'T'];
-  var unitIndex = 0;
+  var unitIndex = units.indexOf(originalUnit);
 
   while (bytes >= 1024 && unitIndex < units.length - 1) {
     bytes /= 1024;

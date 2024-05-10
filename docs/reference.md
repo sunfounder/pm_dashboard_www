@@ -24,27 +24,37 @@
       - [Settings](#settings)
   - [Peripherals](#peripherals)
   - [API](#api)
-    - [GET /get-version](#get-get-version)
-    - [GET /get-device-info](#get-get-device-info)
-    - [GET /test](#get-test)
-    - [GET /test-mqtt](#get-test-mqtt)
-    - [GET /get-history](#get-get-history)
-    - [GET /get-history-file](#get-get-history-file)
-    - [GET /get-time-range](#get-get-time-range)
-    - [GET /get-config](#get-get-config)
-    - [GET /get-log-list](#get-get-log-list)
-    - [GET /get-log](#get-get-log)
-    - [GET /get-wifi-config](#get-get-wifi-config)
+    - [GET /get-version 获取当前版本号](#get-get-version-获取当前版本号)
+    - [GET /get-device-info 获取设备信息](#get-get-device-info-获取设备信息)
+    - [GET /test 测试服务状态](#get-test-测试服务状态)
+    - [GET /test-mqtt 测试MQTT连接](#get-test-mqtt-测试mqtt连接)
+    - [GET /get-history 获取历史数据](#get-get-history-获取历史数据)
+    - [GET /get-history-file 获取历史数据文件](#get-get-history-file-获取历史数据文件)
+    - [GET /get-time-range 获取时间范围](#get-get-time-range-获取时间范围)
+    - [GET /get-config 获取所有设置](#get-get-config-获取所有设置)
+    - [GET /get-log-list 获取日志列表](#get-get-log-list-获取日志列表)
+    - [GET /get-log 获取日志](#get-get-log-获取日志)
+    - [GET /get-wifi-config 获取Wi-Fi配置](#get-get-wifi-config-获取wi-fi配置)
     - [GET /get-wifi-state](#get-get-wifi-state)
-    - [GET /get-wifi-scan](#get-get-wifi-scan)
-    - [GET /get-ap-config](#get-get-ap-config)
-    - [GET /get-timestamp](#get-get-timestamp)
-    - [POST /set-config](#post-set-config)
-    - [POST /set-output](#post-set-output)
-    - [POST /set-wifi-config](#post-set-wifi-config)
-    - [POST /set-ap-config](#post-set-ap-config)
-    - [POST /ota-update](#post-ota-update)
-    - [POST /set-time-sync](#post-set-time-sync)
+    - [GET /get-wifi-scan 获取Wi-Fi扫描列表](#get-get-wifi-scan-获取wi-fi扫描列表)
+    - [GET /get-wifi-status 获取Wi-Fi状态](#get-get-wifi-status-获取wi-fi状态)
+    - [GET /get-wifi-ip 获取Wi-Fi IP](#get-get-wifi-ip-获取wi-fi-ip)
+    - [GET /get-ap-config 获取AP配置](#get-get-ap-config-获取ap配置)
+    - [GET /get-timestamp 获取当前时间戳](#get-get-timestamp-获取当前时间戳)
+    - [POST /set-config DEPRECATED](#post-set-config-deprecated)
+    - [POST /set-output 设置输出](#post-set-output-设置输出)
+    - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
+    - [POST /set-wifi-restart 重启Wi-Fi](#post-set-wifi-restart-重启wi-fi)
+    - [POST /set-ap-config AP配置](#post-set-ap-config-ap配置)
+    - [POST /set-ap-restart 重启AP](#post-set-ap-restart-重启ap)
+    - [POST /ota-update OTA 更新](#post-ota-update-ota-更新)
+    - [POST /set-shutdown-percentage 设置关机电池百分比](#post-set-shutdown-percentage-设置关机电池百分比)
+    - [POST /set-power-off-percentage 设置断电电池百分比](#post-set-power-off-percentage-设置断电电池百分比)
+    - [POST /set-auto-time 设置自动时间](#post-set-auto-time-设置自动时间)
+    - [POST /set-time 设置时间](#post-set-time-设置时间)
+    - [POST /set-timezone 设置时区](#post-set-timezone-设置时区)
+    - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
+>>>>>>> d4cb4dcc8f4e3f47ebc5e34a4fd75e7245759ca8
 
 
 ## 页面
@@ -249,6 +259,7 @@ Wi-Fi 设置弹窗，打开弹窗获取WiFi信息
 - 取消按钮点击取消
 - 确认按钮点击后发送API [`/set-wifi-config`](#post-set-wifi-config)
 - 请求API [`get-wifi-state`](#get-get-wifi-state) 获取链接状态，如果成功则显示连接成功，否则显示连接失败
+- 前端发送数据格式: `"STA": {"sta_ssid": "sta_ssid", "sta_psk": "sta_psk","sta_switch":"true"}`
 
 #### AP
 
@@ -260,6 +271,7 @@ AP 设置弹窗，打开弹窗获取AP信息
 - AP 密码输入框（密码，最小8位）, peripheral 判断: `ap_psk`
 - 取消按钮点击取消
 - 确认按钮点击后发送API [`/set-ap-config`](#post-set-ap-config)
+- 前端发送数据格式: `"AP": {"ap_ssid": "ap_ssid", "ap_psk": "ap_psk""}`
 
 #### Download History(暂缓)
 
@@ -387,15 +399,13 @@ AP 设置弹窗，打开弹窗获取AP信息
 
 api地址: `http://ip:34001/api/v1.0`
 
-### GET /get-version
+### GET /get-version 获取当前版本号
 
-- Description: 获取当前版本号
 - Response: 
   - `{"status": true, "data": "1.0.0"}`
 
-### GET /get-device-info
+### GET /get-device-info 获取设备信息
 
-- Description: Get device information
 - Response: 
   ```json
   {
@@ -411,15 +421,13 @@ api地址: `http://ip:34001/api/v1.0`
   }
   ```
 
-### GET /test
+### GET /test 测试服务状态
 
-- Description: Test if the server is running
 - Response: 
   - `{"status": true, "data": "OK"}`
 
-### GET /test-mqtt
+### GET /test-mqtt 测试MQTT连接
 
-- Description: Test if the MQTT configuration is correct
 - Data: 
   - `host` - MQTT Broker Host
   - `port` - MQTT Broker Port
@@ -435,25 +443,22 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": false, "error": "[ERROR] username not found"}`
   - `{"status": false, "error": "[ERROR] password not found"}`
 
-### GET /get-history
+### GET /get-history 获取历史数据
 
-- Description: Get history
 - Data:
   - `n` - Number of records to return
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-history-file
+### GET /get-history-file 获取历史数据文件
 
-- Description: Get day history file
 - Data:
   - `date` - Date in format `YYYY-MM-DD`
 - Response:
   - file
 
-### GET /get-time-range
-
-- Description: Get time range
+### GET /get-time-range 获取时间范围
+ 
 - Data:
   - `start` - Start time
   - `end` - End time
@@ -461,21 +466,18 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-config
+### GET /get-config 获取所有设置
 
-- Description: Get configuration
 - Response:
   - `{"status": true, "data": {}`
 
-### GET /get-log-list
+### GET /get-log-list 获取日志列表
 
-- Description: Get log list
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-log
+### GET /get-log 获取日志
 
-- Description: Get log
 - Data:
   - `filename` - Log file name
   - `lines`(optional) - Number of records to return
@@ -485,9 +487,8 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": false, "error": "[ERROR] file not found"}`
   - `{"status": true, "data": []}`
 
-### GET /get-wifi-config
+### GET /get-wifi-config 获取Wi-Fi配置
 
-- Description: Get Wi-Fi configuration
 - Response:
   - `{"status": true, "data": {"sta_switch": true, "sta_ssid": "SSID","sta_psk": "password"}}`
 
@@ -499,25 +500,38 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": true, "data": "disconnected"}`
   - `{"status": true, "data": "connecting"}`
 
-### GET /get-wifi-scan
+### GET /get-wifi-scan 获取Wi-Fi扫描列表
 
-- Description: Get Wi-Fi scan list
 - Response:
   - `{"status": true, "data": ["SSID1", "SSID2"]}` 
 
-### GET /get-ap-config
+### GET /get-wifi-status 获取Wi-Fi状态
 
-- Description: Get AP configuration
+- Response:
+  - `{"status": true, "data": "0"}` IDLE_STATUS
+  - `{"status": true, "data": "1"}` NO_SSID_AVAIL
+  - `{"status": true, "data": "2"}` SCAN_COMPLETED
+  - `{"status": true, "data": "3"}` CONNECTED
+  - `{"status": true, "data": "4"}` CONNECT_FAILED
+  - `{"status": true, "data": "5"}` CONNECTION_LOST
+  - `{"status": true, "data": "6"}` DISCONNECTED
+
+### GET /get-wifi-ip 获取Wi-Fi IP
+
+- Response:
+  - `{"status": true, "data": "192.168.1.1"}`
+
+### GET /get-ap-config 获取AP配置
+
 - Response:
   - `{"status": true, "data": {"ap_ssid": "SSID", "ap_psk": "password"}}`
 
-### GET /get-timestamp
+### GET /get-timestamp 获取当前时间戳
 
-- Description: Get current timestamp
 - Response:
   - `{"status": true, "data": "1612137600"}`
 
-### POST /set-config
+### POST /set-config DEPRECATED
 
 - Description: Set configuration
 - Data:
@@ -525,17 +539,15 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": data}`
 
-### POST /set-output
+### POST /set-output 设置输出
 
-- Description: Set output
 - Data:
-  - `switch` - Output switch 0/1
+  - `switch` - Output switch 0/1/2: Power off 断电/Shutdown 关机/Power on 开机
+
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-wifi-config
-
-- Description: Set Wi-Fi configuration
+### POST /set-wifi-config Wi-Fi配置
 - Data:
   - `sta_switch` - Wi-Fi switch 0/1
   - `sta_ssid` - Wi-Fi SSID
@@ -543,25 +555,67 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-ap-config
+### POST /set-wifi-restart 重启Wi-Fi
 
-- Description: Set AP configuration
+- Response:　没有返回
+
+### POST /set-ap-config AP配置
+
 - Data:
   - `ap_ssid` - AP SSID
   - `ap_psk` - AP password
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /ota-update
+### POST /set-ap-restart 重启AP
 
-- Description: OTA Update
+- Response:　没有返回
+
+### POST /ota-update OTA 更新
+
 - Data:
   - `file` - OTA file
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-time-sync
+### POST /set-shutdown-percentage 设置关机电池百分比
 
-- Description: Set time sync
 - Data:
-  - `ntp_server` - NTP Server
+  - `shutdown-percentage` - 百分比
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-power-off-percentage 设置断电电池百分比
+
+- Data:
+  - `power-off-percentage` - 百分比
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-auto-time 设置自动时间
+
+- Data:
+  - `enable` - 自动时间开关 true/false
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-time 设置时间
+
+- Data:
+  - `timestamp` - 时间戳（秒）
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-timezone 设置时区
+
+- Data:
+  - `timezone` - 时区
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-ntp-server 设置NTP服务器
+
+- Data:
+  - `ntp_server` - NTP服务器
+- Response:
+  - `{"status": true, "data": "OK"}`

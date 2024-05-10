@@ -7,10 +7,6 @@ import { useTheme } from '@mui/material/styles';
 const ExternalInputCard = (props) => {
   const theme = useTheme();
   const detail = {
-    isPluggedIn: {
-      title: "Status",
-      unit: "",
-    },
     voltage: {
       title: "Voltage",
       unit: "V",
@@ -25,19 +21,33 @@ const ExternalInputCard = (props) => {
       title: "Power",
       unit: "W",
       color: theme.palette.power.main,
-    }
+    },
+    isPluggedIn: {
+      title: "Status",
+      unit: "",
+    },
   };
-  let newData = props.data.map(obj => ({
-    timestamp: timeFormatting(obj.time),
-    isPluggedIn: obj.is_plugged_in ? "Plugged in" : "Unplugged",
-    voltage: obj.external_input_voltage / 1000,
-    current: obj.external_input_current / 1000,
-    power: obj.external_input_voltage / 1000 * obj.external_input_current / 1000,
-  }))
-  let chartData = newData.map(({ isPluggedIn, ...rest }) => rest)
+  let newData = props.data.map(obj => {
+    let tmp = {
+      timestamp: timeFormatting(obj.time),
+    }
+    if ('is_input_plugged_in' in obj) {
+      tmp.isPluggedIn = obj.is_input_plugged_in ? "Plugged in" : "Unplugged";
+    }
+    if ('input_voltage' in obj) {
+      tmp.voltage = obj.input_voltage / 1000;
+    }
+    if ('input_current' in obj) {
+      tmp.current = obj.input_current / 1000;
+      tmp.power = tmp.voltage * tmp.current;
+    }
+    return tmp;
+  });
+
+  let chartData = newData.map(({ isPluggedIn, ...rest }) => rest);
   return (
     <Card
-      title="External"
+      title="Input"
       color="externalInput"
       width={4}
       data={newData}
