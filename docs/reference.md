@@ -35,6 +35,7 @@
     - [GET /get-log-list](#get-get-log-list)
     - [GET /get-log](#get-get-log)
     - [GET /get-wifi-config](#get-get-wifi-config)
+    - [GET /get-wifi-state](#get-get-wifi-state)
     - [GET /get-wifi-scan](#get-get-wifi-scan)
     - [GET /get-ap-config](#get-get-ap-config)
     - [GET /get-timestamp](#get-get-timestamp)
@@ -247,6 +248,7 @@ Wi-Fi 设置弹窗，打开弹窗获取WiFi信息
 - STA 密码输入框（密码，最小8位）, peripheral 判断: `sta_psk`
 - 取消按钮点击取消
 - 确认按钮点击后发送API [`/set-wifi-config`](#post-set-wifi-config)
+- 请求API [`get-wifi-state`](#get-get-wifi-state) 获取链接状态，如果成功则显示连接成功，否则显示连接失败
 
 #### AP
 
@@ -488,6 +490,14 @@ api地址: `http://ip:34001/api/v1.0`
 - Description: Get Wi-Fi configuration
 - Response:
   - `{"status": true, "data": {"sta_switch": true, "sta_ssid": "SSID","sta_psk": "password"}}`
+
+### GET /get-wifi-state
+
+- Description: Get Wi-Fi state
+- Response:
+  - `{"status": true, "data": "connected"}`
+  - `{"status": true, "data": "disconnected"}`
+  - `{"status": true, "data": "connecting"}`
 
 ### GET /get-wifi-scan
 
