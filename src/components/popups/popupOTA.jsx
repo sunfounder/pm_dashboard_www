@@ -4,19 +4,25 @@ import {
   Box,
   LinearProgress,
   Typography,
+  List,
+  ListItem,
+  Card,
+  CardActions,
+  ListItemText
 } from '@mui/material';
 
 import PopupFrame from './popupFrame.jsx';
 import {
   SettingItem,
   SettingItemButton,
+  SettingItemFileSelector,
 } from './settingItems.jsx';
 
 const PopupOTA = (props) => {
   const [loading, setLoading] = useState(false);
   const [linearWithValueLabel, setLinearWithValueLabel] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [latestVersion, setLatestVersion] = useState({ versiov: "", time: "", log: "", url: "" });
+  const [latestVersion, setLatestVersion] = useState({ version: "", time: "", log: "", url: "" });
   const [fileName, setFileName] = useState('Select firmware');
   const [progress, setProgress] = useState(0);
   const [downloadButton, setDownloadButton] = useState(false);
@@ -36,7 +42,7 @@ const PopupOTA = (props) => {
   const checkUpdate = async () => {
     let latestVersion = await getLatestVersion();
     if (latestVersion) {
-      let result = compareVersions(latestVersion.versiov, currentVersion);
+      let result = compareVersions(latestVersion.version, currentVersion);
       if (result > 0) {
         console.log("有新版本");
         setDownloadButton(true);
@@ -88,7 +94,7 @@ const PopupOTA = (props) => {
   const getLatestVersion = async () => {
     setLoading(true);
     const username = 'sunfounder';
-    const repoName = 'ai-camera-firmware';
+    const repoName = 'pironman-u1-firmware';
     try {
       const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/releases/latest`);
       const data = await response.json();
@@ -96,7 +102,7 @@ const PopupOTA = (props) => {
         setLoading(false);
       }
       const latestVersion = {
-        versiov: data.tag_name,
+        version: data.tag_name,
         time: data.published_at,
         log: data.body,
         url: data.assets[0].browser_download_url
@@ -133,36 +139,28 @@ const PopupOTA = (props) => {
       <SettingItemButton
         title="Current Version"
         subtitle={currentVersion}
-        buttonText="Check Updates"
+        buttonText="Check for updates"
         onClick={checkUpdate}
       />
-      {
-        latestVersion.versiov !== "" &&
-        <Box>
-          <Typography >{latestVersion.versiov}</Typography>
-          <Typography >{latestVersion.log}</Typography>
-          <a href={latestVersion.url}>
+      {latestVersion.version !== "" &&
+        <Card elevation={3} sx={{ margin: '10px' }}>
+          <List dense={true}>
+            <ListItem>
+              <ListItemText primary="Latest version" secondary={latestVersion.version}></ListItemText>
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="Change logs" secondary={latestVersion.log}></ListItemText>
+            </ListItem>
+            {/* <ListItem><Typography>{latestVersion.log}</Typography></ListItem> */}
+          </List>
+          <CardActions>
             <Button>Download</Button>
-          </a>
-        </Box>
-      }
-      <SettingItem
+          </CardActions>
+        </Card>}
+      <SettingItemFileSelector
         title="Firmware"
-        subtitle=""
-      >
-        <Box sx={{ width: "50%" }}>
-          <form>
-            <label htmlFor="fileInput">{fileName}</label>
-            <input
-              type="file"
-              id="fileInput"
-              accept=".bin"
-              style={{ display: "none" }}
-              onChange={handleFileSelect}
-            />
-          </form>
-        </Box>
-      </SettingItem>
+        subtitle="Select bin file to upgrade"
+        onChange={handleFileSelect} />
       {!linearWithValueLabel &&
         <Button variant="contained"
           disabled={selectedFile == null ? true : false}
