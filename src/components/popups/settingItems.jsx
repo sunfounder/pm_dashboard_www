@@ -44,6 +44,7 @@ import SignalWifi1BarLockIcon from '@mui/icons-material/SignalWifi1BarLock';
 import SignalWifi2BarLockIcon from '@mui/icons-material/SignalWifi2BarLock';
 import SignalWifi3BarLockIcon from '@mui/icons-material/SignalWifi3BarLock';
 import SignalWifi4BarLockIcon from '@mui/icons-material/SignalWifi4BarLock';
+import UploadIcon from '@mui/icons-material/Upload';
 
 import { formatBytes } from '../../js/utils';
 
@@ -118,6 +119,18 @@ const TIMEZONE_MAP = [
   { data: 'UTC-13:00', label: '(UTC+13:00) Nuku\'alofa' },
 ]
 
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 const SettingItem = (props) => {
   return (<>
     <ListItem>
@@ -158,10 +171,6 @@ const SettingItemNumber = (props) => {
     if (props.validation) return props.validation(value);
 
     if (typeof value === "string" && value !== "") {
-      // if (value === "" || value === undefined || value === NaN) {
-      //   props.onError();
-      //   return { status: false, message: "Port is required" };
-      // }
       if (! /^\d+$/.test(value)) {
         props.onError(true);
         return { status: false, message: `Number is required` };
@@ -202,6 +211,15 @@ const SettingItemNumber = (props) => {
 }
 
 const SettingItemText = (props) => {
+  const [value, setValue] = useState(props.value);
+  const handleChange = (event) => {
+    setValue(event.target.value);
+    if (props.onChange) props.onChange(event);
+  }
+  const handleSubmit = () => {
+    props.onSubmit(value);
+  }
+
   let inputProps = null;
   if (props.start) {
     inputProps = {
@@ -211,6 +229,19 @@ const SettingItemText = (props) => {
     inputProps = {
       endAdornment: <InputAdornment position="end">{props.end}</InputAdornment>,
     }
+  } else if (props.submitable) {
+    inputProps = {
+      endAdornment: <InputAdornment position="end">
+        <IconButton
+          size="small"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={props.disabled}
+        >
+          <Check />
+        </IconButton>
+      </InputAdornment>,
+    }
   }
   return (
     <SettingItem
@@ -219,28 +250,33 @@ const SettingItemText = (props) => {
     >
       <TextField
         error={props.error || false}
-        sx={{ width: "30%" }}
+        sx={{ width: "40%" }}
         variant={props.variant || "standard"}
         value={props.value}
-        onChange={props.onChange}
+        onChange={handleChange}
         InputProps={inputProps}
         type={props.type || "text"}
         autoComplete={props.autoComplete || "off"}
         name={props.name}
+        disabled={props.disabled}
         helperText={props.helperText}
         placeholder={props.placeholder}
-      ></TextField>
+      >
+      </TextField>
     </SettingItem>
   )
 }
 
 const SettingItemSwitch = (props) => {
+  const handleChange = (event) => {
+    props.onChange(event.target.checked);
+  }
   return (
     <SettingItem
       title={props.title}
       subtitle={props.subtitle}
     >
-      <Switch onChange={props.onChange} checked={props.value} />
+      <Switch onChange={handleChange} checked={props.value} />
     </SettingItem>
   )
 }
@@ -259,7 +295,7 @@ const SettingItemPassword = (props) => {
     >
       <Input
         sx={{ width: '30%' }}
-        id="standard-adornment-password"
+        id={props.id}
         type={showPassword ? 'text' : 'password'}
         onChange={props.onChange}
         value={props.value}
@@ -283,6 +319,18 @@ const SettingItemPassword = (props) => {
 }
 
 const SettingItemSlider = (props) => {
+  const [value, setValue] = useState(props.value);
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+    props.onChange && props.onChange(event.target.value);
+  }
+
+  const handleChangeCommitted = async () => {
+    if (!await props.onCommitted(value)) {
+      setValue(props.value);
+    }
+  }
   return (
     <SettingItem
       title={props.title}
@@ -292,8 +340,9 @@ const SettingItemSlider = (props) => {
         sx={{ width: "50%", margin: "10px" }}
       >
         <Slider
-          onChange={props.onChange}
-          value={props.value}
+          onChangeCommitted={handleChangeCommitted}
+          onChange={handleChange}
+          value={value}
           valueLabelFormat={props.valueFormat}
           valueLabelDisplay="auto"
           marks={props.marks}
@@ -328,7 +377,7 @@ const SettingItemMenu = (props) => {
   )
 }
 
-const SettingItemCurrentTime = (props) => {
+const SettingItemTime = (props) => {
   const [currentTime, setCurrentTime] = useState('');
 
   const getCurrentTime = useCallback(async () => {
@@ -366,7 +415,9 @@ const SettingItemCurrentTime = (props) => {
 const SettingItemTimezone = (props) => {
 
   // data 如 "UTC-8:00" 转为 "(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei"
+  // console.log("props.value", props.value);
   let option = TIMEZONE_MAP.find(timezone => timezone.data === props.value);
+  // console.log("option", option);
 
   const handleChange = (event, option) => {
     props.onChange(option.data)
@@ -376,49 +427,13 @@ const SettingItemTimezone = (props) => {
     <SettingItem title={props.title} subtitle={props.subtitle} >
       <Autocomplete
         disablePortal
-        id="timezone-select"
+        id={props.id}
         options={TIMEZONE_MAP}
         sx={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label={props.title} />}
         value={option}
         onChange={handleChange}
       />
-    </SettingItem>
-  )
-}
-
-const SettingItemNTPServer = (props) => {
-  const [value, setValue] = useState(props.value);
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  }
-  return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
-      <FormControl sx={{ m: 1, width: '25ch' }} variant="standard">
-        <Input
-          id="standard-adornment-password"
-          type='text'
-          value={value}
-          disabled={props.disabled}
-          onChange={handleChange}
-          endAdornment={
-            !props.disabled &&
-            <InputAdornment position="end">
-              <IconButton
-                size="small"
-                color="primary"
-                onClick={props.onChange}
-                disabled={props.disabled}
-              >
-                <Check />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </FormControl>
     </SettingItem>
   )
 }
@@ -515,7 +530,7 @@ const SettingItemSSIDList = (props) => {
       subtitle={props.subtitle}
     >
       <Autocomplete
-        id="asynchronous-demo"
+        id={props.id}
         sx={{ width: "60%" }}
         open={open}
         value={props.value}
@@ -561,7 +576,7 @@ const SettingItemSSIDList = (props) => {
 }
 
 const SettingItemButton = (props) => {
-  <SettingItem title={props.title} subtitle={props.subtitle}>
+  return <SettingItem title={props.title} subtitle={props.subtitle}>
     <Button
       onClick={props.onClick}
       startIcon={props.loading && <CircularProgress size={30} />}
@@ -569,6 +584,24 @@ const SettingItemButton = (props) => {
       {props.buttonText}
     </Button>
   </SettingItem>
+}
+
+const SettingItemFileSelector = (props) => {
+  return <SettingItemText
+    title={props.title}
+    subtitle={props.subtitle}
+    value={props.value}
+    onChange={props.onChange}
+    disabled={props.disabled}
+    end={
+      <IconButton
+        component="label"
+      >
+        <UploadIcon />
+        <VisuallyHiddenInput type="file" />
+      </IconButton>
+    }
+  />
 }
 
 export {
@@ -581,9 +614,9 @@ export {
   SettingItemSwitch,
   SettingItemSlider,
   SettingItemMenu,
-  SettingItemCurrentTime,
+  SettingItemTime,
   SettingItemTimezone,
-  SettingItemNTPServer,
   SettingItemSDCardUsage,
   SettingItemSSIDList,
+  SettingItemFileSelector,
 }

@@ -1,51 +1,57 @@
-
 import {
   SettingItemToggleButton,
   SettingItemSlider,
   SettingItemSwitch,
   SettingItem,
-  SettingItemCurrentTime,
+  SettingItemTime,
   SettingItemTimezone,
-  SettingItemNTPServer,
+  SettingItemText,
   SettingItemSDCardUsage,
 } from "./settingItems.jsx";
 import SectionFrame from "./sectionFrame.jsx";
 
 const SectionSystem = (props) => {
-  const handleShutdownPercentageChange = async (event) => {
-    let result = await props.sendData('set-shutdown-percentage', { 'shutdown-percentage': event.target.value });
+
+  const handleShutdownPercentageCommitted = async (shutdownPercentage) => {
+    let result = await props.sendData('set-shutdown-percentage', { 'shutdown-percentage': shutdownPercentage });
     if (result === "OK") {
-      props.onChange('system', 'shutdown_percentage', event.target.value);
+      props.onChange('system', 'shutdown_percentage', shutdownPercentage);
+      return true;
+    } else {
+      return false;
     }
   }
-  const handlePowerOffPercentageChange = async (event) => {
-    let result = await props.sendData('set-poweroff-percentage', { 'power-off-percentage': event.target.value });
+  const handlePowerOffPercentageCommitted = async (powerOffPercentage) => {
+    let result = await props.sendData('set-power-off-percentage', { 'power-off-percentage': powerOffPercentage });
     if (result === "OK") {
-      props.onChange('system', 'poweroff_percentage', event.target.value);
+      props.onChange('system', 'power_off_percentage', powerOffPercentage);
+      return true;
+    } else {
+      return false;
     }
   }
-  const handleTimeChange = async (event) => {
-    let result = await props.sendData('set-time', { 'timestamp': event.target.value });
+  const handleTimeChange = async (time) => {
+    let result = await props.sendData('set-time', { 'timestamp': time });
     if (result === "OK") {
-      props.onChange('system', 'time', event.target.value);
+      props.onChange('system', 'time', time);
     }
   }
-  const handleTimezoneChange = async (event) => {
-    let result = await props.sendData('set-timezone', { 'timezone': event.target.value });
+  const handleTimezoneChange = async (timezone) => {
+    let result = await props.sendData('set-timezone', { 'timezone': timezone });
     if (result === "OK") {
-      props.onChange('system', 'timezone', event.target.value);
+      props.onChange('system', 'timezone', timezone);
     }
   }
-  const handleAutoTimeSwitchChange = async (event) => {
-    let result = await props.sendData('set-auto-time', { 'enable': event.target.value });
+  const handleAutoTimeSwitchChange = async (enable) => {
+    let result = await props.sendData('set-auto-time', { 'enable': enable });
     if (result === "OK") {
-      props.onChange('system', 'auto_time', event.target.value);
+      props.onChange('system', 'auto_time', enable);
     }
   }
-  const handleNTPServerChange = async (event) => {
-    let result = await props.sendData('set-ntp-server', { 'ntp_server': event.target.value });
+  const handleNTPServerChange = async (ntpServer) => {
+    let result = await props.sendData('set-ntp-server', { 'ntp_server': ntpServer });
     if (result === "OK") {
-      props.onChange('system', 'ntp_server', event.target.value);
+      props.onChange('system', 'ntp_server', ntpServer);
     }
   }
   return (
@@ -68,8 +74,8 @@ const SectionSystem = (props) => {
           title="Shutdown Stratagy"
           subtitle="Send shutdown request, if the battery percentage falls below this and no input power."
           valueFormat={(value) => `${value}%`}
-          onChange={handleShutdownPercentageChange}
-          value={props.config.shutdown_percentage}
+          onCommitted={handleShutdownPercentageCommitted}
+          value={props.config.shutdownPercentage}
           sx={{ marginTop: 2, }}
           min={10}
           max={100}
@@ -82,8 +88,8 @@ const SectionSystem = (props) => {
           title="Power Off Stratagy"
           subtitle="Power off if the battery percentage falls below this."
           valueFormat={(value) => `${value}%`}
-          onChange={handlePowerOffPercentageChange}
-          value={props.config.power_off_percentage}
+          onCommitted={handlePowerOffPercentageCommitted}
+          value={props.config.powerOffPercentage}
           sx={{ marginTop: 2, }}
           min={5}
           max={100}
@@ -92,8 +98,8 @@ const SectionSystem = (props) => {
         />}
       {/* 当前时间 */}
       {props.peripherals.includes("time") &&
-        <SettingItemCurrentTime
-          title="Current Time"
+        <SettingItemTime
+          title="Time"
           subtitle=""
           editable={!props.peripherals.includes("auto_time_enable") || props.config.auto_time_switch}
           request={props.request}
@@ -102,7 +108,7 @@ const SectionSystem = (props) => {
       {/* 时区选择 */}
       {props.peripherals.includes("timezone") &&
         <SettingItemTimezone
-          title="SettingItemTimezone"
+          title="Timezone"
           subtitle=""
           value={props.config.timezone}
           onChange={handleTimezoneChange}
@@ -116,12 +122,13 @@ const SectionSystem = (props) => {
         />}
       {/* NTP 服务器 */}
       {props.peripherals.includes("auto_time_enable") &&
-        <SettingItemNTPServer
+        <SettingItemText
           title="NTP Server"
           subtitle=""
           disabled={!props.config.auto_time_switch}
           value={props.config.ntp_server}
-          onChange={handleNTPServerChange}
+          submitable={true}
+          onSubmit={handleNTPServerChange}
         />}
       {/* SD 卡占用 */}
       {props.peripherals.includes("sd_card_usage") &&
