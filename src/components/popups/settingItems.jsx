@@ -286,7 +286,7 @@ const SettingItemSwitch = (props) => {
       subtitle={props.subtitle}
     >
       {loading && <CircularProgress size={20} />}
-      <Switch onChange={handleChange} checked={props.value} disabled={loading} />
+      <Switch onChange={handleChange} checked={props.value || false} disabled={loading} />
     </SettingItem>
   )
 }
@@ -393,15 +393,8 @@ const SettingItemMenu = (props) => {
 }
 
 const SettingItemTime = (props) => {
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(props.value || 0);
   const [changing, setChanging] = useState(false);
-
-  const getCurrentTime = async () => {
-    const newCurrentTime = await props.request("get-timestamp");
-    if (newCurrentTime && newCurrentTime !== currentTime) {
-      setCurrentTime(newCurrentTime);
-    }
-  }
 
   const handleTimeAccepted = (newTime) => {
     let timestamp = newTime.toSeconds();
@@ -417,12 +410,10 @@ const SettingItemTime = (props) => {
 
   useEffect(() => {
     if (!changing) {
-      const interval = setInterval(() => {
-        getCurrentTime();
-      }, 300);
-      return () => clearInterval(interval);
+      console.log('setCurrentTime', props.value);
+      setCurrentTime(props.value);
     }
-  }, [changing]);
+  }, [props.value])
 
   const adapterLocale = navigator.language.toLowerCase().split('-')[0];
 
@@ -433,7 +424,6 @@ const SettingItemTime = (props) => {
     >
       <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={adapterLocale}>
         <DateTimePicker
-          views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
           value={DateTime.fromSeconds(currentTime)}
           onAccept={handleTimeAccepted}
           onChange={handleTimeChanged}
@@ -472,19 +462,6 @@ const SettingItemTimezone = (props) => {
 
 // SD卡容量占用
 const SettingItemSDCardUsage = (props) => {
-  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 16,
-    borderRadius: 7,
-    marginTop: "0px !important",
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-      borderRadius: 5,
-      backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
-    },
-  }));
-
   // 占用
   let usage = props.used / props.total * 100;
   let usedString = formatBytes(props.used, 'M');
@@ -496,9 +473,9 @@ const SettingItemSDCardUsage = (props) => {
       title={props.title}
       subtitle={props.subtitle}
     >
-      <Stack spacing={2} sx={{ flexGrow: 1 }}>
+      <Stack sx={{ flexGrow: 1 }}>
         <Box><Typography >{msg}</Typography></Box>
-        <BorderLinearProgress variant="determinate" value={usage} />
+        <LinearProgress variant="determinate" value={usage} />
       </Stack>
     </SettingItem>
   )

@@ -1,4 +1,4 @@
-
+import React, { useEffect } from 'react';
 import {
   ListItem,
   Button,
@@ -16,6 +16,7 @@ import {
 import SectionFrame from "./sectionFrame.jsx";
 
 const SectionSystem = (props) => {
+  const [currentTime, setCurrentTime] = React.useState(0);
 
   const handleShutdownPercentageCommitted = async (shutdownPercentage) => {
     let result = await props.sendData('set-shutdown-percentage', { 'shutdown-percentage': shutdownPercentage });
@@ -26,7 +27,7 @@ const SectionSystem = (props) => {
       return false;
     }
   }
-  const handleTimeChange = async (time) => {
+  const handleTimeAccepted = async (time) => {
     let result = await props.sendData('set-timestamp', { 'timestamp': time });
     if (result === "OK") {
       props.onChange('system', 'time', time);
@@ -36,7 +37,7 @@ const SectionSystem = (props) => {
     let result = await props.sendData('set-timezone', { 'timezone': timezone });
     if (result === "OK") {
       props.onChange('system', 'timezone', timezone);
-    }
+    } 
   }
   const handleAutoTimeSwitchChange = async (enable) => {
     let result = await props.sendData('set-auto-time', { 'enable': enable });
@@ -50,6 +51,20 @@ const SectionSystem = (props) => {
       props.onChange('system', 'ntp_server', ntpServer);
     }
   }
+  const getCurrentTime = async () => {
+    const newCurrentTime = await props.request("get-timestamp");
+    if (newCurrentTime && newCurrentTime !== currentTime) {
+      setCurrentTime(newCurrentTime);
+    }
+  }
+  useEffect(() => {
+    getCurrentTime();
+    const interval = setInterval(() => {
+      getCurrentTime();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [props.open, props.config.timezone, props.config.auto_time_switch, props.config.ntpServer]);
+
   return (
     <SectionFrame title="System">
       {/* 温度单位 */}
@@ -81,9 +96,10 @@ const SectionSystem = (props) => {
         <SettingItemTime
           title="Time"
           subtitle=""
+          value={currentTime}
           editable={!props.peripherals.includes("auto_time_enable") || !props.config.auto_time_switch}
           request={props.request}
-          onAccept={handleTimeChange}
+          onAccept={handleTimeAccepted}
         />}
       {/* 时区选择 */}
       {props.peripherals.includes("timezone") &&
@@ -133,7 +149,7 @@ const SectionSystem = (props) => {
       {/* 重启设备 */}
       {props.peripherals.includes("restart") &&
         <ListItem>
-          <Button variant='outlined' color="error" onClick={()=>props.restartPrompt('Restart Device', 'Do you want to restart device?')} sx={{ width: '100%' }} >
+          <Button variant='outlined' color="error" onClick={() => props.restartPrompt('Restart Device', 'Do you want to restart device?')} sx={{ width: '100%' }} >
             Restart
           </Button>
         </ListItem>}

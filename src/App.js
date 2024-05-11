@@ -65,21 +65,32 @@ const darkTheme = createTheme({
   },
   components: {
     MuiCssBaseline: {
-      styleOverrides: `
-      ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background-color: rgb(60, 60, 60);
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: #888;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: #555;
-      }
-      `,
+      styleOverrides: {
+        body: {
+          scrollbarColor: "#6b6b6b #2b2b2b",
+          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+            backgroundColor: "#2b2b2b",
+          },
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            borderRadius: 8,
+            backgroundColor: "#ff0000",
+            minHeight: 24,
+            border: "3px solid #2b2b2b",
+          },
+          "&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus": {
+            backgroundColor: "#959595",
+          },
+          "&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active": {
+            backgroundColor: "#959595",
+          },
+          "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "#555",
+          },
+          "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
+            backgroundColor: "#2b2b2b",
+          },
+        },
+      },
     },
   },
 });
@@ -131,27 +142,39 @@ const lightTheme = createTheme({
   },
   components: {
     MuiCssBaseline: {
-      styleOverrides: `
-        ::-webkit-scrollbar {
-          width: 10px;
-          height: 10px;
-        }
-        ::-webkit-scrollbar-track {
-          background-color: rgb(240, 240, 240);
-        }
-        ::-webkit-scrollbar-thumb {
-          background-color: #aaa;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background-color: #bbb;
-        }
-      `,
+      styleOverrides: {
+        body: {
+          scrollbarColor: "#aaa #eee",
+          "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
+            backgroundColor: "#eee",
+            width: '2px',
+          },
+          "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
+            borderRadius: 8,
+            backgroundColor: "#eee",
+            minHeight: 24,
+            border: "3px solid #eee",
+          },
+          "&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus": {
+            backgroundColor: "#959595",
+          },
+          "&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active": {
+            backgroundColor: "#959595",
+          },
+          "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover": {
+            backgroundColor: "#555",
+          },
+          "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
+            backgroundColor: "#eee",
+          },
+        },
+      },
     },
   },
 });
 
 const App = () => {
-  const [theme, setTheme] = useState(lightTheme);
+  const [theme, setTheme] = useState(null);
 
   const changeTheme = (themeName) => {
     if (themeName === 'dark')
@@ -167,8 +190,8 @@ const App = () => {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <ThemeProvider theme={theme || lightTheme}>
+      <CssBaseline enableColorScheme />
       <div className='app'>
         <Home onModeChange={changeTheme} />
       </div>

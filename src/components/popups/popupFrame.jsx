@@ -44,19 +44,20 @@ const PopupFrame = (props) => {
             <Close />
           </IconButton>
         } />
-        <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden", padding: "0 0" }}>
+        <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden", paddingRight: 0 }}>
           {props.children}
         </Box>
-        <CardActions>
-          <Stack
-            direction="row"
-            justifyContent="right"
-            width={"100%"}
-            spacing={12}
-          >
-            {props.actions}
-          </Stack>
-        </CardActions>
+        {props.actions &&
+          <CardActions>
+            <Stack
+              direction="row"
+              justifyContent="right"
+              width={"100%"}
+              spacing={12}
+            >
+              {props.actions}
+            </Stack>
+          </CardActions>}
       </Paper >
     </Modal >
   );

@@ -59,11 +59,11 @@ const PopupSettings = (props) => {
     }
     props.onModeChange(theme);
     setThemeSwitchChecked(isDark);
-    window.localStorage.setItem("PMTheme", theme);
+    window.localStorage.setItem("pm-dashboard-theme", theme);
   };
 
-  const handleDarkMode = (e) => {
-    themeSwitching(e.target.checked);
+  const handleDarkMode = (checked) => {
+    themeSwitching(checked);
   }
 
   const handleMQTTChanged = (key, value) => {

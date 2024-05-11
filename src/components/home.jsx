@@ -9,12 +9,7 @@ import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 import { HOST } from '../js/config.js';
 
-const DEFAULT_PERIPHERALS = [
-  'output_switch',
-  'ota_manual',
-  'time',
-  'restart',
-]
+const DEFAULT_PERIPHERALS = []
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
