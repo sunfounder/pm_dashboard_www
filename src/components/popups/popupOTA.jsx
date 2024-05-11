@@ -21,20 +21,24 @@ import {
 
 import './markdown.css';
 import { Download } from '@mui/icons-material';
+import { HOST } from '../../js/config';
 
 const PopupOTA = (props) => {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [latestVersion, setLatestVersion] = useState({ version: "", time: "", log: "", url: "" });
-  const [fileName, setFileName] = useState('Select firmware');
+  const [fileName, setFileName] = useState('');
   const [progress, setProgress] = useState(0);
   const [currentVersion, setCurrentVersion] = useState("");
-  const [downloading, setDownloading] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
 
   const handleUpgrade = async () => {
     console.log("手动升级");
-    sendFile();
-    setDownloading(true);
+    if (!selectedFile) {
+      props.showSnackBar("error", "Please select a file first");
+      return;
+    }
+    props.showAlert("OTA Upgrade", `Are you sure to upgrade with ${fileName}.`, () => upgrade());
   }
 
   const getCurrentVersion = useCallback(async () => {
@@ -56,9 +60,9 @@ const PopupOTA = (props) => {
     }
   }
 
-  const sendFile = async () => {
-    const HOST = `http://pironman-u1.local:34001/api/v1.0/`;
+  const upgrade = async () => {
     if (selectedFile) {
+      setUpgrading(true);
       let formData = new FormData();
       formData.append('update', selectedFile);
       let xhr = new XMLHttpRequest();
@@ -66,12 +70,13 @@ const PopupOTA = (props) => {
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
           let progress = e.loaded / e.total * 100;
-          console.log("progress", progress);
           setProgress(progress);
           if (progress === 100) {
             console.log('update success');
             props.showSnackBar("success", "Upgrade Success");
-            setProgress(0);
+            setUpgrading(false);
+            setTimeout(() => setProgress(0), 200);
+            props.restartPrompt("Update successfully", "Do you want to restart now to take effect?");
           }
         }
       });
@@ -81,16 +86,10 @@ const PopupOTA = (props) => {
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
+    console.log('handleFileSelect', file);
     setSelectedFile(file);
-    if (file && file.type === "application/octet-stream") {
-      // 处理选择的二进制文件
-      setFileName(file.name);
-    } else {
-      // 文件类型不符合要求
-      console.log("请选择二进制文件");
-    }
+    setFileName(file.name);
   };
-
 
   const getLatestVersion = async () => {
     setLoading(true);
@@ -173,48 +172,18 @@ const PopupOTA = (props) => {
         value={fileName}
         accept='.bin'
         onChange={handleFileSelect} />
-      <ListItemButton component="button" onClick={handleUpgrade}>
-        <ListItemText primary="Upgrade" />
-      </ListItemButton>
-      {downloading &&
-        <ListItem >
-          <LinearProgress variant="determinate" {...props} />
-        </ListItem>
-      }
-      {/* <LinearWithValueLabel
-          sx={{ margin: '10px ' }}
-          progress={progress}
-          setDownloading={setDownloading}
-        />} */}
+      <ListItem >
+        {upgrading ?
+          <Box sx={{ width: '100%' }}>
+            <LinearProgress variant="determinate" value={progress} sx={{ width: '100%', height: '36.5px', borderRadius: '4px' }} />
+          </Box> :
+          <Button variant='contained' onClick={handleUpgrade} sx={{ width: '100%' }}>
+            Upgrade
+          </Button>
+        }
+      </ListItem>
     </PopupFrame >
   );
 };
-
-const LinearProgressWithLabel = (props) => {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
-      </Box>
-    </Box>
-  );
-}
-
-const LinearWithValueLabel = (props) => {
-  console.log(props.progress);
-  useEffect(() => {
-    if (props.progress === 100) {
-      setTimeout(() => {
-        props.setDownloading(false);
-      }, 3000);
-    }
-  }, [props]);
-
-  return (
-    <Box sx={{ width: '90%', margin: "10px" }}>
-      <LinearProgressWithLabel value={props.progress} sx={{ height: "36px", borderRadius: "4px" }} />
-    </Box>
-  );
-}
 
 export default PopupOTA;

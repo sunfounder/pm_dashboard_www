@@ -22,8 +22,15 @@ const PopupAP = (props) => {
   const [error, setError] = useState('');
 
   const getData = async () => {
-    let data = await props.request("get-ap-config", "GET");
-    setData(data);
+    let result = await props.request("get-ap-config", "GET");
+    if (!result) return;
+    let newData = { ...data };
+    for (let key in result) {
+      if (newData[key] !== undefined) {
+        newData[key] = result[key];
+      }
+    }
+    setData(newData);
   }
 
   const handleSSIDChanged = (event) => {

@@ -1,3 +1,8 @@
+
+import {
+  ListItem,
+  Button,
+} from '@mui/material';
 import {
   SettingItemToggleButton,
   SettingItemSlider,
@@ -21,17 +26,8 @@ const SectionSystem = (props) => {
       return false;
     }
   }
-  const handlePowerOffPercentageCommitted = async (powerOffPercentage) => {
-    let result = await props.sendData('set-power-off-percentage', { 'power-off-percentage': powerOffPercentage });
-    if (result === "OK") {
-      props.onChange('system', 'power_off_percentage', powerOffPercentage);
-      return true;
-    } else {
-      return false;
-    }
-  }
   const handleTimeChange = async (time) => {
-    let result = await props.sendData('set-time', { 'timestamp': time });
+    let result = await props.sendData('set-timestamp', { 'timestamp': time });
     if (result === "OK") {
       props.onChange('system', 'time', time);
     }
@@ -45,7 +41,7 @@ const SectionSystem = (props) => {
   const handleAutoTimeSwitchChange = async (enable) => {
     let result = await props.sendData('set-auto-time', { 'enable': enable });
     if (result === "OK") {
-      props.onChange('system', 'auto_time', enable);
+      props.onChange('system', 'auto_time_switch', enable);
     }
   }
   const handleNTPServerChange = async (ntpServer) => {
@@ -72,29 +68,13 @@ const SectionSystem = (props) => {
       {props.peripherals.includes("shutdown_percentage") &&
         <SettingItemSlider
           title="Shutdown Stratagy"
-          subtitle="Send shutdown request, if the battery percentage falls below this and no input power."
+          subtitle="Shutdown, if no input and battery percentage falls below this."
           valueFormat={(value) => `${value}%`}
           onCommitted={handleShutdownPercentageCommitted}
           value={props.config.shutdown_percentage}
           sx={{ marginTop: 2, }}
           min={10}
           max={100}
-          step={10}
-          marks
-        />}
-      {/* 电池保护 */}
-      {props.peripherals.includes("power_off_percentage") &&
-        <SettingItemSlider
-          title="Power Off Stratagy"
-          subtitle="Power off if the battery percentage falls below this."
-          valueFormat={(value) => `${value}%`}
-          onCommitted={handlePowerOffPercentageCommitted}
-          value={props.config.power_off_percentage}
-          sx={{ marginTop: 2, }}
-          min={5}
-          max={100}
-          step={5}
-          marks
         />}
       {/* 当前时间 */}
       {props.peripherals.includes("time") &&
@@ -103,7 +83,7 @@ const SectionSystem = (props) => {
           subtitle=""
           editable={!props.peripherals.includes("auto_time_enable") || !props.config.auto_time_switch}
           request={props.request}
-          onChange={handleTimeChange}
+          onAccept={handleTimeChange}
         />}
       {/* 时区选择 */}
       {props.peripherals.includes("timezone") &&
@@ -150,6 +130,13 @@ const SectionSystem = (props) => {
           title="IP Address"
           subtitle={props.config.ip_address}
         />}
+      {/* 重启设备 */}
+      {props.peripherals.includes("restart") &&
+        <ListItem>
+          <Button variant='outlined' color="error" onClick={()=>props.restartPrompt('Restart Device', 'Do you want to restart device?')} sx={{ width: '100%' }} >
+            Restart
+          </Button>
+        </ListItem>}
     </SectionFrame>
   )
 }

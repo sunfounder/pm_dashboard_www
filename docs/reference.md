@@ -41,6 +41,8 @@
     - [GET /get-wifi-ip 获取Wi-Fi IP](#get-get-wifi-ip-获取wi-fi-ip)
     - [GET /get-ap-config 获取AP配置](#get-get-ap-config-获取ap配置)
     - [GET /get-timestamp 获取当前时间戳](#get-get-timestamp-获取当前时间戳)
+    - [GET /get-default-on 获取是否默认开机](#get-get-default-on-获取是否默认开机)
+    - [GET /get-output 获取输出状态](#get-get-output-获取输出状态)
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
     - [POST /set-output 设置输出](#post-set-output-设置输出)
     - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
@@ -51,9 +53,10 @@
     - [POST /set-shutdown-percentage 设置关机电池百分比](#post-set-shutdown-percentage-设置关机电池百分比)
     - [POST /set-power-off-percentage 设置断电电池百分比](#post-set-power-off-percentage-设置断电电池百分比)
     - [POST /set-auto-time 设置自动时间](#post-set-auto-time-设置自动时间)
-    - [POST /set-time 设置时间](#post-set-time-设置时间)
+    - [POST /set-timestamp 设置时间](#post-set-timestamp-设置时间)
     - [POST /set-timezone 设置时区](#post-set-timezone-设置时区)
     - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
+    - [POST /set-restart 重启设备](#post-set-restart-重启设备)
 
 
 ## 页面
@@ -393,6 +396,8 @@ AP 设置弹窗，打开弹窗获取AP信息
 37. ip_address: IP地址
 38. sd_card_usage: SD卡容量占用
 39. download_history_file: 下载历史数据文件
+40. default_on: 是否默认开机的选项
+41. restart: 设备自己是否支持重启
 
 ## API
 
@@ -530,6 +535,16 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": "1612137600"}`
 
+### GET /get-default-on 获取是否默认开机
+
+- Response:
+  - `{"status": true, "data": "true"}`
+
+### GET /get-output 获取输出状态
+
+- Response:
+  - `{"status": true, "data": 0}` -  0/1/2: Power off 断电/Shutdown 关机/Power on 开机
+
 ### POST /set-config DEPRECATED
 
 - Description: Set configuration
@@ -598,7 +613,7 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-time 设置时间
+### POST /set-timestamp 设置时间
 
 - Data:
   - `timestamp` - 时间戳（秒）
@@ -618,3 +633,7 @@ api地址: `http://ip:34001/api/v1.0`
   - `ntp_server` - NTP服务器
 - Response:
   - `{"status": true, "data": "OK"}`
+
+### POST /set-restart 重启设备
+
+- Response:　没有返回

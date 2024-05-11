@@ -78,7 +78,15 @@ const PopupSettings = (props) => {
   };
 
   const getConfig = async () => {
-    const newConfig = await props.request('get-config');
+    const result = await props.request('get-config');
+    let newConfig = { ...config };
+    if (result) {
+      for (let key in result) {
+        if (newConfig[key]) {
+          newConfig[key] = result[key];
+        }
+      }
+    }
     setConfig(newConfig);
   }
 
@@ -117,6 +125,8 @@ const PopupSettings = (props) => {
           sendData={props.sendData}
           request={props.request}
           peripherals={props.peripherals}
+          restartPrompt={props.restartPrompt}
+          latestData={props.latestData}
         />}
     </PopupFrame >
   );

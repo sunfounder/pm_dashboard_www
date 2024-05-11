@@ -36,12 +36,20 @@ const DashboardPanel = (props) => {
 
   // 自动获取数据
   useEffect(() => {
-    const interval = setInterval(() => {
-      updateData();
-    }, updateDataInterval);
+    let interval;
+    if (!props.connectionError) {
+      interval = setInterval(() => {
+        updateData();
+      }, updateDataInterval);
+    }
     return () => clearInterval(interval);
-    // }, []);
-  }, [updateDataInterval, updateData]);
+  }, [updateDataInterval, updateData, props.connectionError]);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      props.onDataChange(data[data.length - 1])
+    }
+  }, [data]);
 
   const bytesFormatter = (value, name, props) => {
     let unit = props.unit;
@@ -54,14 +62,6 @@ const DashboardPanel = (props) => {
     }
     return value;
   };
-
-  const isAvaialble = (key) => {
-    if (key === 'fan') {
-      return props.peripherals.includes('pwm_fan') || props.peripherals.includes('gpio_fan') || props.peripherals.includes('spc');
-    } else {
-      return props.peripherals.includes(key);
-    }
-  }
 
   return (<Box sx={{ width: "100%", height: "100%", overflowY: "scroll", overflowX: "hidden" }}>
     <Panel title={props.deviceName} {...props}>
@@ -94,10 +94,6 @@ const DashboardPanel = (props) => {
         {props.peripherals.includes('memory') && <MemoryCard data={data} />}
         {props.peripherals.includes('network') && <NetworkCard data={data} />}
         {props.peripherals.includes('cpu') && <ProcessorCard data={data} switch={props.peripherals.includes('output_switch')} />}
-        {/* {<StorageCard data={data} />}
-        {<MemoryCard data={data} />}
-        {<NetworkCard data={data} />}
-        {<ProcessorCard data={data} />} */}
       </Box >
     </Panel >
   </Box>

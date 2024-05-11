@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
@@ -25,14 +25,10 @@ import {
 } from '@mui/material';
 
 import { DateTimePicker } from '@mui/x-date-pickers';
-
-import dayjs from 'dayjs';
-import 'dayjs/locale/de';
-import 'dayjs/locale/en';
-import 'dayjs/locale/zh';
-
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+
+import { DateTime, Settings } from 'luxon';
 
 import {
   Visibility,
@@ -88,39 +84,39 @@ import { formatBytes } from '../../js/utils';
 //   { label: '(UTC+13:00) Nuku\'alofa', id: 33 }
 // ];
 const TIMEZONE_MAP = [
-  { data: 'UTC+12:00', label: '(UTC-12:00) International Date Line West' },
-  { data: 'UTC+11:00', label: '(UTC-11:00) Midway Island, Samoa' },
-  { data: 'UTC+10:00', label: '(UTC-10:00) Hawaii' },
-  { data: 'UTC+09:00', label: '(UTC-09:00) Alaska' },
-  { data: 'UTC+08:00', label: '(UTC-08:00) Pacific Time (US & Canada)' },
-  { data: 'UTC+07:00', label: '(UTC-07:00) Mountain Time (US & Canada)' },
-  { data: 'UTC+06:00', label: '(UTC-06:00) Central Time (US & Canada), Mexico City' },
-  { data: 'UTC+05:00', label: '(UTC-05:00) Eastern Time (US & Canada), Bogota, Lima' },
-  { data: 'UTC+04:00', label: '(UTC-04:00) Atlantic Time (Canada), Caracas, La Paz' },
-  { data: 'UTC+03:30', label: '(UTC-03:30) Newfoundland' },
-  { data: 'UTC+03:00', label: '(UTC-03:00) Brasilia, Buenos Aires, Georgetown' },
-  { data: 'UTC+02:00', label: '(UTC-02:00) Mid-Atlantic' },
-  { data: 'UTC+01:00', label: '(UTC-01:00) Azores, Cape Verde Islands' },
-  { data: 'UTC', label: '(UTC) Dublin, Edinburgh, Lisbon, London, Casablanca' },
-  { data: 'UTC-01:00', label: '(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' },
-  { data: 'UTC-02:00', label: '(UTC+02:00) Athens, Bucharest, Istanbul, Cairo' },
-  { data: 'UTC-03:00', label: '(UTC+03:00) Moscow, St. Petersburg, Volgograd' },
-  { data: 'UTC-03:30', label: '(UTC+03:30) Tehran' },
-  { data: 'UTC-04:00', label: '(UTC+04:00) Abu Dhabi, Muscat, Baku, Tbilisi' },
-  { data: 'UTC-04:30', label: '(UTC+04:30) Kabul' },
-  { data: 'UTC-05:00', label: '(UTC+05:00) Islamabad, Karachi, Tashkent' },
-  { data: 'UTC-05:30', label: '(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi' },
-  { data: 'UTC-05:45', label: '(UTC+05:45) Kathmandu' },
-  { data: 'UTC-06:00', label: '(UTC+06:00) Astana, Dhaka, Almaty, Novosibirsk' },
-  { data: 'UTC-06:30', label: '(UTC+06:30) Yangon (Rangoon)' },
-  { data: 'UTC-07:00', label: '(UTC+07:00) Bangkok, Hanoi, Jakarta' },
-  { data: 'UTC-08:00', label: '(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei' },
-  { data: 'UTC-09:00', label: '(UTC+09:00) Osaka, Sapporo, Tokyo, Seoul' },
-  { data: 'UTC-09:30', label: '(UTC+09:30) Adelaide, Darwin' },
-  { data: 'UTC-10:00', label: '(UTC+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam, Port Moresby' },
-  { data: 'UTC-11:00', label: '(UTC+11:00) Magadan, Solomon Islands, New Caledonia' },
-  { data: 'UTC-12:00', label: '(UTC+12:00) Auckland, Wellington, Fiji, Kamchatka' },
-  { data: 'UTC-13:00', label: '(UTC+13:00) Nuku\'alofa' },
+  { data: 'UTC+12:00', offset: 'UTC-12:00', label: '(UTC-12:00) International Date Line West' },
+  { data: 'UTC+11:00', offset: 'UTC-11:00', label: '(UTC-11:00) Midway Island, Samoa' },
+  { data: 'UTC+10:00', offset: 'UTC-10:00', label: '(UTC-10:00) Hawaii' },
+  { data: 'UTC+09:00', offset: 'UTC-09:00', label: '(UTC-09:00) Alaska' },
+  { data: 'UTC+08:00', offset: 'UTC-08:00', label: '(UTC-08:00) Pacific Time (US & Canada)' },
+  { data: 'UTC+07:00', offset: 'UTC-07:00', label: '(UTC-07:00) Mountain Time (US & Canada)' },
+  { data: 'UTC+06:00', offset: 'UTC-06:00', label: '(UTC-06:00) Central Time (US & Canada), Mexico City' },
+  { data: 'UTC+05:00', offset: 'UTC-05:00', label: '(UTC-05:00) Eastern Time (US & Canada), Bogota, Lima' },
+  { data: 'UTC+04:00', offset: 'UTC-04:00', label: '(UTC-04:00) Atlantic Time (Canada), Caracas, La Paz' },
+  { data: 'UTC+03:30', offset: 'UTC-03:30', label: '(UTC-03:30) Newfoundland' },
+  { data: 'UTC+03:00', offset: 'UTC-03:00', label: '(UTC-03:00) Brasilia, Buenos Aires, Georgetown' },
+  { data: 'UTC+02:00', offset: 'UTC-02:00', label: '(UTC-02:00) Mid-Atlantic' },
+  { data: 'UTC+01:00', offset: 'UTC-01:00', label: '(UTC-01:00) Azores, Cape Verde Islands' },
+  { data: 'UTC', offset: 'UTC', label: '(UTC) Dublin, Edinburgh, Lisbon, London, Casablanca' },
+  { data: 'UTC-01:00', offset: 'UTC+01:00', label: '(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna' },
+  { data: 'UTC-02:00', offset: 'UTC+02:00', label: '(UTC+02:00) Athens, Bucharest, Istanbul, Cairo' },
+  { data: 'UTC-03:00', offset: 'UTC+03:00', label: '(UTC+03:00) Moscow, St. Petersburg, Volgograd' },
+  { data: 'UTC-03:30', offset: 'UTC+03:30', label: '(UTC+03:30) Tehran' },
+  { data: 'UTC-04:00', offset: 'UTC+04:00', label: '(UTC+04:00) Abu Dhabi, Muscat, Baku, Tbilisi' },
+  { data: 'UTC-04:30', offset: 'UTC+04:30', label: '(UTC+04:30) Kabul' },
+  { data: 'UTC-05:00', offset: 'UTC+05:00', label: '(UTC+05:00) Islamabad, Karachi, Tashkent' },
+  { data: 'UTC-05:30', offset: 'UTC+05:30', label: '(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi' },
+  { data: 'UTC-05:45', offset: 'UTC+05:45', label: '(UTC+05:45) Kathmandu' },
+  { data: 'UTC-06:00', offset: 'UTC+06:00', label: '(UTC+06:00) Astana, Dhaka, Almaty, Novosibirsk' },
+  { data: 'UTC-06:30', offset: 'UTC+06:30', label: '(UTC+06:30) Yangon (Rangoon)' },
+  { data: 'UTC-07:00', offset: 'UTC+07:00', label: '(UTC+07:00) Bangkok, Hanoi, Jakarta' },
+  { data: 'UTC-08:00', offset: 'UTC+08:00', label: '(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei' },
+  { data: 'UTC-09:00', offset: 'UTC+09:00', label: '(UTC+09:00) Osaka, Sapporo, Tokyo, Seoul' },
+  { data: 'UTC-09:30', offset: 'UTC+09:30', label: '(UTC+09:30) Adelaide, Darwin' },
+  { data: 'UTC-10:00', offset: 'UTC+10:00', label: '(UTC+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam, Port Moresby' },
+  { data: 'UTC-11:00', offset: 'UTC+11:00', label: '(UTC+11:00) Magadan, Solomon Islands, New Caledonia' },
+  { data: 'UTC-12:00', offset: 'UTC+12:00', label: '(UTC+12:00) Auckland, Wellington, Fiji, Kamchatka' },
+  { data: 'UTC-13:00', offset: 'UTC+13:00', label: '(UTC+13:00) Nuku\'alofa' },
 ]
 
 const VisuallyHiddenInput = styled('input')({
@@ -247,6 +243,11 @@ const SettingItemText = (props) => {
       </InputAdornment>,
     }
   }
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value])
+
   return (
     <SettingItem
       title={props.title}
@@ -272,15 +273,20 @@ const SettingItemText = (props) => {
 }
 
 const SettingItemSwitch = (props) => {
-  const handleChange = (event) => {
-    props.onChange(event.target.checked);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = async (event) => {
+    setLoading(true);
+    await props.onChange(event.target.checked);
+    setLoading(false);
   }
   return (
     <SettingItem
       title={props.title}
       subtitle={props.subtitle}
     >
-      <Switch onChange={handleChange} checked={props.value} />
+      {loading && <CircularProgress size={20} />}
+      <Switch onChange={handleChange} checked={props.value} disabled={loading} />
     </SettingItem>
   )
 }
@@ -336,6 +342,10 @@ const SettingItemSlider = (props) => {
     }
   }
 
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value])
+
   return (
     <SettingItem
       title={props.title}
@@ -348,7 +358,7 @@ const SettingItemSlider = (props) => {
           onChangeCommitted={handleChangeCommitted}
           onChange={handleChange}
           value={value}
-          valueLabelFormat={props.valueFormat}
+          getAriaValueText={props.valueFormat}
           valueLabelDisplay="auto"
           marks={props.marks}
           step={props.step}
@@ -383,24 +393,36 @@ const SettingItemMenu = (props) => {
 }
 
 const SettingItemTime = (props) => {
-  const [currentTime, setCurrentTime] = useState('');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [changing, setChanging] = useState(false);
 
-  const getCurrentTime = useCallback(async () => {
+  const getCurrentTime = async () => {
     const newCurrentTime = await props.request("get-timestamp");
-    setCurrentTime(newCurrentTime * 1000);
-  }, [props])
+    if (newCurrentTime && newCurrentTime !== currentTime) {
+      setCurrentTime(newCurrentTime);
+    }
+  }
 
-  const handleTimeChanged = (newTime) => {
-    console.log(newTime);
+  const handleTimeAccepted = (newTime) => {
+    let timestamp = newTime.toSeconds();
+    console.log(timestamp);
+    props.onAccept(timestamp);
+    setChanging(false);
+  }
+
+  const handleTimeChanged = () => {
+    console.log('handleTimeChanged');
+    setChanging(true);
   }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      getCurrentTime();
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [getCurrentTime]);
-
+    if (!changing) {
+      const interval = setInterval(() => {
+        getCurrentTime();
+      }, 300);
+      return () => clearInterval(interval);
+    }
+  }, [changing]);
 
   const adapterLocale = navigator.language.toLowerCase().split('-')[0];
 
@@ -409,11 +431,12 @@ const SettingItemTime = (props) => {
       title={props.title}
       subtitle={props.subtitle}
     >
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={adapterLocale}>
+      <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={adapterLocale}>
         <DateTimePicker
-          value={dayjs(currentTime)}
-          // onChange={handleTimeChanged}
-          onAccept={handleTimeChanged}
+          views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
+          value={DateTime.fromSeconds(currentTime)}
+          onAccept={handleTimeAccepted}
+          onChange={handleTimeChanged}
           readOnly={!props.editable} />
       </LocalizationProvider>
     </SettingItem>
@@ -426,7 +449,7 @@ const SettingItemTimezone = (props) => {
   // data 如 "UTC-8:00" 转为 "(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei"
   // console.log("props.value", props.value);
   let option = TIMEZONE_MAP.find(timezone => timezone.data === props.value);
-  // console.log("option", option);
+  Settings.defaultZone = option.offset;
 
   const handleChange = (event, option) => {
     props.onChange(option.data)
@@ -596,6 +619,7 @@ const SettingItemButton = (props) => {
 }
 
 const SettingItemFileSelector = (props) => {
+  console.log("SettingItemFileSelector", props.value)
   return <SettingItemText
     title={props.title}
     subtitle={props.subtitle}

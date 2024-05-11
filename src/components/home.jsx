@@ -7,17 +7,13 @@ import Snackbars from './snackbar.jsx';
 import Alert from './alert';
 import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
-
-const ip = window.location.hostname;
-// const HOST = `http://${ip}:34001/api/v1.0/`;
-// const HOST = `http://192.168.100.146:34001/api/v1.0/`;
-// const HOST = `http://pironman-u1-002.local:34001/api/v1.0/`;
-const HOST = `http://192.168.4.1:34001/api/v1.0/`;
+import { HOST } from '../js/config.js';
 
 const DEFAULT_PERIPHERALS = [
   'output_switch',
   'ota_manual',
   'time',
+  'restart',
 ]
 
 const Home = (props) => {
@@ -41,8 +37,15 @@ const Home = (props) => {
   const [alertCancelCallback, setAlertCancelCallback] = useState(null);
   //全局提示框显示状态
   const [tabIndex, setTabIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
+  // 连接失败状态
+  const [connected, setConnected] = useState(false);
+  // 最新的一组数据
+  const [latestData, setLatestData] = useState({});
 
-  const request = async (url, method, payload) => {
+  const request = async (url, method, payload, ignore) => {
+    if (!connected && !ignore) {
+      return;
+    }
     try {
       const requestOptions = {
         method: method,
@@ -64,6 +67,7 @@ const Home = (props) => {
       if (!response.ok) {
         console.error(`Request failed with status ${response.status}`);
         showSnackBar("error", `Request Error: ${response.status}`);
+        setConnected(false);
         return false;
       }
       let result;
@@ -93,19 +97,6 @@ const Home = (props) => {
       return false;
     }
   }
-
-  const getDeviceInfo = async () => {
-    let deviceInfo = await request("get-device-info", "GET");
-    console.log("deviceInfo", deviceInfo);
-    if (deviceInfo) {
-      setPeripherals(deviceInfo.peripherals);
-      setDeviceName(deviceInfo.name);
-    }
-  }
-
-  useEffect(() => {
-    getDeviceInfo();
-  }, [])
 
   const handleTabChange = (event, newValue) => {
     window.localStorage.setItem("pm-dashboard-tabIndex", newValue);
@@ -147,6 +138,9 @@ const Home = (props) => {
   }
 
   const sendData = async (path, payload, ignoreError) => {
+    if (!connected) {
+      return;
+    }
     try {
       const response = await fetch(HOST + path, {
         method: "POST",
@@ -161,6 +155,7 @@ const Home = (props) => {
       // 确保请求成功
       if (!response.ok) {
         showSnackBar("error", `HTTP error! Status: : ${response.status}`);
+        setConnected(false);
         return;
       }
       let result;
@@ -217,6 +212,10 @@ const Home = (props) => {
     setTemperatureUnit(temperatureUnit);
   }
 
+  const handleDataChange = (data) => {
+    setLatestData(data);
+  }
+
   const commonProps = {
     deviceName: deviceName,
     peripherals: peripherals,
@@ -228,6 +227,67 @@ const Home = (props) => {
     sendData: sendData,
   }
 
+  const testConnection = async () => {
+    console.log("test connection");
+    let result = await request("test", "GET", {}, true);
+    if (result) {
+      setConnected(true);
+    } else {
+      setTimeout(() => testConnection(), 5000);
+    }
+  }
+
+  const getDeviceInfo = async () => {
+    let deviceInfo = await request("get-device-info", "GET");
+    console.log("deviceInfo", deviceInfo);
+    if (deviceInfo) {
+      setPeripherals(deviceInfo.peripherals);
+      setDeviceName(deviceInfo.name);
+    }
+  }
+
+  useEffect(() => {
+    getDeviceInfo();
+  }, [connected])
+
+  useEffect(() => {
+    if (!connected) {
+      testConnection();
+    }
+  }, [connected])
+
+  const restartPrompt = async (title, message) => {
+    let outputState;
+    let defaultOn;
+    let content = message;
+    console.log(latestData);
+    if (peripherals.includes('output_switch') && 'output_state' in latestData) {
+      outputState = latestData.output_state;
+    }
+    if (peripherals.includes('default_on')) {
+      defaultOn = await request('get-default-on', 'GET');
+    }
+    // 判断是否支持 output_switch 和 default_on
+    if (outputState !== undefined && defaultOn !== undefined) {
+      // 树莓派开机而且设置为Default On
+      if (outputState === 2 && defaultOn === true) {
+        content += " Raspberry Pi is running and will keep running during restart.";
+      } else if (outputState !== 2 && defaultOn === false) {
+        content += " Raspberry Pi is off and will keep off during restart.";
+      } else if (outputState === 2 && defaultOn === false) {
+        content += " Attention: The device is set to default off, but the Raspberry Pi is currently running. Restarting the device will disconnect power to the Raspberry Pi. It is recommended to shut down the Raspberry Pi before proceeding or switch the default-off jumper cap to default-on.";
+      } else if (outputState !== 2 && defaultOn === true) {
+        content += " Attention: The device is set to default on, but the Raspberry Pi is currently off. Restarting the device will power on the Raspberry Pi.";
+      }
+    }
+    showAlert(
+      title,
+      content,
+      () => sendData('set-restart', {}),
+      () => { }
+    );
+  }
+
   return (
     <Box id="home" sx={{
       width: "100%",
@@ -237,11 +297,13 @@ const Home = (props) => {
       <PersistentDrawerLeft
         {...commonProps}
         temperatureUnit={temperatureUnit}
+        connected={connected}
         sendData={sendData}
         showAlert={showAlert}
         onPopupWiFi={handlePopupWiFi}
         onPopupAP={handlePopupAP}
         onPopupOTA={handlePopupOTA}
+        onDataChange={handleDataChange}
       />
       <PopupSettings
         open={settingPageDisplay}
@@ -253,6 +315,8 @@ const Home = (props) => {
         commonProps={commonProps}
         showSnackBar={showSnackBar}
         sendData={sendData}
+        restartPrompt={restartPrompt}
+        latestData={latestData}
       />
       <PopupOTA
         open={PopupOTADisplay}
@@ -261,6 +325,8 @@ const Home = (props) => {
         peripherals={peripherals}
         showSnackBar={showSnackBar}
         showAlert={showAlert}
+        restartPrompt={restartPrompt}
+        latestData={latestData}
       />
       <PopupWiFi
         open={wifiSettingPageDisplay}

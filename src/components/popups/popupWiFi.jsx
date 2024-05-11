@@ -26,8 +26,15 @@ const PopupWiFi = (props) => {
 
 
   const getData = async () => {
-    let data = await props.request("get-wifi-config", "GET");
-    setData(data);
+    let result = await props.request("get-wifi-config", "GET");
+    let newData = { ...data };
+    if (!result) return;
+    for (let key in result) {
+      if (newData[key] !== undefined) {
+        newData[key] = result[key];
+      }
+    }
+    setData(newData);
     let ip = await props.request("get-wifi-ip", "GET");
     setIP(ip);
   }
