@@ -596,7 +596,6 @@ const SettingItemButton = (props) => {
 }
 
 const SettingItemFileSelector = (props) => {
-  console.log("SettingItemFileSelector", props.value)
   return <SettingItemText
     title={props.title}
     subtitle={props.subtitle}

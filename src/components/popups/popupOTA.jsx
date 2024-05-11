@@ -26,7 +26,7 @@ import { HOST } from '../../js/config';
 const PopupOTA = (props) => {
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [latestVersion, setLatestVersion] = useState({ version: "", time: "", log: "", url: "" });
+  const [latestVersion, setLatestVersion] = useState(null);
   const [fileName, setFileName] = useState('');
   const [progress, setProgress] = useState(0);
   const [currentVersion, setCurrentVersion] = useState("");
@@ -46,16 +46,43 @@ const PopupOTA = (props) => {
     setCurrentVersion(currentVersion);
   }, [props])
 
+  const getLatestVersion = async () => {
+    setLoading(true);
+    const username = 'sunfounder';
+    const repoName = 'pironman-u1-firmware';
+    try {
+      const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/releases/latest`);
+      const data = await response.json();
+      if (data) {
+        setLoading(false);
+      }
+      const latestVersion = {
+        version: data.tag_name,
+        time: data.published_at,
+        log: data.body,
+        url: data.assets[0].browser_download_url
+      }
+      console.log('Latest version:', latestVersion);
+      return latestVersion;
+    } catch (error) {
+      console.error('Error fetching latest release:', error);
+      return false;
+    }
+  }
+
   const checkUpdate = async () => {
     let latestVersion = await getLatestVersion();
     if (latestVersion) {
       let result = compareVersions(latestVersion.version, currentVersion);
       if (result > 0) {
+        setLatestVersion(latestVersion);
         console.log("有新版本");
       } else if (result < 0) {
         console.log("新版本号比当前版本号小");
+        props.showSnackBar("success", "Already up to date");
       } else {
         console.log("版本相同");
+        props.showSnackBar("success", "Already up to date");
       }
     }
   }
@@ -76,7 +103,11 @@ const PopupOTA = (props) => {
             props.showSnackBar("success", "Upgrade Success");
             setUpgrading(false);
             setTimeout(() => setProgress(0), 200);
-            props.restartPrompt("Update successfully", "Do you want to restart now to take effect?");
+            props.restartPrompt(
+              "Update successfully",
+              "Do you want to restart now to take effect?",
+              props.onCancel,
+            );
           }
         }
       });
@@ -90,31 +121,6 @@ const PopupOTA = (props) => {
     setSelectedFile(file);
     setFileName(file.name);
   };
-
-  const getLatestVersion = async () => {
-    setLoading(true);
-    const username = 'sunfounder';
-    const repoName = 'pironman-u1-firmware';
-    try {
-      const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/releases/latest`);
-      const data = await response.json();
-      if (data) {
-        setLoading(false);
-      }
-      const latestVersion = {
-        version: data.tag_name,
-        time: data.published_at,
-        log: data.body,
-        url: data.assets[0].browser_download_url
-      }
-      setLatestVersion(latestVersion);
-      console.log('Latest version:', latestVersion);
-      return latestVersion;
-    } catch (error) {
-      console.error('Error fetching latest release:', error);
-      return false;
-    }
-  }
 
   const handleDownload = () => {
     window.open(latestVersion.url);
@@ -135,23 +141,30 @@ const PopupOTA = (props) => {
 
   useEffect(() => {
     getCurrentVersion();
+    return () => {
+      setSelectedFile(null);
+      setFileName('');
+      setProgress(0);
+      setUpgrading(false);
+      setLatestVersion(null);
+    }
   }, [props.open]);
 
 
   return (
     <PopupFrame title="OTA" open={props.open} onClose={props.onCancel}>
       <SettingItemButton
-        title="Current Version"
+        title={`${props.deviceName} Firmware`}
         subtitle={currentVersion}
         buttonText="Check for updates"
         loading={loading}
         onClick={checkUpdate}
       />
-      {latestVersion.version !== "" &&
+      {latestVersion && latestVersion.version !== "" &&
         <Card elevation={3} sx={{ margin: '10px' }}>
           <List dense={true}>
             <ListItem>
-              <ListItemText primary="Latest version" secondary={latestVersion.version}></ListItemText>
+              <ListItemText primary="New version available" secondary={latestVersion.version}></ListItemText>
             </ListItem>
             <ListItem>
               <ListItemText primary="Change logs" secondary={
@@ -177,7 +190,11 @@ const PopupOTA = (props) => {
           <Box sx={{ width: '100%' }}>
             <LinearProgress variant="determinate" value={progress} sx={{ width: '100%', height: '36.5px', borderRadius: '4px' }} />
           </Box> :
-          <Button variant='contained' onClick={handleUpgrade} sx={{ width: '100%' }}>
+          <Button
+            variant='contained'
+            disabled={upgrading || !selectedFile}
+            onClick={handleUpgrade}
+            sx={{ width: '100%' }}>
             Upgrade
           </Button>
         }

@@ -37,7 +37,7 @@ const SectionSystem = (props) => {
     let result = await props.sendData('set-timezone', { 'timezone': timezone });
     if (result === "OK") {
       props.onChange('system', 'timezone', timezone);
-    } 
+    }
   }
   const handleAutoTimeSwitchChange = async (enable) => {
     let result = await props.sendData('set-auto-time', { 'enable': enable });
@@ -149,7 +149,17 @@ const SectionSystem = (props) => {
       {/* 重启设备 */}
       {props.peripherals.includes("restart") &&
         <ListItem>
-          <Button variant='outlined' color="error" onClick={() => props.restartPrompt('Restart Device', 'Do you want to restart device?')} sx={{ width: '100%' }} >
+          <Button
+            variant='outlined'
+            color="error"
+            onClick={() => {
+              props.restartPrompt(
+                'Restart Device',
+                'Do you want to restart device?',
+                props.onCancel
+              );
+            }}
+            sx={{ width: '100%' }} >
             Restart
           </Button>
         </ListItem>}

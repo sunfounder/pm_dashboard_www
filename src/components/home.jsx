@@ -251,7 +251,7 @@ const Home = (props) => {
     }
   }, [connected])
 
-  const restartPrompt = async (title, message) => {
+  const restartPrompt = async (title, message, onConfirm, onCancel) => {
     let outputState;
     let defaultOn;
     let content = message;
@@ -278,8 +278,14 @@ const Home = (props) => {
     showAlert(
       title,
       content,
-      () => sendData('set-restart', {}),
-      () => { }
+      () => {
+        sendData('set-restart', {});
+        setTimeout(()=>showAlert("Restarting", "The device is restarting. Please wait for a moment.", () => {}), 100);
+        onConfirm && onConfirm();
+      },
+      () => {
+        onCancel && onCancel();
+      }
     );
   }
 
@@ -322,6 +328,7 @@ const Home = (props) => {
         showAlert={showAlert}
         restartPrompt={restartPrompt}
         latestData={latestData}
+        deviceName={deviceName}
       />
       <PopupWiFi
         open={wifiSettingPageDisplay}
