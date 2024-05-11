@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 
 import { formatBytes } from '../../js/utils';
@@ -43,7 +43,7 @@ const DashboardPanel = (props) => {
       }, updateDataInterval);
     }
     return () => clearInterval(interval);
-  }, [updateDataInterval, updateData, props.connectionError]);
+  }, [updateDataInterval, props.connectionError]);
 
   useEffect(() => {
     if (data.length > 0) {

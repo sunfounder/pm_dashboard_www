@@ -4,7 +4,6 @@ import {
   Button,
   Box,
   LinearProgress,
-  ListItemButton,
   List,
   ListItem,
   Card,
@@ -14,13 +13,11 @@ import {
 
 import PopupFrame from './popupFrame.jsx';
 import {
-  SettingItem,
   SettingItemButton,
   SettingItemFileSelector,
 } from './settingItems.jsx';
 
 import './markdown.css';
-import { Download } from '@mui/icons-material';
 import { HOST } from '../../js/config';
 
 const PopupOTA = (props) => {

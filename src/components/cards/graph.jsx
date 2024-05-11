@@ -5,7 +5,6 @@ import "./graph.css"
 const Graph = (props) => {
 
   const chartBoxRef = useRef();
-  const { children, isMobile } = props
 
   return (
     <Paper
@@ -17,7 +16,7 @@ const Graph = (props) => {
         minHeight: "150px",
       }}
     >
-      {children}
+      {props.children}
     </Paper>
   )
 }

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import {
   Box,
   Drawer,
   CssBaseline,
-  // MuiAppBar,
   Toolbar,
   List,
   Typography,
@@ -157,7 +156,7 @@ const PersistentDrawerLeft = (props) => {
             <Typography variant="h6" noWrap component="div">
               {title[props.tabIndex].text}
             </Typography>
-            {props.tabIndex != 0 && downloadElement}
+            {props.tabIndex !== 0 && downloadElement}
           </Box>
           {/* <IconButton
             aria-label="settings"
@@ -265,7 +264,7 @@ const PersistentDrawerLeft = (props) => {
         </List>
         <Divider />
         {/* aa */}
-        {props.tabIndex != 0 && element}
+        {props.tabIndex !== 0 && element}
 
       </Drawer>
       <Main className='main' open={open} sx={{ padding: 0 }}>

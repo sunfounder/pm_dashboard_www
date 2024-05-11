@@ -61,7 +61,7 @@ import {
   deepOrange,
 } from '@mui/material/colors';
 
-import { DateTime, Settings } from 'luxon';
+import { DateTime } from 'luxon';
 
 import Panel from './panel.jsx';
 import { celciusToFahrenheit } from '../../js/utils.js';
