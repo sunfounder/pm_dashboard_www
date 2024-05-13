@@ -50,7 +50,6 @@ const DashboardPanel = (props) => {
   }, [updateDataInterval, props.connected, data]);
 
   useEffect(() => {
-    console.log("get-history", data);
     if (data.length > 0) {
       props.onDataChange(data[data.length - 1])
     }

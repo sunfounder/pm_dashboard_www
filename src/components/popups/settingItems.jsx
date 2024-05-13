@@ -49,41 +49,6 @@ import UploadIcon from '@mui/icons-material/Upload';
 
 import { formatBytes } from '../../js/utils';
 
-// const TIMEZONE_MAP = [
-//   { label: '(UTC-12:00) International Date Line West', id: 1 },
-//   { label: '(UTC-11:00) Midway Island, Samoa', id: 2 },
-//   { label: '(UTC-10:00) Hawaii', id: 3 },
-//   { label: '(UTC-09:00) Alaska', id: 4 },
-//   { label: '(UTC-08:00) Pacific Time (US & Canada)', id: 5 },
-//   { label: '(UTC-07:00) Mountain Time (US & Canada)', id: 6 },
-//   { label: '(UTC-06:00) Central Time (US & Canada), Mexico City', id: 7 },
-//   { label: '(UTC-05:00) Eastern Time (US & Canada), Bogota, Lima', id: 8 },
-//   { label: '(UTC-04:00) Atlantic Time (Canada), Caracas, La Paz', id: 19 },
-//   { label: '(UTC-03:30) Newfoundland', id: 10 },
-//   { label: '(UTC-03:00) Brasilia, Buenos Aires, Georgetown', id: 11 },
-//   { label: '(UTC-02:00) Mid-Atlantic', id: 12 },
-//   { label: '(UTC-01:00) Azores, Cape Verde Islands', id: 13 },
-//   { label: '(UTC) Dublin, Edinburgh, Lisbon, London, Casablanca', id: 14 },
-//   { label: '(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna', id: 15 },
-//   { label: '(UTC+02:00) Athens, Bucharest, Istanbul, Cairo', id: 16 },
-//   { label: '(UTC+03:00) Moscow, St. Petersburg, Volgograd', id: 17 },
-//   { label: '(UTC+03:30) Tehran', id: 18 },
-//   { label: '(UTC+04:00) Abu Dhabi, Muscat, Baku, Tbilisi', id: 19 },
-//   { label: '(UTC+04:30) Kabul', id: 20 },
-//   { label: '(UTC+05:00) Islamabad, Karachi, Tashkent', id: 21 },
-//   { label: '(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi', id: 22 },
-//   { label: '(UTC+05:45) Kathmandu', id: 23 },
-//   { label: '(UTC+06:00) Astana, Dhaka, Almaty, Novosibirsk', id: 24 },
-//   { label: '(UTC+06:30) Yangon (Rangoon)', id: 25 },
-//   { label: '(UTC+07:00) Bangkok, Hanoi, Jakarta', id: 26 },
-//   { label: '(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei', id: 27 },
-//   { label: '(UTC+09:00) Osaka, Sapporo, Tokyo, Seoul', id: 28 },
-//   { label: '(UTC+09:30) Adelaide, Darwin', id: 29 },
-//   { label: '(UTC+10:00) Brisbane, Canberra, Melbourne, Sydney, Guam, Port Moresby', id: 30 },
-//   { label: '(UTC+11:00) Magadan, Solomon Islands, New Caledonia', id: 31 },
-//   { label: '(UTC+12:00) Auckland, Wellington, Fiji, Kamchatka', id: 32 },
-//   { label: '(UTC+13:00) Nuku\'alofa', id: 33 }
-// ];
 const TIMEZONE_MAP = [
   { data: 'UTC+12:00', offset: 'UTC-12:00', label: '(UTC-12:00) International Date Line West' },
   { data: 'UTC+11:00', offset: 'UTC-11:00', label: '(UTC-11:00) Midway Island, Samoa' },
