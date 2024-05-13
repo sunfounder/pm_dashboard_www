@@ -92,6 +92,7 @@ const PopupSettings = (props) => {
 
   useEffect(() => {
     getConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open])
 
   return (

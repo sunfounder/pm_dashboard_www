@@ -88,6 +88,7 @@ const PopupWiFi = (props) => {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open])
 
   return (

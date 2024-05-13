@@ -155,6 +155,7 @@ const HistoryPanel = (props) => {
     </Card >
     setElement(newElement);
     props.onElementChange(element); // 组件加载时调用父组件的回调函数，并传递元素
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [element, props.onElementChange]);
 
   useEffect(() => {
@@ -165,6 +166,7 @@ const HistoryPanel = (props) => {
     </IconButton>;
     setDownloadElement(newDownloadElement);
     props.onDownloadElementChange(downloadElement); // 组件加载时调用父组件的回调函数，并传递元素
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [downloadElement, props.onDownloadElementChange]);
 
   const handleKeyChange = (key, checked) => {
@@ -343,6 +345,7 @@ const DateTimeRangePicker = (props) => {
       }
     }, 1000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quickSelect]);
   // }, []);
 

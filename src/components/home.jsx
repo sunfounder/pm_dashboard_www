@@ -243,12 +243,14 @@ const Home = (props) => {
 
   useEffect(() => {
     getDeviceInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected])
 
   useEffect(() => {
     if (!connected) {
       testConnection();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected])
 
   const restartPrompt = async (title, message, onConfirm, onCancel) => {
@@ -280,7 +282,7 @@ const Home = (props) => {
       content,
       () => {
         sendData('set-restart', {});
-        setTimeout(()=>showAlert("Restarting", "The device is restarting. Please wait for a moment.", () => {}), 100);
+        setTimeout(() => showAlert("Restarting", "The device is restarting. Please wait for a moment.", () => { }), 100);
         onConfirm && onConfirm();
       },
       () => {

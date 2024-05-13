@@ -145,6 +145,7 @@ const PopupOTA = (props) => {
       setUpgrading(false);
       setLatestVersion(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open]);
 
 

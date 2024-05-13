@@ -63,6 +63,7 @@ const SectionSystem = (props) => {
       getCurrentTime();
     }, 5000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open, props.config.timezone, props.config.auto_time_switch, props.config.ntpServer]);
 
   return (
