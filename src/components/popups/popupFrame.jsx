@@ -29,12 +29,12 @@ const PopupFrame = (props) => {
       <Paper
         elevation={3}
         sx={{
-          width: props.width || '50vw',
+          width: props.width || '760px',
           maxHeight: props.maxHeight || '60vh',
           borderRadius: "10px",
           display: "flex",
           flexDirection: "column",
-          '@media (max-width: 767px)': {
+          '@media (max-width: 768px)': {
             width: '90vw',
           },
         }}

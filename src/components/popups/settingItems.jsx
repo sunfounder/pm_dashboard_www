@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
+import { useMediaQuery } from '@mui/material';
 
 import {
   ListItem,
@@ -132,10 +133,17 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const SettingItem = (props) => {
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
+  let flexDirection = 'row';
+
+  if (props.wrap && isSmallScreen) flexDirection = 'column';
+
   return (<>
-    <ListItem>
-      <ListItemText primary={props.title} secondary={props.subtitle} />
-      {props.children}
+    <ListItem sx={{ flexDirection: flexDirection }}>
+      <ListItemText primary={props.title} secondary={props.subtitle} sx={{ width: '100%' }} />
+      <Box sx={{ display: 'flex', flexFlow: 'right', justifyContent: 'flex-end', width: '100%' }}>
+        {props.children}
+      </Box>
     </ListItem>
   </>
   )
@@ -148,10 +156,7 @@ const SettingItemToggleButton = (props) => {
     </ToggleButton>
   )
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} >
       <ToggleButtonGroup size="small" value={props.value}
         onChange={props.onChange}
         exclusive={true}
@@ -249,13 +254,10 @@ const SettingItemText = (props) => {
   }, [props.value])
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} >
       <TextField
         error={props.error || false}
-        sx={{ width: "40%" }}
+        sx={{ width: "100%" }}
         variant={props.variant || "standard"}
         value={value}
         onChange={handleChange}
@@ -281,10 +283,7 @@ const SettingItemSwitch = (props) => {
     setLoading(false);
   }
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} >
       {loading && <CircularProgress size={20} />}
       <Switch onChange={handleChange} checked={props.value || false} disabled={loading} />
     </SettingItem>
@@ -299,12 +298,9 @@ const SettingItemPassword = (props) => {
   };
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} wrap >
       <Input
-        sx={{ width: '30%' }}
+        sx={{ width: '40%' }}
         id={props.id}
         type={showPassword ? 'text' : 'password'}
         onChange={props.onChange}
@@ -347,12 +343,9 @@ const SettingItemSlider = (props) => {
   }, [props.value])
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} wrap >
       <Box
-        sx={{ width: "50%", margin: "10px" }}
+        sx={{ width: "100%" }}
       >
         <Slider
           onChangeCommitted={handleChangeCommitted}
@@ -372,10 +365,7 @@ const SettingItemSlider = (props) => {
 
 const SettingItemMenu = (props) => {
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props}>
       <FormControl variant="standard" sx={{ m: 1, minWidth: 120, margin: "0" }}>
         <Select
           onChange={props.onChange}
@@ -418,10 +408,7 @@ const SettingItemTime = (props) => {
   const adapterLocale = navigator.language.toLowerCase().split('-')[0];
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} wrap >
       <LocalizationProvider dateAdapter={AdapterLuxon} adapterLocale={adapterLocale}>
         <DateTimePicker
           value={DateTime.fromSeconds(currentTime)}
@@ -446,12 +433,12 @@ const SettingItemTimezone = (props) => {
   };
 
   return (
-    <SettingItem title={props.title} subtitle={props.subtitle} >
+    <SettingItem {...props} wrap >
       <Autocomplete
         disablePortal
         id={props.id}
         options={TIMEZONE_MAP}
-        sx={{ width: 300 }}
+        sx={{ width: "100%" }}
         renderInput={(params) => <TextField {...params} label={props.title} />}
         value={option}
         onChange={handleChange}
@@ -469,10 +456,7 @@ const SettingItemSDCardUsage = (props) => {
   let msg = `${usedString}B / ${totalString}B`;
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} wrap >
       <Stack sx={{ flexGrow: 1 }}>
         <Box><Typography >{msg}</Typography></Box>
         <LinearProgress variant="determinate" value={usage} />
@@ -534,10 +518,7 @@ const SettingItemSSIDList = (props) => {
   }
 
   return (
-    <SettingItem
-      title={props.title}
-      subtitle={props.subtitle}
-    >
+    <SettingItem {...props} wrap >
       <Autocomplete
         id={props.id}
         sx={{ width: "60%" }}
@@ -585,7 +566,7 @@ const SettingItemSSIDList = (props) => {
 }
 
 const SettingItemButton = (props) => {
-  return <SettingItem title={props.title} subtitle={props.subtitle}>
+  return <SettingItem {...props} >
     <Button
       onClick={props.onClick}
       startIcon={props.loading && <CircularProgress size={30} />}
@@ -597,8 +578,8 @@ const SettingItemButton = (props) => {
 
 const SettingItemFileSelector = (props) => {
   return <SettingItemText
-    title={props.title}
-    subtitle={props.subtitle}
+    {...props}
+    wrap
     editable={false}
     value={props.value}
     disabled={props.disabled}
