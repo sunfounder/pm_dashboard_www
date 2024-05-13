@@ -29,7 +29,7 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 
-import { DateTime, Settings } from 'luxon';
+import { DateTime, Settings as LuxonSettings } from 'luxon';
 
 import {
   Visibility,
@@ -403,6 +403,7 @@ const SettingItemTime = (props) => {
       console.log('setCurrentTime', props.value);
       setCurrentTime(props.value);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.value])
 
   const adapterLocale = navigator.language.toLowerCase().split('-')[0];
@@ -426,7 +427,7 @@ const SettingItemTimezone = (props) => {
   // data 如 "UTC-8:00" 转为 "(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei"
   // console.log("props.value", props.value);
   let option = TIMEZONE_MAP.find(timezone => timezone.data === props.value);
-  Settings.defaultZone = option.offset;
+  LuxonSettings.defaultZone = option.offset;
 
   const handleChange = (event, option) => {
     props.onChange(option.data)
