@@ -13,8 +13,10 @@ import MemoryCard from '../cards/memoryCard.jsx';
 import ProcessorCard from '../cards/processorCard.jsx';
 import NetworkCard from '../cards/networkCard.jsx';
 
+const TEST_DATA = [];
+
 const DashboardPanel = (props) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(TEST_DATA);
   const [updateDataInterval, setUpdateDataInterval] = useState(1000);
 
   const updateData = async () => {
@@ -30,6 +32,8 @@ const DashboardPanel = (props) => {
         }
         newData.push(_data);
         setData(newData);
+      } else {
+        setData(_data);
       }
     }
   }
@@ -37,18 +41,20 @@ const DashboardPanel = (props) => {
   // 自动获取数据
   useEffect(() => {
     let interval;
-    if (!props.connectionError) {
+    if (props.connected) {
       interval = setInterval(() => {
         updateData();
       }, updateDataInterval);
     }
     return () => clearInterval(interval);
-  }, [updateDataInterval, props.connectionError]);
+  }, [updateDataInterval, props.connected, data]);
 
   useEffect(() => {
+    console.log("get-history", data);
     if (data.length > 0) {
       props.onDataChange(data[data.length - 1])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const bytesFormatter = (value, name, props) => {
