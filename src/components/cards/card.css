@@ -79,7 +79,7 @@
   flex-direction: column;
   width: 300px;
   /* min-width: 300px; */
-  height: 200px;
+  height: 220px;
   -webkit-box-flex: 0 !important;
   flex-grow: 0 !important;
 }
