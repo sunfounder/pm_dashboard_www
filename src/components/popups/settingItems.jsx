@@ -142,17 +142,17 @@ const SettingItemNumber = (props) => {
 
     if (typeof value === "string" && value !== "") {
       if (! /^\d+$/.test(value)) {
-        props.onError(true);
+        if (props.onError) props.onError(true);
         return { status: false, message: `Number is required` };
       }
     }
     // 如果没有传入最大最小值表示不使用
     if (props.min === undefined || props.max === undefined) return { status: true };
     if (value < props.min || value > props.max) {
-      props.onError(true);
+      if (props.onError) props.onError(true);
       return { status: false, message: `Out of range [${props.min}, ${props.max}]` };
     }
-    props.onError(false);
+    if (props.onError) props.onError(false);
     return { status: true };
   }
 
@@ -171,7 +171,7 @@ const SettingItemNumber = (props) => {
       setError(true);
       setHelperText(result.message);
     }
-    props.onChange(newEvent);
+    if (props.onChange) props.onChange(value);
   }
   return <SettingItemText {...props}
     error={error}
@@ -265,7 +265,7 @@ const SettingItemPassword = (props) => {
   return (
     <SettingItem {...props} wrap >
       <Input
-        sx={{ width: '40%' }}
+        sx={{ width: '100%' }}
         id={props.id}
         type={showPassword ? 'text' : 'password'}
         onChange={props.onChange}
