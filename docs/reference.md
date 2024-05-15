@@ -57,7 +57,7 @@
     - [POST /set-timezone 设置时区](#post-set-timezone-设置时区)
     - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
     - [POST /set-restart 重启设备](#post-set-restart-重启设备)
-
+    - [POST /set-fan-power 设置风扇功率](#post-set-fan-power-设置风扇功率)
 
 ## 页面
 
@@ -637,3 +637,10 @@ api地址: `http://ip:34001/api/v1.0`
 ### POST /set-restart 重启设备
 
 - Response:　没有返回
+
+### POST /set-fan-power 设置风扇功率
+
+- Data:
+  - `fan_power` - 风扇功率
+- Response:
+  - `{"status": true, "data": "OK"}`
