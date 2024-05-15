@@ -58,6 +58,8 @@
     - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
     - [POST /set-restart 重启设备](#post-set-restart-重启设备)
     - [POST /set-fan-power 设置风扇功率](#post-set-fan-power-设置风扇功率)
+    - [POST /set-sd-data-interval 设置SD卡数据间隔](#post-set-sd-data-interval-设置sd卡数据间隔)
+    - [POST /set-sd-data-retain 设置SD卡数据保留天数](#post-set-sd-data-retain-设置sd卡数据保留天数)
 
 ## 页面
 
@@ -473,7 +475,54 @@ api地址: `http://ip:34001/api/v1.0`
 ### GET /get-config 获取所有设置
 
 - Response:
-  - `{"status": true, "data": {}`
+```json
+  {
+    "status": true,
+    "data": {
+      "auto": {
+        "reflash_interval": 1, //刷新间隔
+        "retry_interval": 3, //刷新
+        "fan_mode": "auto",
+        "fan_state": true,
+        "fan_speed": 65,
+        "rgb_switch": true,
+        "rgb_style": "breath",  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
+        "rgb_color": "#0a1aff",
+        "rgb_speed": 50, //速度
+        "rgb_pwm_frequency": 1000, //频率
+        "rgb_pin": 10,  // 10,12,21,
+      },
+      "mqtt": {
+        "host": "core-mosquitto",
+        "port": 1883,
+        "username": "mqtt",
+        "password": "mqtt"
+      },
+      "dashboard": {
+        "ssl": false,
+        "ssl_ca_cert": "",
+        "ssl_cert": ""
+      },
+      "system": {
+        "temperature_unit": "C",
+        "shutdown_percentage": 100,  //关机策略
+        "power_off_percentage": 100,  //电池保护策略
+        "timestamp": "16552455",
+        "timezone": "UTC-08:00",
+        "auto_time_enable": false,
+        "ntp_server": "",
+        "mac_address": "",
+        "ip_address": "",
+        "sd_card_usage": 0,
+        "sd_card_total": 0,
+        "sd_card_data_interval": 60, // SD 卡存数据的时间间隔，单位秒
+        "sd_card_data_retain": 7, // SD 卡存数据保留天数，单位天
+        "fan_power": 0,
+        "gpio_fan_mode": 1,
+      }
+    }
+  }
+```
 
 ### GET /get-log-list 获取日志列表
 
@@ -642,5 +691,19 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Data:
   - `fan_power` - 风扇功率
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-sd-data-interval 设置SD卡数据间隔
+
+- Data:
+  - `data_interval` - 数据间隔，单位秒
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-sd-data-retain 设置SD卡数据保留天数
+
+- Data:
+  - `data_retain` - 数据保留天数，单位天
 - Response:
   - `{"status": true, "data": "OK"}`
