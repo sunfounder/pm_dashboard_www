@@ -18,7 +18,7 @@ const defaultConfigData = {
     "rgb_color": "#0a1aff",
     "rgb_speed": 50, //速度
     "rgb_pwm_frequency": 1000, //频率
-    "rgb_pin": 10,  // 10,12,21
+    "rgb_pin": 10,  // 10,12,21,
   },
   "mqtt": {
     "host": "core-mosquitto",
@@ -43,6 +43,8 @@ const defaultConfigData = {
     "ip_address": "",
     "sd_card_usage": 0,
     "sd_card_total": 0,
+    "fan_power": 0,
+    "gpio_fan_mode": 1,
   }
 }
 
@@ -67,7 +69,12 @@ const PopupSettings = (props) => {
   }
 
   const handleMQTTChanged = (key, value) => {
-    props.onChange('mqtt', key, value);
+    // props.onChange('mqtt', key, value);
+    handleChanged('mqtt', key, value);
+  }
+  const handleAutohanged = (key, value) => {
+    // props.onChange('auto', key, value);
+    handleChanged('auto', key, value);
   }
 
   const handleChanged = (field, name, value) => {
@@ -104,7 +111,7 @@ const PopupSettings = (props) => {
         value={themeSwitchChecked} />
       {/* Auto */}
       {props.peripherals.includes("auto") &&
-        <SectionAuto></SectionAuto>}
+        <SectionAuto config={config.auto} onChange={handleAutohanged}></SectionAuto>}
       {/* MQTT */}
       {props.peripherals.includes("mqtt") &&
         <SectionMQTT

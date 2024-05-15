@@ -14,7 +14,7 @@ import {
   SettingItemSDCardUsage,
 } from "./settingItems.jsx";
 import SectionFrame from "./sectionFrame.jsx";
-
+const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const SectionSystem = (props) => {
   const [currentTime, setCurrentTime] = React.useState(0);
 
@@ -27,6 +27,17 @@ const SectionSystem = (props) => {
       return false;
     }
   }
+
+  const handleFanModeCommitted = async (fanPower) => {
+    let result = await props.sendData('set-fan-power', { 'fan_mode': fanPower });
+    if (result === "OK") {
+      props.onChange('system', 'fan_power', fanPower);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   const handleTimeAccepted = async (time) => {
     let result = await props.sendData('set-timestamp', { 'timestamp': time });
     if (result === "OK") {
@@ -91,6 +102,23 @@ const SectionSystem = (props) => {
           sx={{ marginTop: 2, }}
           min={10}
           max={100}
+        />}
+      {/* 风扇模式 */}
+      {
+        <SettingItemSlider
+          // title="GPIO Fan Mode"
+          // subtitle="Set GPIO fan mode"
+          title="Fan Power"
+          subtitle="Set Fan Power"
+          valueFormat={(value) => `${value}%`}
+          onCommitted={handleFanModeCommitted}
+          value={props.config.fan_power}
+          sx={{ marginBottom: 0 }}
+          step={25}
+          min={0}
+          max={100}
+          // step={1}
+          marks
         />}
       {/* 当前时间 */}
       {props.peripherals.includes("time") &&
