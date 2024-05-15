@@ -42,7 +42,7 @@ const SectionMQTT = (props) => {
         title="Host"
         subtitle="MQTT broker host"
         value={props.config ? props.config.host : ""}
-        onChange={(event) => props.onChange('host', event.target.value)}
+        onChange={(event) => props.onChange('host', event)}
       />
       <SettingItemNumber
         title="Port"
@@ -57,7 +57,7 @@ const SectionMQTT = (props) => {
         value={props.config ? props.config.username : ""}
         autoComplete="username"
         name="username"
-        onChange={(event) => props.onChange('username', event.target.value)}
+        onChange={(event) => props.onChange('username', event)}
       />
       <SettingItemPassword
         title="Password"
