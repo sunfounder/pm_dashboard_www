@@ -12,6 +12,7 @@ import {
   SettingItemTimezone,
   SettingItemText,
   SettingItemSDCardUsage,
+  SettingItemNumber
 } from "./settingItems.jsx";
 import SectionFrame from "./sectionFrame.jsx";
 const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
@@ -60,6 +61,20 @@ const SectionSystem = (props) => {
     let result = await props.sendData('set-ntp-server', { 'ntp_server': ntpServer });
     if (result === "OK") {
       props.onChange('system', 'ntp_server', ntpServer);
+    }
+  }
+  const handleSDDataIntervalBlur = async (interval) => {
+    const data = props.config.sd_card_data_interval;
+    let result = await props.sendData('set-sd-data-interval', { 'interval': data });
+    if (result === "OK") {
+      props.onChange('system', 'sd_card_data_interval', data);
+    }
+  }
+  const handleSDDataRetainBlur = async (retain) => {
+    const data = props.config.sd_card_data_retain;
+    let result = await props.sendData('set-sd-data-retain', { 'retain': data });
+    if (result === "OK") {
+      props.onChange('system', 'sd_card_data_retain', data);
     }
   }
   const getCurrentTime = async () => {
@@ -157,12 +172,37 @@ const SectionSystem = (props) => {
         />}
       {/* SD 卡占用 */}
       {props.peripherals.includes("sd_card_usage") &&
-        <SettingItemSDCardUsage
-          title="Micro SD card usage"
-          subtitle=""
-          used={props.config.sd_card_used}
-          total={props.config.sd_card_total}
-        />}
+        <>
+          <SettingItemSDCardUsage
+            title="Micro SD card usage"
+            subtitle=""
+            used={props.config.sd_card_used}
+            total={props.config.sd_card_total}
+          />
+          <SettingItemNumber
+            title="SD Data Interval"
+            subtitle="Set SD data interval in seconds"
+            value={props.config ? props.config.sd_card_data_interval : ""}
+            disabled={props.config.sd_card_total === 0}
+            min={1}
+            max={Infinity}
+            end="S"
+            onBlur={handleSDDataIntervalBlur}
+            onChange={(e) => props.onChange('system', 'sd_card_data_interval', e)}
+          />
+          <SettingItemNumber
+            title="SD Data Retain"
+            subtitle="Set SD data retain days"
+            value={props.config ? props.config.sd_card_data_retain : ""}
+            disabled={props.config.sd_card_total === 0}
+            min={1}
+            max={Infinity}
+            end="Days"
+            onBlur={handleSDDataRetainBlur}
+            onChange={(e) => props.onChange('system', 'sd_card_data_retain', e)}
+          />
+        </>
+      }
       {/* Mac地址 */}
       {props.peripherals.includes("mac_address") &&
         <SettingItem

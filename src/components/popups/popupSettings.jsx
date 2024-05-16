@@ -42,7 +42,9 @@ const defaultConfigData = {
     "mac_address": "",
     "ip_address": "",
     "sd_card_usage": 0,
-    "sd_card_total": 0,
+    "sd_card_total": 1,
+    "sd_card_data_interval": 1,
+    "sd_card_data_retain": 1,
     "fan_power": 0,
     "gpio_fan_mode": 1,
   }

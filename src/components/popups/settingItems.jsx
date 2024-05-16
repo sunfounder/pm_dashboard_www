@@ -158,7 +158,8 @@ const SettingItemNumber = (props) => {
 
   const handleChange = (event) => {
     let newEvent = event;
-    let value = event.target.value;
+    // let value = event.target.value;
+    let value = event;
     let result = validation(value)
     if (result.status) {
       setError(false);
@@ -177,6 +178,7 @@ const SettingItemNumber = (props) => {
     error={error}
     helperText={helperText}
     onChange={handleChange}
+    onBlur={props.onBlur}
   />
 }
 
@@ -233,6 +235,7 @@ const SettingItemText = (props) => {
         disabled={props.disabled}
         helperText={props.helperText}
         placeholder={props.placeholder}
+        onBlur={props.onBlur}
       >
       </TextField>
     </SettingItem>
