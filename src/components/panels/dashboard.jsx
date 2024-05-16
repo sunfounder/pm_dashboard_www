@@ -79,7 +79,7 @@ const DashboardPanel = (props) => {
           <ExternalInputCard data={data} bytesFormatter={bytesFormatter} switchShow={props.peripherals.includes('output_switch')} />
         }
         {
-          (props.peripherals.includes('pwm_fan') || props.peripherals.includes('spc_fan_power')) &&
+          (props.peripherals.includes('pwm_fan')) &&
           <FanCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
         {
           (props.peripherals.includes('is_battery_plugged_in') ||
