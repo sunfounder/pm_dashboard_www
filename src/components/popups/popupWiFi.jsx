@@ -56,6 +56,10 @@ const PopupWiFi = (props) => {
     setData({ ...data, "sta_ssid": ssid });
   }
 
+  const handleSSIDListInputChange = (ssid) => {
+    setData({ ...data, "sta_ssid": ssid });
+  }
+
   const handleSave = async () => {
     if (error !== '') {
       props.showSnackBar("error", error);
@@ -127,6 +131,7 @@ const PopupWiFi = (props) => {
             value={data.sta_ssid}
             request={props.request}
             onChange={handleSSIDChange}
+            onIinputChange={handleSSIDListInputChange}
           />}
         {props.peripherals.includes("sta_psk") &&
           <SettingItemPassword

@@ -505,8 +505,12 @@ const SettingItemSSIDList = (props) => {
         onChange={(event, newValue) => {
           props.onChange(newValue);
         }}
+        onInputChange={(event, newInputValue) => {
+          props.onIinputChange(newInputValue);
+        }}
         options={options}
         loading={loading}
+        freeSolo
         renderOption={(props, ssid) => {
           let ssidData = ssidList.find((item) => item.ssid === ssid);
           return (<Box component="li" sx={{ display: "flex", alignItems: 'space-between', '& > img': { flexShrink: 0 } }} {...props}>
