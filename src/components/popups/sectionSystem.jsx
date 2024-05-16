@@ -180,23 +180,25 @@ const SectionSystem = (props) => {
             total={props.config.sd_card_total}
           />
           <SettingItemNumber
+            width="30%"
             title="SD Data Interval"
             subtitle="Set SD data interval in seconds"
             value={props.config ? props.config.sd_card_data_interval : ""}
             disabled={props.config.sd_card_total === 0}
             min={1}
-            max={Infinity}
+            max={3600}
             end="S"
             onBlur={handleSDDataIntervalBlur}
             onChange={(e) => props.onChange('system', 'sd_card_data_interval', e)}
           />
           <SettingItemNumber
+            width="30%"
             title="SD Data Retain"
             subtitle="Set SD data retain days"
             value={props.config ? props.config.sd_card_data_retain : ""}
             disabled={props.config.sd_card_total === 0}
             min={1}
-            max={Infinity}
+            max={2000}
             end="Days"
             onBlur={handleSDDataRetainBlur}
             onChange={(e) => props.onChange('system', 'sd_card_data_retain', e)}

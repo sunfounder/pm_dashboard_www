@@ -224,7 +224,7 @@ const SettingItemText = (props) => {
     <SettingItem {...props} >
       <TextField
         error={props.error || false}
-        sx={{ width: "100%" }}
+        sx={{ width: props.width || "100%" }}
         variant={props.variant || "standard"}
         value={value}
         onChange={handleChange}
@@ -490,7 +490,7 @@ const SettingItemSSIDList = (props) => {
     <SettingItem {...props} wrap >
       <Autocomplete
         id={props.id}
-        sx={{ width: "60%" }}
+        sx={{ width: "100%" }}
         open={open}
         value={props.value}
         disabled={props.disabled}
