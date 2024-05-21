@@ -33,7 +33,7 @@ import {
   Check,
 } from '@mui/icons-material';
 
-const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
+const GPIO_FAN_MODES = ['Always On', 'Performance', 'Cool', 'Balanced', 'Quiet'];
 
 const SettingPage = (props) => {
   const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("pm-dashboard-theme") === "dark" ? true : false);
@@ -125,8 +125,8 @@ const SettingPage = (props) => {
               />}
             {props.peripherals.includes("gpio_fan") &&
               <SettingSliderItem
-                title="GPIO Fan Mode"
-                subtitle="Set GPIO fan mode"
+                title="Fan Mode"
+                subtitle="Set fan mode"
                 valueFormat={(value) => GPIO_FAN_MODES[4 - value]}
                 onChange={(event) => props.onChange('auto', 'gpio_fan_mode', 4 - event.target.value)}
                 value={4 - props.configData.auto.gpio_fan_mode}
