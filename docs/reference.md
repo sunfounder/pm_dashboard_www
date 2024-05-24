@@ -46,6 +46,7 @@
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
     - [POST /set-output 设置输出](#post-set-output-设置输出)
     - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
+    - [POST /set-sta-switch Wi-Fi STA模式配置](#post-set-sta-switch-wi-fi-sta模式配置)
     - [POST /set-wifi-restart 重启Wi-Fi](#post-set-wifi-restart-重启wi-fi)
     - [POST /set-ap-config AP配置](#post-set-ap-config-ap配置)
     - [POST /set-ap-restart 重启AP](#post-set-ap-restart-重启ap)
@@ -615,6 +616,11 @@ api地址: `http://ip:34001/api/v1.0`
   - `sta_switch` - Wi-Fi switch 0/1
   - `sta_ssid` - Wi-Fi SSID
   - `sta_psk` - Wi-Fi password
+- Response:
+  - `{"status": true, "data": "OK"}`
+### POST /set-sta-switch Wi-Fi STA模式配置
+- Data:
+  - `sta_switch` - Wi-Fi switch 0/1
 - Response:
   - `{"status": true, "data": "OK"}`
 
