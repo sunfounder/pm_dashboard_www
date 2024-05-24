@@ -63,18 +63,38 @@ const SectionSystem = (props) => {
       props.onChange('system', 'ntp_server', ntpServer);
     }
   }
-  const handleSDDataIntervalBlur = async (interval) => {
-    const data = props.config.sd_card_data_interval;
-    let result = await props.sendData('set-sd-data-interval', { 'interval': data });
+  const handleSDDataIntervalBlur = async (event) => {
+    let value = event.target.value;
+    // const data = props.config.sd_card_data_interval;
+    // 限制输入的类型
+    if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
+    if (value < 1 || value > 3600) return;
+    let result = await props.sendData('set-sd-data-interval', { 'interval': value });
     if (result === "OK") {
-      props.onChange('system', 'sd_card_data_interval', data);
+      props.onChange('system', 'sd_card_data_interval', value);
     }
   }
-  const handleSDDataRetainBlur = async (retain) => {
-    const data = props.config.sd_card_data_retain;
-    let result = await props.sendData('set-sd-data-retain', { 'retain': data });
+
+  const handleSDDataRetainSend = async (value) => {
+    let result = await props.sendData('set-sd-data-retain', { 'retain': value });
     if (result === "OK") {
-      props.onChange('system', 'sd_card_data_retain', data);
+      props.onChange('system', 'sd_card_data_retain', value);
+    }
+  }
+  const handleSDDataRetainBlur = (event) => {
+    let value = event.target.value;
+    const data = props.config.sd_card_data_retain;
+    if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
+    // 最大不能超过1000
+    if (value < 1 || value > 1000) return;
+    if (value < data) {
+      props.showAlert(
+        "Attention",
+        "The historical data retention period has been reduced. This means that we will be deleting data older than the new retention period. Please ensure that you have backed up any important data before the changes take effect.",
+        () => handleSDDataRetainSend(value), () => console.log("取消")
+      );
+    } else {
+      handleSDDataRetainSend(value);
     }
   }
   const getCurrentTime = async () => {
@@ -189,7 +209,7 @@ const SectionSystem = (props) => {
             max={3600}
             end="S"
             onBlur={handleSDDataIntervalBlur}
-            onChange={(e) => props.onChange('system', 'sd_card_data_interval', e)}
+          // onChange={(e) => props.onChange('system', 'sd_card_data_interval', e)}
           />
           <SettingItemNumber
             width="30%"
@@ -198,10 +218,10 @@ const SectionSystem = (props) => {
             value={props.config ? props.config.sd_card_data_retain : ""}
             disabled={props.config.sd_card_total === 0}
             min={1}
-            max={2000}
+            max={1000}
             end="Days"
             onBlur={handleSDDataRetainBlur}
-            onChange={(e) => props.onChange('system', 'sd_card_data_retain', e)}
+          // onChange={(e) => props.onChange('system', 'sd_card_data_retain', e)}
           />
         </>
       }

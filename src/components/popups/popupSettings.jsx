@@ -133,6 +133,7 @@ const PopupSettings = (props) => {
           config={config.system}
           onChange={handleChanged}
           sendData={props.sendData}
+          showAlert={props.showAlert}
           request={props.request}
           peripherals={props.peripherals}
           restartPrompt={props.restartPrompt}

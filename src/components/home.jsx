@@ -319,6 +319,7 @@ const Home = (props) => {
         showSnackBar={showSnackBar}
         sendData={sendData}
         restartPrompt={restartPrompt}
+        showAlert={showAlert}
         latestData={latestData}
       />
       <PopupOTA
