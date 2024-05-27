@@ -39,8 +39,30 @@ const PopupWiFi = (props) => {
     setIP(ip);
   }
 
-  const handleSwitchChange = (event) => {
-    setData({ ...data, "sta_switch": event.target.checked });
+  const handleSwitchChange = async (event) => {
+    let switchData = { "sta_switch": event };
+    // setData({ ...data, "sta_switch": event });
+    props.showAlert(
+      "Wi-Fi configuration saved",
+      "When I switch off the STA mode, I need to reconfigure the network.",
+      () => {
+        setLoading(true);
+        sendSwitchData(switchData);
+      },
+      () => console.log("cancel"),
+    );
+  }
+
+  const sendSwitchData = async (switchData) => {
+    const result = await props.sendData("set-sta-switch", switchData);
+    if (result === 'OK') {
+      setLoading(false);
+      setData({ ...data, "sta_switch": switchData });
+      getData();
+    } else {
+      props.showSnackBar("error", "Failed to change Wi-Fi status");
+      setLoading(false);
+    }
   }
 
   const handlePasswordChange = (event) => {
@@ -93,20 +115,35 @@ const PopupWiFi = (props) => {
   useEffect(() => {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    const interval = setInterval(() => {
+      getWifiIp();
+    }, 3000);
+    return () => clearInterval(interval);
   }, [props.open])
 
+  const getWifiIp = async () => {
+    let newIp = await props.request("get-wifi-ip", "GET");
+    if (newIp) {
+      setIP(newIp);
+    }
+  }
   return (
     <PopupFrame
       title="WIFI Setting"
       open={props.open}
       onClose={handleCancel}
       actions={
-        <Button
-          onClick={handleSave}
-          disabled={loading}
-        >
-          {loading ? <CircularProgress size={20} /> : "Save"}
-        </Button>
+        <>
+          {
+            data.sta_switch &&
+            <Button
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={20} /> : "Save"}
+            </Button>
+          }
+        </>
       }
     >
       <List>
@@ -124,7 +161,7 @@ const PopupWiFi = (props) => {
         {/* <SettingItem
           title="Wi-Fi mode"
           disabled={!data.sta_switch} */}
-        {props.peripherals.includes("sta_ssid_scan") &&
+        {props.peripherals.includes("sta_ssid_scan") && data.sta_switch &&
           <SettingItemSSIDList
             title="STA SSID"
             disabled={!data.sta_switch}
@@ -133,7 +170,7 @@ const PopupWiFi = (props) => {
             onChange={handleSSIDChange}
             onIinputChange={handleSSIDListInputChange}
           />}
-        {props.peripherals.includes("sta_psk") &&
+        {props.peripherals.includes("sta_psk") && data.sta_switch &&
           <SettingItemPassword
             title="STA Password"
             disabled={!data.sta_switch}
