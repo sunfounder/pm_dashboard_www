@@ -557,7 +557,7 @@ api地址: `http://ip:34001/api/v1.0`
 ### GET /get-wifi-scan 获取Wi-Fi扫描列表
 
 - Response:
-  - `{"status": true, "data": ["SSID1", "SSID2"]}` 
+  - `{"status": true, "data": [{rssi：-39, ssid：'SSID1', bssid：'F6:96:34:88:EF:DC', channel：6, secure：3}]}`  
 
 ### GET /get-wifi-status 获取Wi-Fi状态
 
