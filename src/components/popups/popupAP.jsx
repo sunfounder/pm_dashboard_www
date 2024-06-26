@@ -34,7 +34,8 @@ const PopupAP = (props) => {
   }
 
   const handleSSIDChanged = (event) => {
-    setData({ ...data, "ap_ssid": event.target.value })
+    // setData({ ...data, "ap_ssid": event.target.value })
+    setData({ ...data, "ap_ssid": event })
   }
 
   const handlePasswordChanged = (event) => {
