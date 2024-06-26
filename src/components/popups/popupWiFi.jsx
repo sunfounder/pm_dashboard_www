@@ -44,7 +44,7 @@ const PopupWiFi = (props) => {
     // setData({ ...data, "sta_switch": event });
     props.showAlert(
       "Wi-Fi configuration saved",
-      "When I switch off the STA mode, I need to reconfigure the network.",
+      event ? "When I switch off the STA mode, I need to reconfigure the network." : "The SAT mode is currently disabled. To access this page, you must use the AP mode.",
       () => {
         setLoading(true);
         sendSwitchData(switchData);
