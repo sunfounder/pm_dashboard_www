@@ -267,13 +267,13 @@ const Home = (props) => {
     // 判断是否支持 output_switch 和 default_on
     if (outputState !== undefined && defaultOn !== undefined) {
       // 树莓派开机而且设置为Default On
-      if (outputState === 2 && defaultOn === true) {
+      if (outputState === 1 && defaultOn === true) {
         content += " Raspberry Pi is running and will keep running during restart.";
-      } else if (outputState !== 2 && defaultOn === false) {
+      } else if (outputState !== 1 && defaultOn === false) {
         content += " Raspberry Pi is off and will keep off during restart.";
-      } else if (outputState === 2 && defaultOn === false) {
+      } else if (outputState === 1 && defaultOn === false) {
         content += " Attention: The device is set to default off, but the Raspberry Pi is currently running. Restarting the device will disconnect power to the Raspberry Pi. It is recommended to shut down the Raspberry Pi before proceeding or switch the default-off jumper cap to default-on.";
-      } else if (outputState !== 2 && defaultOn === true) {
+      } else if (outputState !== 1 && defaultOn === true) {
         content += " Attention: The device is set to default on, but the Raspberry Pi is currently off. Restarting the device will power on the Raspberry Pi.";
       }
     }
