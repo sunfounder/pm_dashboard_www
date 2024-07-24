@@ -82,6 +82,7 @@ const PersistentDrawerLeft = (props) => {
   const [element, setelement] = useState(null);
   const [downloadElement, setDownloadElement] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -109,6 +110,11 @@ const PersistentDrawerLeft = (props) => {
   const handleDrawerOpen = () => {
     setOpen(!open);
   };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  }
+
   let title = [
     { text: props.deviceName, icon: <DashboardIcon /> },
   ]
@@ -123,6 +129,7 @@ const PersistentDrawerLeft = (props) => {
 
   const handleMenuItemClick = (item, index) => {
     props.onTabChange(item, index);
+    setSelectedIndex(index);
   }
 
   const handleChildElement = (element) => {
@@ -154,18 +161,10 @@ const PersistentDrawerLeft = (props) => {
               </IconButton>
             }
             <Typography variant="h6" noWrap component="div">
-              {title[props.tabIndex].text}
+              {props.deviceName}
             </Typography>
-            {props.tabIndex !== 0 && downloadElement}
+            {/* {props.tabIndex !== 0 && downloadElement} */}
           </Box>
-          {/* <IconButton
-            aria-label="settings"
-            color="inherit"
-            onClick={props.onSettingPage}
-          >
-            <SettingsIcon />
-            <WidgetsOutlinedIcon />
-          </IconButton> */}
 
 
           <Box sx={{ flexGrow: 0 }}>
@@ -235,6 +234,7 @@ const PersistentDrawerLeft = (props) => {
 
       <Drawer
         sx={{
+          position: 'absolute',
           width: drawerWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
@@ -242,19 +242,16 @@ const PersistentDrawerLeft = (props) => {
             boxSizing: 'border-box',
           },
         }}
-        variant="persistent"
         anchor="left"
         open={open}
+        onClose={handleDrawerClose}
       >
         <DrawerHeader>
-          {/* <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton> */}
         </DrawerHeader>
         <Divider />
         <List>
           {title.map((item, index) => (
-            <ListItem key={item.text} disablePadding>
+            <ListItem key={item.text} disablePadding sx={{ backgroundColor: selectedIndex === index ? '#eee' : 'inherit' }}>
               <ListItemButton onClick={() => handleMenuItemClick(item, index)}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
@@ -263,11 +260,11 @@ const PersistentDrawerLeft = (props) => {
           ))}
         </List>
         <Divider />
-        {/* aa */}
+        {/* 左侧列表 */}
         {props.tabIndex !== 0 && element}
 
       </Drawer>
-      <Main className='main' open={open} sx={{ padding: 0 }}>
+      <Main className='main' open={open} sx={{ padding: 0, width: "100vw", marginLeft: "0px" }}>
         <DrawerHeader />
         <Box sx={{ height: '95%' }}>
           {props.tabIndex === 0 && <DashboardPanel {...props} temperatureUnit={props.temperatureUnit} />}

@@ -103,14 +103,19 @@ const SectionSystem = (props) => {
       setCurrentTime(newCurrentTime);
     }
   }
+
   useEffect(() => {
-    getCurrentTime();
-    const interval = setInterval(() => {
+    if (props.peripherals.includes("time")) {
       getCurrentTime();
-    }, 5000);
-    return () => clearInterval(interval);
+      const interval = setInterval(() => {
+        getCurrentTime();
+      }, 5000);
+      return () => clearInterval(interval);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.open, props.config.timezone, props.config.auto_time_switch, props.config.ntpServer]);
+  }, [props.open, props.config.timezone, props.config.auto_time_switch, props.config.ntpServer, props.peripherals]);
+
+
 
   return (
     <SectionFrame title="System">
@@ -139,7 +144,7 @@ const SectionSystem = (props) => {
           max={100}
         />}
       {/* 风扇模式 */}
-      {
+      {props.peripherals.includes("spc_fan_power") &&
         <SettingItemSlider
           // title="GPIO Fan Mode"
           // subtitle="Set GPIO fan mode"

@@ -25,7 +25,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { CalendarIcon } from '@mui/x-date-pickers';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
@@ -61,7 +61,7 @@ import {
   deepOrange,
 } from '@mui/material/colors';
 
-import { DateTime } from 'luxon';
+import dayjs from 'dayjs';
 
 import Panel from './panel.jsx';
 import { celciusToFahrenheit } from '../../js/utils.js';
@@ -102,8 +102,7 @@ const HistoryPanel = (props) => {
   const [end, setEnd] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-history-selected-keys")) || []);
   const [colors, setColors] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-history-colors")) || {});
-  const [element, setElement] = useState(null);
-  const [downloadElement, setDownloadElement] = useState(null);
+
   const updateData = useCallback(async () => {
     if (selectedKeys.length === 0) {
       return;
@@ -124,20 +123,21 @@ const HistoryPanel = (props) => {
       });
     }
     setData(data);
-  }, [props, start, end, selectedKeys]);
+  }, [start, end, selectedKeys]);
 
   useEffect(() => {
     updateData();
   }, [start, end, selectedKeys, updateData]);
 
   useEffect(() => {
-    props.request("get-history-data", "GET", { n: 1 }).then(data => {
+    props.request("get-history", "GET", { n: 1 }).then(data => {
+      if (!data) return;
       let keys = Object.keys(data);
       // 删除时间
       keys.splice(keys.indexOf("time"), 1);
       setKeys(keys);
     });
-  }, [props]);
+  }, [props.request]);
 
   useEffect(() => {
     let newElement = <Card sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden scroll", padding: "0 10px" }}>
@@ -153,21 +153,9 @@ const HistoryPanel = (props) => {
         })}
       </List>
     </Card >
-    setElement(newElement);
-    props.onElementChange(element); // 组件加载时调用父组件的回调函数，并传递元素
+    props.onElementChange(newElement); // 组件加载时调用父组件的回调函数，并传递元素
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [element, props.onElementChange]);
-
-  useEffect(() => {
-    let newDownloadElement = <IconButton id="download" aria-label="download" color="red" onClick={handleDownloadCSV}>
-      <MuiToolTip title="Download CSV">
-        <DownloadIcon />
-      </MuiToolTip>
-    </IconButton>;
-    setDownloadElement(newDownloadElement);
-    props.onDownloadElementChange(downloadElement); // 组件加载时调用父组件的回调函数，并传递元素
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [downloadElement, props.onDownloadElementChange]);
+  }, [keys, selectedKeys, colors]);
 
   const handleKeyChange = (key, checked) => {
     let temp = [];
@@ -223,32 +211,16 @@ const HistoryPanel = (props) => {
 
   return (
     <Panel title="History" {...props} sx={{ height: "100%", overflow: "hidden" }} navActions={
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: 'center' }}>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <DateTimeRangePicker onChange={handleTimeRangeChange} onError={(msg) => props.showSnackBar("error", msg)} />
-        {/* <IconButton id="download" aria-label="download" color="primary" onClick={handleDownloadCSV}>
+        <IconButton id="download" aria-label="download" color="primary" onClick={handleDownloadCSV}>
           <MuiToolTip title="Download CSV">
             <DownloadIcon />
           </MuiToolTip>
-        </IconButton> */}
+        </IconButton>
       </Box>
     }>
       <Box sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden", gap: "2rem" }}>
-
-
-        {/* <Card sx={{ display: "flex", width: "320px", height: "100%", overflow: "hidden scroll", padding: "0 10px" }}>
-          <List dense sx={{ height: "fit-content" }}>
-            {keys.map((key, index) => {
-              return (
-                <DataListItem key={key} name={key}
-                  checked={selectedKeys.includes(key)}
-                  color={colors[key]}
-                  onClick={handleKeyChange}
-                  onColorChange={handleColorChange}
-                />);
-            })}
-          </List>
-        </Card > */}
-
         <Card sx={{ width: "100%" }}>
           <Chart data={data} keys={selectedKeys} colors={colors} />
         </Card>
@@ -258,16 +230,19 @@ const HistoryPanel = (props) => {
 }
 
 const DateTimeRangePicker = (props) => {
-  // default start time is 5 minutes ago
-  const [start, setStart] = useState(parseInt(window.localStorage.getItem("pm-dashboard-history-start")) || DateTime.now().minus({ minutes: 5 }).toSeconds());
-  const [end, setEnd] = useState(parseInt(window.localStorage.getItem("pm-dashboard-history-end")) || DateTime.now().toSeconds());
+  const [start, setStart] = useState(parseInt(window.localStorage.getItem("pm-dashboard-history-start")) || dayjs().subtract(5, "minute").unix());
+  const [end, setEnd] = useState(parseInt(window.localStorage.getItem("pm-dashboard-history-end")) || dayjs().unix());
   const [quickSelect, setQuickSelect] = useState(window.localStorage.getItem("pm-dashboard-history-quick-select") || "last-5-minutes");
   const [label, setLabel] = useState(QuickSelect[quickSelect] || "Last 5 minutes");
+  const [startMenuShow, setStartMenuShow] = useState(false);
+  const [endMenuShow, setEndMenuShow] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const openMenu = Boolean(menuAnchorEl);
 
   const handleMenuShow = (event) => {
     setMenuAnchorEl(event.currentTarget);
+    setStartMenuShow(false);
+    setEndMenuShow(false);
   }
 
   const handleMenuClose = () => {
@@ -278,25 +253,39 @@ const DateTimeRangePicker = (props) => {
     window.localStorage.setItem("pm-dashboard-history-quick-select", value);
     setQuickSelect(value);
     setLabel(QuickSelect[value]);
-    handleMenuClose();
+    // handleMenuClose();
+    let [start, end] = getTimeRange(quickSelect);
+    setStart(start);
+    setEnd(end);
+    props.onChange({ start: start, end: end });
   }
 
   const getTimeRange = (value) => {
     let start, end;
     if (value === "today") {
-      start = DateTime.now().startOf("day").toSeconds();
-      end = DateTime.now().toSeconds();
+      start = dayjs().startOf("day").unix();
+      end = dayjs().endOf("day").unix();
     } else if (value === "yesterday") {
-      start = DateTime.now().subtract({ days: 1 }).startOf("day").toSeconds();
-      end = DateTime.now().subtract({ days: 1 }).endOf("day").toSeconds();
+      start = dayjs().subtract(1, "day").startOf("day").unix();
+      end = dayjs().subtract(1, "day").endOf("day").unix();
     } else if (value.startsWith("last")) {
       let temp = value.split("-");
       let number = parseInt(temp[1]);
       let unit = temp[2];
-      start = DateTime.now().minus({ [unit]: number }).toSeconds();
-      end = DateTime.now().toSeconds();
+      start = dayjs().subtract(parseInt(number), unit).unix();
+      end = dayjs().unix();
     }
     return [start, end];
+  }
+
+  const handleStartMenuShow = () => {
+    setEndMenuShow(false);
+    setStartMenuShow(true);
+  }
+
+  const handleEndMenuShow = () => {
+    setStartMenuShow(false);
+    setEndMenuShow(true);
   }
 
   const handleStartChange = (datetime) => {
@@ -309,8 +298,8 @@ const DateTimeRangePicker = (props) => {
       return;
     }
     window.localStorage.setItem("pm-dashboard-history-start", datetime.unix());
-    let startLabel = DateTime.fromSeconds(datetime.unix())
-    let endLabel = DateTime.fromSeconds(end);
+    let startLabel = dayjs.unix(datetime.unix()).format("YYYY-MM-DD HH:mm:ss");
+    let endLabel = dayjs.unix(end).format("YYYY-MM-DD HH:mm:ss");
     setLabel(`${startLabel} - ${endLabel}`);
     setStart(datetime.unix());
     setQuickSelect("custom");
@@ -327,30 +316,28 @@ const DateTimeRangePicker = (props) => {
       return;
     }
     window.localStorage.setItem("pm-dashboard-history-end", datetime.unix());
-    let startLabel = DateTime.fromSeconds(start);
-    let endLabel = DateTime.fromSeconds(datetime.unix());
+    let startLabel = dayjs.unix(start).format("YYYY-MM-DD HH:mm:ss");
+    let endLabel = dayjs.unix(datetime.unix()).format("YYYY-MM-DD HH:mm:ss");
     setLabel(`${startLabel} - ${endLabel}`);
     setEnd(datetime.unix());
     setQuickSelect("custom");
     props.onChange({ end: datetime.unix() });
   }
 
-  useEffect(() => {
-    let interval = setInterval(() => {
-      if (quickSelect !== "custom") {
-        let [start, end] = getTimeRange(quickSelect);
-        setStart(start);
-        setEnd(end);
-        props.onChange({ start: start, end: end });
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quickSelect]);
-  // }, []);
+  // useEffect(() => {
+  //   // let interval = setInterval(() => {
+  //   if (quickSelect !== "custom") {
+  //     let [start, end] = getTimeRange(quickSelect);
+  //     setStart(start);
+  //     setEnd(end);
+  //     props.onChange({ start: start, end: end });
+  //   }
+  //   // }, 1000);
+  //   // return () => clearInterval(interval);
+  // }, [quickSelect]);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <FormControl sx={{ m: 1, width: '50ch' }} variant="outlined" size='smaall'>
         <InputLabel htmlFor="datetime-range">Datetime Range</InputLabel>
         <OutlinedInput
@@ -392,30 +379,65 @@ const DateTimeRangePicker = (props) => {
                 </MenuItem>
               );
             })}
+            {
+              window.matchMedia("(max-width: 767px)").matches &&
+              <>
+                <MenuItem>
+                  <DateTimeField
+                    label="From"
+                    value={dayjs.unix(start)}
+                    onChange={handleStartChange}
+                    onClick={handleStartMenuShow}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    sx={{ margin: "auto", width: "100%" }}
+                  />
+                </MenuItem>
+                {
+                  startMenuShow &&
+                  <DateCalendar value={dayjs.unix(start)} onChange={handleStartChange} />
+                }
+                <MenuItem>
+                  <DateTimeField
+                    label="To"
+                    value={dayjs.unix(end)}
+                    onChange={(date) => setEnd(date.unix())}
+                    onClick={handleEndMenuShow}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    sx={{ margin: "auto", width: "100%" }}
+                  />
+                </MenuItem>
+                {
+                  endMenuShow &&
+                  <DateCalendar value={dayjs.unix(end)} onChange={handleEndChange} />
+                }
+              </>
+            }
           </MenuList>
-          <Box id="custom-datetime-range" sx={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "auto" }}>
-            <Box sx={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around", padding: "0 10px" }}>
-              <DateTimeField
-                label="From"
-                value={DateTime.fromSeconds(start)}
-                onChange={handleStartChange}
-                format="YYYY-MM-DD HH:mm:ss"
-                sx={{ margin: "auto", width: "100%" }}
-              />
-              <Typography variant="h6" sx={{ margin: "auto 10px" }}>-</Typography>
-              <DateTimeField
-                label="To"
-                value={DateTime.fromSeconds(end)}
-                onChange={(date) => setEnd(date.unix())}
-                format="YYYY-MM-DD HH:mm:ss"
-                sx={{ margin: "auto", width: "100%" }}
-              />
+          {!window.matchMedia("(max-width: 767px)").matches &&
+            <Box id="custom-datetime-range" sx={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "auto" }}>
+              <Box sx={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-around", padding: "0 10px" }}>
+                <DateTimeField
+                  label="From"
+                  value={dayjs.unix(start)}
+                  onChange={handleStartChange}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  sx={{ margin: "auto", width: "100%" }}
+                />
+                <Typography variant="h6" sx={{ margin: "auto 10px" }}>-</Typography>
+                <DateTimeField
+                  label="To"
+                  value={dayjs.unix(end)}
+                  onChange={(date) => setEnd(date.unix())}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  sx={{ margin: "auto", width: "100%" }}
+                />
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "row" }}>
+                <DateCalendar value={dayjs.unix(start)} onChange={handleStartChange} />
+                <DateCalendar value={dayjs.unix(end)} onChange={handleEndChange} />
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "row" }}>
-              <DateCalendar value={DateTime.fromSeconds(start)} onChange={handleStartChange} />
-              <DateCalendar value={DateTime.fromSeconds(end)} onChange={handleEndChange} />
-            </Box>
-          </Box>
+          }
         </Box>
       </Menu>
     </LocalizationProvider >
@@ -527,7 +549,7 @@ const Chart = (props) => {
         />
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time" tickFormatter={formatXAxis} />
-        <YAxis />
+        <YAxis width={20} fontSize={10} />
         <Tooltip />
         <Legend />
         {props.keys.map((key, index) => {

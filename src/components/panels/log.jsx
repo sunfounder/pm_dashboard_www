@@ -20,6 +20,7 @@ import {
   ListItemIcon,
 } from '@mui/material';
 import Panel from './panel.jsx';
+import MuiToolTip from '@mui/material/Tooltip';
 import DownloadIcon from '@mui/icons-material/Download';
 import WrapIcon from '@mui/icons-material/WrapText';
 import AutoScrollIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
@@ -55,7 +56,7 @@ const LogPanel = (props) => {
     }
     let result = await props.request('get-log', 'GET', payload);
     setFileContent(result);
-  }, [logFile, filter, lines, level, props]);
+  }, [logFile, filter, lines, level, props.request]);
 
   const handleFileSelect = async (event, filename) => {
     const index = logList.indexOf(filename);
@@ -77,7 +78,7 @@ const LogPanel = (props) => {
     }
     window.localStorage.setItem("pm-dashboard-log-logList", JSON.stringify(result));
     setLogList(result);
-  }, [fileIndex, props]);
+  }, [fileIndex,]);
 
   const handleConfigChange = (config) => {
     if (config.lines !== undefined) {
@@ -178,37 +179,10 @@ const LogPanel = (props) => {
   }, [downloadElement, props.onDownloadElementChange]);
 
   return (<Panel id="log-panel" title="Log" {...props} sx={{ height: "100%", overflow: "hidden" }}
-  // navActions={<Tooltip title="Download log file">
-  //   <IconButton aria-label="download" color="primary" onClick={handleDownload}>
-  //     <DownloadIcon />
-  //   </IconButton>
-  // </Tooltip>}
   >
-    <Box sx={{ display: "flex", width: "100%", height: "90%", gap: "2rem" }}>
-
-
-      {/* <Card id="log-list" sx={{ width: '300px', overflow: "auto" }}>
-        <List component="nav" dense>
-          {logList.map((filename, index) => {
-            let logName = filename.replace(".log", "");
-            let moduleName = '';
-            if (logName.includes('.')) {
-              moduleName = logName.split('.')[0];
-              logName = logName.split('.')[1];
-            }
-            return <ListItemButton key={index} selected={index === fileIndex} onClick={(event) => handleFileSelect(event, filename)}>
-              <ListItemIcon>
-                <DescriptionIcon />
-              </ListItemIcon>
-              <ListItemText primary={logName} secondary={moduleName} />
-            </ListItemButton>
-          })}
-        </List>
-      </Card > */}
-
-
-      <Card id="log-content" sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
-        <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} />
+    <Box sx={{ display: "flex", width: "100%", height: "100%", gap: "2rem" }}>
+      <Box id="log-content" sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
+        <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} handleDownload={handleDownload} />
         <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "auto"} auto` }}>
           <List>
             {fileContent && fileContent.map((line, index) => {
@@ -218,7 +192,7 @@ const LogPanel = (props) => {
             })}
           </List>
         </Box>
-      </Card>
+      </Box>
     </Box >
   </Panel >
   );
@@ -264,51 +238,116 @@ const Toolbox = (props) => {
   //   props.onChange({ autoScroll: event.target.checked });
   // }
 
-
+  let isMobile = window.matchMedia("(max-width: 767px)").matches;
 
   return (
-    <Box sx={{ width: "100%", display: "flex", margin: "10px 0", gap: "10px" }}>
-      <TextField id="lines-number" label="Lines" variant="outlined" size="small" value={props.lines} sx={{ width: "100px" }} onChange={handleLinesChange} />
-      <FormControl size="small">
-        <InputLabel id="level">Level</InputLabel>
-        <Select
-          labelId="level-label"
-          id="level"
-          value={props.level}
-          label="Level"
-          onChange={handleLevelChange}
-        >
-          <MenuItem value={"DEBUG"}>Debug</MenuItem>
-          <MenuItem value={"INFO"}>Info</MenuItem>
-          <MenuItem value={"WARNING"}>Warning</MenuItem>
-          <MenuItem value={"ERROR"}>Error</MenuItem>
-          <MenuItem value={"CRITICAL"}>Critical</MenuItem>
-        </Select>
-      </FormControl>
-      <TextField id="filter" label="Filter" variant="outlined" size="small" value={props.filter} onChange={handleFilterChange} sx={{ flexGrow: 1 }} />
+    <Box sx={{ width: "100%", display: "flex", margin: "10px 0", gap: "9px", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row" }}>
+      <Box sx={{ width: "100%", display: "flex", margin: !isMobile ? "10px 0" : "0", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+        {!isMobile &&
+          <TextField id="lines-number" label="Lines" variant="outlined" size="small" value={props.lines} sx={{ width: isMobile ? "54px" : "100px" }} onChange={handleLinesChange} />
+        }
+        {
+          isMobile &&
+          <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <TextField id="lines-number" label="Lines" variant="outlined" size="small" value={props.lines} sx={{ width: isMobile ? "54px" : "100px" }} onChange={handleLinesChange} />
+            <FormControl size="small">
+              <InputLabel id="level">Level</InputLabel>
+              <Select
+                labelId="level-label"
+                id="level"
+                value={props.level}
+                label="Level"
+                onChange={handleLevelChange}
+              >
+                <MenuItem value={"DEBUG"}>Debug</MenuItem>
+                <MenuItem value={"INFO"}>Info</MenuItem>
+                <MenuItem value={"WARNING"}>Warning</MenuItem>
+                <MenuItem value={"ERROR"}>Error</MenuItem>
+                <MenuItem value={"CRITICAL"}>Critical</MenuItem>
+              </Select>
+            </FormControl>
+            <ToggleButtonGroup
+              value={toggleGroupValues}
+              onChange={handleToggleGroupChange}
+              size="small"
+            >
+              <ToggleButton value="wrap" aria-label="wrap">
+                <Tooltip title="Line Wrap">
+                  <WrapIcon />
+                </Tooltip>
+              </ToggleButton>
+              <ToggleButton value="autoScroll" aria-label="autoScroll">
+                <Tooltip title="Auto Scroll">
+                  <AutoScrollIcon />
+                </Tooltip>
+              </ToggleButton>
+              <ToggleButton value="autoUpdate" aria-label="autoUpdate">
+                <Tooltip title="Auto Update">
+                  <AutoUpdateIcon />
+                </Tooltip>
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <IconButton id="download" aria-label="download" color="primary" onClick={props.handleDownload}>
+              <MuiToolTip title="Download CSV">
+                <DownloadIcon />
+              </MuiToolTip>
+            </IconButton>
+          </Box>
+        }
+        {
+          !isMobile &&
+          <FormControl size="small">
+            <InputLabel id="level">Level</InputLabel>
+            <Select
+              labelId="level-label"
+              id="level"
+              value={props.level}
+              label="Level"
+              onChange={handleLevelChange}
+            >
+              <MenuItem value={"DEBUG"}>Debug</MenuItem>
+              <MenuItem value={"INFO"}>Info</MenuItem>
+              <MenuItem value={"WARNING"}>Warning</MenuItem>
+              <MenuItem value={"ERROR"}>Error</MenuItem>
+              <MenuItem value={"CRITICAL"}>Critical</MenuItem>
+            </Select>
+          </FormControl>
+        }
+        <TextField id="filter" label="Filter" variant="outlined" size="small" value={props.filter} onChange={handleFilterChange} sx={{ flexGrow: 1 }} />
+      </Box>
       {/* <FormControlLabel control={<Checkbox defaultChecked value={props.autoUpdate} onChange={handleAutoUpdateChanges} />} label="Auto Update" />
       <FormControlLabel control={<Checkbox defaultChecked value={props.autoScroll} onChange={handleAutoScrollChanges} />} label="Auto Scroll" /> */}
-      <ToggleButtonGroup
-        value={toggleGroupValues}
-        onChange={handleToggleGroupChange}
-        size="small"
-      >
-        <ToggleButton value="wrap" aria-label="wrap">
-          <Tooltip title="Line Wrap">
-            <WrapIcon />
-          </Tooltip>
-        </ToggleButton>
-        <ToggleButton value="autoScroll" aria-label="autoScroll">
-          <Tooltip title="Auto Scroll">
-            <AutoScrollIcon />
-          </Tooltip>
-        </ToggleButton>
-        <ToggleButton value="autoUpdate" aria-label="autoUpdate">
-          <Tooltip title="Auto Update">
-            <AutoUpdateIcon />
-          </Tooltip>
-        </ToggleButton>
-      </ToggleButtonGroup>
+      {
+        !isMobile &&
+        <Box sx={{ display: "flex", margin: !isMobile ? "10px 0" : "0", gap: "9px", alignItems: "center" }}>
+          <ToggleButtonGroup
+            value={toggleGroupValues}
+            onChange={handleToggleGroupChange}
+            size="small"
+          >
+            <ToggleButton value="wrap" aria-label="wrap">
+              <Tooltip title="Line Wrap">
+                <WrapIcon />
+              </Tooltip>
+            </ToggleButton>
+            <ToggleButton value="autoScroll" aria-label="autoScroll">
+              <Tooltip title="Auto Scroll">
+                <AutoScrollIcon />
+              </Tooltip>
+            </ToggleButton>
+            <ToggleButton value="autoUpdate" aria-label="autoUpdate">
+              <Tooltip title="Auto Update">
+                <AutoUpdateIcon />
+              </Tooltip>
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <IconButton id="download" aria-label="download" color="primary" onClick={props.handleDownload}>
+            <MuiToolTip title="Download CSV">
+              <DownloadIcon />
+            </MuiToolTip>
+          </IconButton>
+        </Box>
+      }
     </Box>
   );
 }
