@@ -17,7 +17,7 @@ const ProcessorCard = (props) => {
     },
     frequency: {
       title: "Frequency",
-      unit: "GHz",
+      unit: "MHz",
     },
     cpuUsage: {
       title: "CPU Usage",
