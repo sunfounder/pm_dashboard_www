@@ -17,7 +17,7 @@ const ProcessorCard = (props) => {
     },
     frequency: {
       title: "Frequency",
-      unit: "GHz",
+      unit: "MHz",
     },
     cpuUsage: {
       title: "CPU Usage",
@@ -89,7 +89,7 @@ const ProcessorCard = (props) => {
       width={4}
       data={newData}
       details={detail}
-      style={processorChartAmount ? { minWidth: "700px"} : {}}
+      style={processorChartAmount ? { minWidth: "700px" } : {}}
       chart={
         processorChartAmount ?
           <div className='multipleChartsBox'>
