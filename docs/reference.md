@@ -61,6 +61,12 @@
     - [POST /set-fan-power 设置风扇功率](#post-set-fan-power-设置风扇功率)
     - [POST /set-sd-data-interval 设置SD卡数据间隔](#post-set-sd-data-interval-设置sd卡数据间隔)
     - [POST /set-sd-data-retain 设置SD卡数据保留天数](#post-set-sd-data-retain-设置sd卡数据保留天数)
+    - [POST /set-rgb-brightness 设置RGB灯亮度](#post-set-rgb-brightness-设置rgb灯亮度)
+    - [POST /set-rgb-color 设置RGB灯颜色](#post-set-rgb-color-设置rgb灯颜色)
+    - [POST /set-rgb-enable 设置RGB灯开关](#post-set-rgb-enable-设置rgb灯开关)
+    - [POST /set-rgb-led-count 设置RGB灯数量](#post-set-rgb-led-count-设置rgb灯数量)
+    - [POST /set-rgb-speed 设置RGB灯速度](#post-set-rgb-speed-设置rgb灯速度)
+    - [POST /set-rgb-style 设置RGB灯样式](#post-set-rgb-style-设置rgb灯样式)
 
 ## 页面
 
@@ -403,7 +409,7 @@ PERIPHERALS = [
 
     "shutdown_percentage",
     "power_off_percentage",
-    
+
     "timezone",
     "auto_time_enable",
     "time",
@@ -774,5 +780,47 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Data:
   - `data_retain` - 数据保留天数，单位天
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-brightness 设置RGB灯亮度
+
+- Data:
+  - `brightness` - 亮度，0-100
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-color 设置RGB灯颜色
+
+- Data:
+  - `color` - 颜色，格式为#RRGGBB
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-enable 设置RGB灯开关
+
+- Data:
+  - `enable` - 开关，true/false
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-led-count 设置RGB灯数量
+
+- Data:
+  - `led_count` - 灯数量
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-speed 设置RGB灯速度
+
+- Data:
+  - `speed` - 速度，0-100
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-style 设置RGB灯样式
+
+- Data:
+  - `style` - 样式，'breath', 'leap', 'flow', 'raise_up', 'colorful'
 - Response:
   - `{"status": true, "data": "OK"}`
