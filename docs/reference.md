@@ -210,7 +210,21 @@ Dashboard按照peripheral显示卡片，从[`/get-history`](#get-get-history)获
 
 ##### CPU卡片
 
-待完成
+数据: 
+1. CPU占用: 
+    - 数据: `pwm_fan_speed`
+    - peripheral: `pwm_fan_speed`
+    - 显示图表
+    - 单位: RPM
+    - 最小值: 0
+    - 最大值: 5000
+2. 风扇功率: 
+    - 数据: `spc_fan_power`
+    - peripheral: `spc_fan_power`
+    - 显示图表
+    - 单位: %
+    - 最小值: 0
+    - 最大值: 100
 
 ##### 内存卡片
 
@@ -360,6 +374,55 @@ AP 设置弹窗，打开弹窗获取AP信息
 
 ## Peripherals
 
+```python
+PERIPHERALS = [
+    "storage",
+    "cpu",
+    "network",
+    "memory",
+    "history",
+    "log",
+
+    "input_voltage",
+    "input_current",
+    "output_switch",
+    "output_voltage",
+    "output_current",
+    "battery_voltage",
+    "battery_current",
+    "battery_capacity",
+    "battery_percentage",
+    "power_source",
+    "is_input_plugged_in",
+    "is_battery_plugged_in",
+    "is_charging",
+
+    "spc_fan_power",
+    "pwm_fan_speed",
+    "gpio_fan_state",
+
+    "shutdown_percentage",
+    "power_off_percentage",
+    
+    "timezone",
+    "auto_time_enable",
+    "time",
+    "sta_switch",
+    "sta_ssid_scan",
+    "sta_ssid",
+    "sta_psk",
+    "ap_ssid",
+    "ap_psk",
+    "ota_auto",
+    "ota_manual",
+    "mac_address",
+    "ip_address",
+    "sd_card_usage",
+    "download_history_file",
+    "default_on",
+    "restart"
+]
+```
 1. storage: 系统储存
 2. cpu: 系统CPU信息
 3. network: 网络状态
