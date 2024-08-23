@@ -426,7 +426,8 @@ PERIPHERALS = [
     "sd_card_usage",
     "download_history_file",
     "default_on",
-    "restart"
+    "restart",
+    "temperature_unit"
 ]
 ```
 1. storage: 系统储存
