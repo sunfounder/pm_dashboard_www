@@ -406,6 +406,7 @@ PERIPHERALS = [
     "spc_fan_power",
     "pwm_fan_speed",
     "gpio_fan_state",
+    "gpio_fan_mode"
 
     "shutdown_percentage",
     "power_off_percentage",
@@ -822,6 +823,6 @@ api地址: `http://ip:34001/api/v1.0`
 ### POST /set-rgb-style 设置RGB灯样式
 
 - Data:
-  - `style` - 样式，'breath', 'leap', 'flow', 'raise_up', 'colorful'
+  - `style` - 样式，'solid', 'breathing', 'flow', 'flow_reverse', 'rainbow', 'rainbow_reverse', 'hue_cycle'
 - Response:
   - `{"status": true, "data": "OK"}`
