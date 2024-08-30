@@ -12,12 +12,54 @@ import {
   SettingItemTimezone,
   SettingItemText,
   SettingItemSDCardUsage,
-  SettingItemNumber
+  SettingItemNumber,
+  SettingItemMenu,
 } from "./settingItems.jsx";
 import SectionFrame from "./sectionFrame.jsx";
 const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const SectionSystem = (props) => {
   const [currentTime, setCurrentTime] = React.useState(0);
+
+  const handleToggleRGBEnabled = async (event) => {
+    let result = await props.sendData('set-rgb-enable', { 'enable': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_enable', event);
+    }
+  }
+
+  const handleRgbColor = async (event) => {
+    console.log(event);
+    if (event.length !== 6) {
+      console.log("Invalid color");
+    } else {
+      const color = "#" + event;
+      let result = await props.sendData('set-rgb-color', { 'color': color });
+      if (result === "OK") {
+        props.onChange('system', 'rgb_color', event);
+      }
+    }
+  }
+
+  const handleRgbBrightness = async (event) => {
+    let result = await props.sendData('set-rgb-brightness', { 'brightness': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_brightness', event);
+    }
+  }
+
+  const handleRgbSpeed = async (event) => {
+    let result = await props.sendData('set-rgb-speed', { 'speed': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_speed', event);
+    }
+  }
+
+  const handleRGBAnimation = async (event) => {
+    let result = await props.sendData('set-rgb-style', { 'style': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_style', event);
+    }
+  }
 
   const handleShutdownPercentageCommitted = async (shutdownPercentage) => {
     let result = await props.sendData('set-shutdown-percentage', { 'shutdown-percentage': shutdownPercentage });
@@ -131,6 +173,71 @@ const SectionSystem = (props) => {
             { value: 'F', name: 'Fahrenheit' },
           ]}
         />}
+      {/* RGB */}
+      {
+        props.peripherals.includes("ws2812") &&
+        <>
+          {/* RGB 开关 */}
+          <SettingItemSwitch
+            title="RGB Enable"
+            subtitle="Whether to enable RGB"
+            // onChange={(event) => props.onChange('rgb_enable', event)}
+            onChange={(event) => handleToggleRGBEnabled(event)}
+            value={props.config.rgb_enable} />
+          {/* RGB 颜色 */}
+          <SettingItemText
+            title="RGB Color"
+            subtitle="Set RGB color"
+            value={props.config.rgb_color.replace("#", "")}
+            // onChange={(event) => props.onChange('rgb_color', event)}
+            onBlur={(event) => handleRgbColor(event.target.value)}
+            start="#"
+          />
+          {/* RGB 亮度 */}
+          <SettingItemSlider
+            title="RGB Brightness"
+            subtitle="Set RGB brightness."
+            valueFormat={(value) => `${value}%`}
+            // onChange={(event) => props.onChange('rgb_brightness', event)}
+            onCommitted={(event) => handleRgbBrightness(event)}
+            value={props.config.rgb_brightness}
+            sx={{ marginTop: 2, }}
+            min={0}
+            max={100}
+          />
+          {/* RGB 模式*/}
+          <SettingItemMenu
+            title="RGB Style"
+            subtitle="Set RGB animation style"
+            // onChange={(event) => props.onChange('system', 'rgb_style', event.target.value)}
+            onChange={(event) => handleRGBAnimation(event.target.value)}
+            value={props.config.rgb_style}
+            options={[
+              { value: "", label: "None" },
+              { value: "solid", label: "Solid" },
+              { value: "breathing", label: "Breathing" },
+              { value: "flow", label: "Flow" },
+              { value: "flow_reverse", label: "Flow Reverse" },
+              { value: "rainbow", label: "Rainbow" },
+              { value: "rainbow_reverse", label: "Rainbow Reverse" },
+              { value: "hue_cycle", label: "Hue Cycle" },
+            ]}
+          />
+          {/* RGB 速度 */}
+          <SettingItemSlider
+            title="RGB Speed"
+            subtitle="Set RGB animation speed"
+            valueFormat={(value) => `${value}%`}
+            // onChange={(event) => props.onChange('rgb_speed', event)}
+            onCommitted={(event) => handleRgbSpeed(event)}
+            value={props.config.rgb_speed}
+            sx={{ marginTop: 2, }}
+            min={0}
+            max={100}
+          />
+        </>
+      }
+
       {/* 关机百分比 */}
       {props.peripherals.includes("shutdown_percentage") &&
         <SettingItemSlider
@@ -144,7 +251,7 @@ const SectionSystem = (props) => {
           max={100}
         />}
       {/* 风扇模式 */}
-      {props.peripherals.includes("spc_fan_power") &&
+      {(props.peripherals.includes("spc_fan_power") || props.peripherals.includes("gpio_fan_mode")) &&
         <SettingItemSlider
           // title="GPIO Fan Mode"
           // subtitle="Set GPIO fan mode"

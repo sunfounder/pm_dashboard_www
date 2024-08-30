@@ -47,6 +47,12 @@ const defaultConfigData = {
     "sd_card_data_retain": 1,
     "fan_power": 0,
     "gpio_fan_mode": 1,
+    "rgb_switch": true,
+    "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
+    "rgb_color": "#0a1aff",
+    "rgb_speed": 50, //速度
+    "rgb_pwm_frequency": 1000, //频率
+    "rgb_pin": 10,  // 10,12,21,
   }
 }
 
@@ -112,8 +118,14 @@ const PopupSettings = (props) => {
         onChange={handleDarkMode}
         value={themeSwitchChecked} />
       {/* Auto */}
-      {props.peripherals.includes("auto") &&
-        <SectionAuto config={config.auto} onChange={handleAutohanged}></SectionAuto>}
+      {/* {props.peripherals.includes("auto") && */}
+      {/* {props.peripherals.includes("ws2812") &&
+        <SectionAuto
+          config={config.auto}
+          onChange={handleAutohanged}
+          sendData={props.sendData}
+        >
+        </SectionAuto>} */}
       {/* MQTT */}
       {props.peripherals.includes("mqtt") &&
         <SectionMQTT
@@ -128,6 +140,7 @@ const PopupSettings = (props) => {
         props.peripherals.includes("auto_time_enable") ||
         props.peripherals.includes("mac_address") ||
         props.peripherals.includes("ip_address") ||
+        props.peripherals.includes("ws2812") ||
         props.peripherals.includes("sd_card_usage")) &&
         <SectionSystem
           config={config.system}
