@@ -47,6 +47,7 @@
     - [GET /get-disk-list 获取磁盘列表](#get-get-disk-list-获取磁盘列表)
     - [GET /get-network-interface-list 获取网络接口列表](#get-get-network-interface-list-获取网络接口列表)
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
+    - [POST /set-temperature-unit 设置温度单位](#post-set-temperature-unit-设置温度单位)
     - [POST /set-output 设置输出](#post-set-output-设置输出)
     - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
     - [POST /set-sta-switch Wi-Fi STA模式配置](#post-set-sta-switch-wi-fi-sta模式配置)
@@ -62,6 +63,7 @@
     - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
     - [POST /set-restart 重启设备](#post-set-restart-重启设备)
     - [POST /set-fan-power 设置风扇功率](#post-set-fan-power-设置风扇功率)
+    - [POST /set-fan-mode 设置风扇模式](#post-set-fan-mode-设置风扇模式)
     - [POST /set-sd-data-interval 设置SD卡数据间隔](#post-set-sd-data-interval-设置sd卡数据间隔)
     - [POST /set-sd-data-retain 设置SD卡数据保留天数](#post-set-sd-data-retain-设置sd卡数据保留天数)
     - [POST /set-rgb-brightness 设置RGB灯亮度](#post-set-rgb-brightness-设置rgb灯亮度)
@@ -715,6 +717,13 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": data}`
 
+### POST /set-temperature-unit 设置温度单位
+
+- Data:
+  - `unit` - 单位 C/F
+- Response:
+  - `{"status": true, "data": "OK"}`
+
 ### POST /set-output 设置输出
 
 - Data:
@@ -809,6 +818,13 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Data:
   - `fan_power` - 风扇功率
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-fan-mode 设置风扇模式
+
+- Data:
+  - `fan_mode` - 风扇模式 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
 - Response:
   - `{"status": true, "data": "OK"}`
 
