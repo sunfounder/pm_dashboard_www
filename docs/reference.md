@@ -23,6 +23,7 @@
       - [Download History(暂缓)](#download-history暂缓)
       - [Settings](#settings)
   - [Peripherals](#peripherals)
+  - [Config](#config)
   - [API](#api)
     - [GET /get-version 获取当前版本号](#get-get-version-获取当前版本号)
     - [GET /get-device-info 获取设备信息](#get-get-device-info-获取设备信息)
@@ -43,6 +44,8 @@
     - [GET /get-timestamp 获取当前时间戳](#get-get-timestamp-获取当前时间戳)
     - [GET /get-default-on 获取是否默认开机](#get-get-default-on-获取是否默认开机)
     - [GET /get-output 获取输出状态](#get-get-output-获取输出状态)
+    - [GET /get-disk-list 获取磁盘列表](#get-get-disk-list-获取磁盘列表)
+    - [GET /get-network-interface-list 获取网络接口列表](#get-get-network-interface-list-获取网络接口列表)
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
     - [POST /set-output 设置输出](#post-set-output-设置输出)
     - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
@@ -67,6 +70,8 @@
     - [POST /set-rgb-led-count 设置RGB灯数量](#post-set-rgb-led-count-设置rgb灯数量)
     - [POST /set-rgb-speed 设置RGB灯速度](#post-set-rgb-speed-设置rgb灯速度)
     - [POST /set-rgb-style 设置RGB灯样式](#post-set-rgb-style-设置rgb灯样式)
+    - [POST /set-oled-disk 设置OLED显示磁盘容量的磁盘路径](#post-set-oled-disk-设置oled显示磁盘容量的磁盘路径)
+    - [POST /set-oled-network-interface 设置OLED显示网络接口](#post-set-oled-network-interface-设置oled显示网络接口)
 
 ## 页面
 
@@ -406,7 +411,9 @@ PERIPHERALS = [
     "spc_fan_power",
     "pwm_fan_speed",
     "gpio_fan_state",
-    "gpio_fan_mode"
+    "gpio_fan_mode",
+    "oled_disk",
+    "oled_ip",
 
     "shutdown_percentage",
     "power_off_percentage",
@@ -453,25 +460,49 @@ PERIPHERALS = [
 20. spc_fan_power: 风扇功率（%）
 21. pwm_fan_speed: PWM风扇速度（RPM）
 22. gpio_fan_state: GPIO风扇状态（bool）
-23. shutdown_percentage: 关机百分比
-24. power_off_percentage: 断电百分比
-25. timezone: 时区
-26. auto_time_enable: 自动时间开关
-27. time: 时间
-28. sta_switch: wifi 开关
-29. sta_ssid_scan: Wi-Fi账号可搜索
-30. sta_ssid: Wi-Fi账号
-31. sta_psk: Wi-Fi密码
-32. ap_ssid: AP账号
-33. ap_psk: AP密码
-34. ota_auto: 自动升级
-35. ota_manual: 手动升级
-36. mac_address: Mac地址
-37. ip_address: IP地址
-38. sd_card_usage: SD卡容量占用
-39. download_history_file: 下载历史数据文件
-40. default_on: 是否默认开机的选项
-41. restart: 设备自己是否支持重启
+23. gpio_fan_mode: GPIO风扇模式（int）
+24. oled_disk: OLED显示磁盘容量的磁盘路径
+25. oled_ip: OLED显示IP地址的网卡
+26. shutdown_percentage: 关机百分比
+27. power_off_percentage: 断电百分比
+28. timezone: 时区
+29. auto_time_enable: 自动时间开关
+30. time: 时间
+31. sta_switch: wifi 开关
+32. sta_ssid_scan: Wi-Fi账号可搜索
+33. sta_ssid: Wi-Fi账号
+34. sta_psk: Wi-Fi密码
+35. ap_ssid: AP账号
+36. ap_psk: AP密码
+37. ota_auto: 自动升级
+38. ota_manual: 手动升级
+39. mac_address: Mac地址
+40. ip_address: IP地址
+41. sd_card_usage: SD卡容量占用
+42. download_history_file: 下载历史数据文件
+43. default_on: 是否默认开机的选项
+44. restart: 设备自己是否支持重启
+
+## Config
+
+```JSON
+{
+    "system": {
+        "rgb_color": "#0a1aff",
+        "rgb_brightness": 50,
+        "rgb_style": "breathing",
+        "rgb_speed": 50,
+        "rgb_enable": true,
+        "rgb_led_count": 4,
+        "temperature_unit": "C",
+        "gpio_fan_mode": 2,
+        "gpio_fan_pin": 6,
+        "oled_disk": "total",
+        "oled_network_interface": "all"
+    }
+}
+```
+
 
 ## API
 
@@ -666,6 +697,16 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": 0}` -  0/1/2: Power off 断电/Shutdown 关机/Power on 开机
 
+### GET /get-disk-list 获取磁盘列表
+
+- Response:
+  - `{"status": true, "data": ["sda1", "nvme0", 'mmblk0']}`
+
+### GET /get-network-interface-list 获取网络接口列表
+
+- Response:
+  - `{"status": true, "data": ["eth0", "wlan0"]}`
+
 ### POST /set-config DEPRECATED
 
 - Description: Set configuration
@@ -824,5 +865,19 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Data:
   - `style` - 样式，'solid', 'breathing', 'flow', 'flow_reverse', 'rainbow', 'rainbow_reverse', 'hue_cycle'
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-oled-disk 设置OLED显示磁盘容量的磁盘路径
+
+- Data:
+  - `disk` - 磁盘路径 'total', 或者是磁盘路径
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-oled-network-interface 设置OLED显示网络接口
+
+- Data:
+  - `interface` - 网卡名称， 'all', 或者是网络接口名称
 - Response:
   - `{"status": true, "data": "OK"}`
