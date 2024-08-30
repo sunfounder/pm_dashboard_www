@@ -40,6 +40,7 @@ const LogPanel = (props) => {
   const [wrap, setWrap] = useState(window.localStorage.getItem("pm-dashboard-log-wrap") === "true");
   const [element, setElement] = useState(null);
   const [downloadElement, setDownloadElement] = useState(null);
+  const [getLogFinished, setGetLogFinished] = useState(true);
 
   const contentRef = useRef(null);
 
@@ -55,6 +56,7 @@ const LogPanel = (props) => {
       level: level,
     }
     let result = await props.request('get-log', 'GET', payload);
+    setGetLogFinished(true);
     setFileContent(result);
   }, [logFile, filter, lines, level, props.request]);
 
@@ -82,6 +84,9 @@ const LogPanel = (props) => {
 
   const handleConfigChange = (config) => {
     if (config.lines !== undefined) {
+      if (config.lines < 1) {
+        config.lines = 10;
+      }
       window.localStorage.setItem("pm-dashboard-log-lines", config.lines);
       setLines(config.lines);
     }
@@ -126,7 +131,8 @@ const LogPanel = (props) => {
   // 自动更新
   useEffect(() => {
     let interval = setInterval(() => {
-      if (autoUpdate && logFile) {
+      if (autoUpdate && logFile && getLogFinished) {
+        setGetLogFinished(false);
         getLog();
       }
     }, 1000);
@@ -149,12 +155,24 @@ const LogPanel = (props) => {
     let newElement = <Card id="log-list" sx={{ width: '100%', overflow: "auto", height: '100%' }}>
       <List component="nav" dense>
         {logList.map((filename, index) => {
-          let logName = filename.replace(".log", "");
-          let moduleName = '';
-          if (logName.includes('.')) {
-            moduleName = logName.split('.')[0];
-            logName = logName.split('.')[1];
+          // let logName = filename.replace(".log", "");
+          // let moduleName = '';
+          // if (logName.includes('.')) {
+          //   moduleName = logName.split('.')[0];
+          //   logName = logName.split('.')[1];
+          // }
+          let logNameArr = filename.split(".");
+          let logName;
+          if (logNameArr[0] === "pm_dashboard" || logNameArr[0] === "pm_auto") {
+            logName = logNameArr[1];
+          } else {
+            logName = logNameArr[0];
           }
+          if (logNameArr[3]) {
+            logName = logNameArr[1] + "." + logNameArr[3];
+          }
+          let moduleName = logNameArr[0];
+
           return <ListItemButton key={index} selected={index === fileIndex} onClick={(event) => handleFileSelect(event, filename)}>
             <ListItemIcon>
               <DescriptionIcon />
@@ -184,13 +202,9 @@ const LogPanel = (props) => {
       <Box id="log-content" sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
         <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} handleDownload={handleDownload} />
         <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "auto"} auto` }}>
-          <List>
-            {fileContent && fileContent.map((line, index) => {
-              return <ListItem key={index} disablePadding>
-                <Typography sx={{ fontFamily: "Courier New", textWrap: wrap ? "wrap" : "nowrap" }}> {line} </Typography>
-              </ListItem>
-            })}
-          </List>
+          <Typography Typography whiteSpace="pre-line" sx={{ fontFamily: "Courier New", textWrap: wrap ? "wrap" : "nowrap" }}>
+            {fileContent ? fileContent.join("") : ""}
+          </Typography>
         </Box>
       </Box>
     </Box >
