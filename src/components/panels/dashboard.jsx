@@ -79,7 +79,8 @@ const DashboardPanel = (props) => {
           <ExternalInputCard data={data} bytesFormatter={bytesFormatter} switchShow={props.peripherals.includes('output_switch')} />
         }
         {
-          (props.peripherals.includes('pwm_fan')) &&
+          // (props.peripherals.includes('pwm_fan')) &&
+          (props.peripherals.includes('pwm_fan_speed')) &&
           <FanCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
         {
           (props.peripherals.includes('is_battery_plugged_in') ||
@@ -98,7 +99,7 @@ const DashboardPanel = (props) => {
         {props.peripherals.includes('storage') && <StorageCard data={data} />}
         {props.peripherals.includes('memory') && <MemoryCard data={data} />}
         {props.peripherals.includes('network') && <NetworkCard data={data} />}
-        {props.peripherals.includes('cpu') && <ProcessorCard data={data} switch={props.peripherals.includes('output_switch')} />}
+        {props.peripherals.includes('cpu') && <ProcessorCard data={data} />}
       </Box >
     </Panel >
   </Box>

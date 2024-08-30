@@ -9,7 +9,7 @@ const powerDetail = {
   unit: "%",
 };
 const speedDetail = {
-  title: "PWM Fan Speed",
+  title: "CPU Fan Speed",
   unit: "RPM",
 };
 const stateDetail = {

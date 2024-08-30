@@ -6,7 +6,7 @@ import { useTheme } from '@mui/material/styles';
 
 const Chart = (props) => {
   const theme = useTheme();
-  const { detail } = props;
+  const detail = props.detail;
   const bytesFormatter = (value, name, props) => {
     let unit = props.unit;
     if (unit === 'B' || unit === 'B/s') {

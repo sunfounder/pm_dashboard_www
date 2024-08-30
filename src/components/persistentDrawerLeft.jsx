@@ -116,7 +116,7 @@ const PersistentDrawerLeft = (props) => {
   }
 
   let title = [
-    { text: props.deviceName, icon: <DashboardIcon /> },
+    { text: "Dashboard", icon: <DashboardIcon /> },
   ]
 
   if (props.peripherals.includes('history')) {
@@ -155,7 +155,7 @@ const PersistentDrawerLeft = (props) => {
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
-              // sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                sx={{ mr: 2 }}
               >
                 <MenuIcon />
               </IconButton>
