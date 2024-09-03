@@ -241,8 +241,16 @@ const Home = (props) => {
     }
   }
 
+  const getConfig = async () => {
+    const result = await request('get-config', "GET");
+    if (result) {
+      setTemperatureUnit(result.system.temperature_unit);
+    }
+  }
+
   useEffect(() => {
     getDeviceInfo();
+    getConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected])
 
