@@ -30,7 +30,6 @@ const PopupOTA = (props) => {
   const [upgrading, setUpgrading] = useState(false);
 
   const handleUpgrade = async () => {
-    console.log("手动升级");
     if (!selectedFile) {
       props.showSnackBar("error", "Please select a file first");
       return;
@@ -59,7 +58,6 @@ const PopupOTA = (props) => {
         log: data.body,
         url: data.assets[0].browser_download_url
       }
-      console.log('Latest version:', latestVersion);
       return latestVersion;
     } catch (error) {
       console.error('Error fetching latest release:', error);
@@ -73,12 +71,12 @@ const PopupOTA = (props) => {
       let result = compareVersions(latestVersion.version, currentVersion);
       if (result > 0) {
         setLatestVersion(latestVersion);
-        console.log("有新版本");
+        // console.log("有新版本");
       } else if (result < 0) {
-        console.log("新版本号比当前版本号小");
+        // console.log("新版本号比当前版本号小");
         props.showSnackBar("success", "Already up to date");
       } else {
-        console.log("版本相同");
+        // console.log("版本相同");
         props.showSnackBar("success", "Already up to date");
       }
     }
@@ -114,7 +112,6 @@ const PopupOTA = (props) => {
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
-    console.log('handleFileSelect', file);
     setSelectedFile(file);
     setFileName(file.name);
   };

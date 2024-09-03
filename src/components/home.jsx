@@ -234,7 +234,7 @@ const Home = (props) => {
 
   const getDeviceInfo = async () => {
     let deviceInfo = await request("get-device-info", "GET");
-    console.log("deviceInfo", deviceInfo);
+    // console.log("deviceInfo", deviceInfo);
     if (deviceInfo) {
       setPeripherals(deviceInfo.peripherals);
       setDeviceName(deviceInfo.name);
@@ -257,7 +257,7 @@ const Home = (props) => {
     let outputState;
     let defaultOn;
     let content = message;
-    console.log(latestData);
+    // console.log(latestData);
     if (peripherals.includes('output_switch') && 'output_state' in latestData) {
       outputState = latestData.output_state;
     }

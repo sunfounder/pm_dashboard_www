@@ -54,7 +54,7 @@ const PopupAP = (props) => {
       return;
     }
     setLoading(true);
-    console.log("data", data);
+    // console.log("data", data);
     let result = await props.sendData("set-ap-config", data);
     if (result === "OK") {
       // props.showSnackBar("success", "Save Successfully");

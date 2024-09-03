@@ -319,7 +319,8 @@ const SettingItemSlider = (props) => {
           onChangeCommitted={handleChangeCommitted}
           onChange={handleChange}
           value={value}
-          getAriaValueText={props.valueFormat}
+          valueLabelFormat={props.valueFormat}
+          // getAriaValueText={props.valueFormat}
           valueLabelDisplay="auto"
           marks={props.marks}
           step={props.step}
@@ -356,19 +357,16 @@ const SettingItemTime = (props) => {
 
   const handleTimeAccepted = (newTime) => {
     let timestamp = newTime.toSeconds();
-    console.log(timestamp);
     props.onAccept(timestamp);
     setChanging(false);
   }
 
   const handleTimeChanged = () => {
-    console.log('handleTimeChanged');
     setChanging(true);
   }
 
   useEffect(() => {
     if (!changing) {
-      console.log('setCurrentTime', props.value);
       setCurrentTime(props.value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -393,7 +391,6 @@ const SettingItemTime = (props) => {
 const SettingItemTimezone = (props) => {
 
   // data 如 "UTC-8:00" 转为 "(UTC+08:00) Beijing, Hong Kong, Singapore, Taipei"
-  // console.log("props.value", props.value);
   let option = TIMEZONE_MAP.find(timezone => timezone.data === props.value);
   LuxonSettings.defaultZone = option.offset;
 
@@ -459,14 +456,12 @@ const SettingItemSSIDList = (props) => {
 
   const startWiFiScan = async (rssi) => {
     let status = await props.request("start-wifi-scan", "GET",);
-    console.log("status", status);
     setLoading(true);
     setTimerId(setTimeout(getSsidList, 1000));
   }
 
   const getSsidList = async () => {
     let ssidList = await props.request("get-wifi-scan", "GET",);
-    console.log("ssidList", ssidList);
     if (typeof ssidList === "object") {
       setSsidList(ssidList);
       let options = ssidList.map((ssid) => ssid.ssid);
