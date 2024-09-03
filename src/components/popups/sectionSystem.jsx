@@ -16,9 +16,18 @@ import {
   SettingItemMenu,
 } from "./settingItems.jsx";
 import SectionFrame from "./sectionFrame.jsx";
-const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
+// const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
+const GPIO_FAN_MODES = ['Always On', 'Performance', 'Cool', 'Balanced', 'Quiet'];
 const SectionSystem = (props) => {
   const [currentTime, setCurrentTime] = React.useState(0);
+
+  const handleTemperatureUnit = async (event) => {
+    let result = await props.sendData('set-temperature-unit', { 'unit': event });
+    if (result === "OK") {
+      props.onTemperatureUnitChanged(event);
+      props.onChange('system', 'temperature_unit', event);
+    }
+  }
 
   const handleToggleRGBEnabled = async (event) => {
     let result = await props.sendData('set-rgb-enable', { 'enable': event });
@@ -28,7 +37,6 @@ const SectionSystem = (props) => {
   }
 
   const handleRgbColor = async (event) => {
-    console.log(event);
     if (event.length !== 6) {
       console.log("Invalid color");
     } else {
@@ -65,9 +73,6 @@ const SectionSystem = (props) => {
     let result = await props.sendData('set-shutdown-percentage', { 'shutdown-percentage': shutdownPercentage });
     if (result === "OK") {
       props.onChange('system', 'shutdown_percentage', shutdownPercentage);
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -78,6 +83,13 @@ const SectionSystem = (props) => {
       return true;
     } else {
       return false;
+    }
+  }
+
+  const handleGPIOFanModeCommitted = async (event) => {
+    let result = await props.sendData('set-fan-mode', { 'fan_mode': event });
+    if (result === "OK") {
+      props.onChange('system', 'gpio_fan_mode', event);
     }
   }
 
@@ -158,7 +170,6 @@ const SectionSystem = (props) => {
   }, [props.open, props.config.timezone, props.config.auto_time_switch, props.config.ntpServer, props.peripherals]);
 
 
-
   return (
     <SectionFrame title="System">
       {/* 温度单位 */}
@@ -166,7 +177,7 @@ const SectionSystem = (props) => {
         <SettingItemToggleButton
           title="Temperature Unit"
           subtitle="Set prefer temperature unit"
-          onChange={(event) => props.onChange('system', 'temperature_unit', event.target.value)}
+          onChange={(event) => handleTemperatureUnit(event.target.value)}
           value={props.config.temperature_unit}
           options={[
             { value: 'C', name: 'Celius' },
@@ -251,10 +262,8 @@ const SectionSystem = (props) => {
           max={100}
         />}
       {/* 风扇模式 */}
-      {(props.peripherals.includes("spc_fan_power") || props.peripherals.includes("gpio_fan_mode")) &&
+      {(props.peripherals.includes("spc_fan_power")) &&
         <SettingItemSlider
-          // title="GPIO Fan Mode"
-          // subtitle="Set GPIO fan mode"
           title="Fan Power"
           subtitle="Set Fan Power"
           valueFormat={(value) => `${value}%`}
@@ -264,9 +273,26 @@ const SectionSystem = (props) => {
           step={25}
           min={0}
           max={100}
-          // step={1}
           marks
         />}
+      {
+        // gpio风扇
+        props.peripherals.includes("gpio_fan_mode") &&
+        <SettingItemSlider
+          title="GPIO Fan Mode"
+          subtitle="Set GPIO fan mode"
+          // valueFormat={(value) => GPIO_FAN_MODES[4 - value]}
+          // value={4 - props.config.gpio_fan_mode}
+          valueFormat={(value) => GPIO_FAN_MODES[value]}
+          onCommitted={handleGPIOFanModeCommitted}
+          value={props.config.gpio_fan_mode}
+          sx={{ marginBottom: 0 }}
+          min={0}
+          max={4}
+          step={1}
+          marks
+        />
+      }
       {/* 当前时间 */}
       {props.peripherals.includes("time") &&
         <SettingItemTime
