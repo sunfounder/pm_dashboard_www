@@ -48,6 +48,7 @@ const defaultConfigData = {
     "fan_power": 0,
     "gpio_fan_mode": 1,
     "rgb_switch": true,
+    "rgb_enable": true,
     "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
     "rgb_color": "#0a1aff",
     "rgb_speed": 50, //速度
@@ -86,7 +87,6 @@ const PopupSettings = (props) => {
   }
 
   const handleChanged = (field, name, value) => {
-    console.log("handleChangeConfig field", field, "name", name, "value", value);
     let newConfig = { ...config };
     newConfig[field][name] = value;
     setConfig(newConfig);
@@ -151,6 +151,7 @@ const PopupSettings = (props) => {
           peripherals={props.peripherals}
           restartPrompt={props.restartPrompt}
           latestData={props.latestData}
+          onTemperatureUnitChanged={props.onTemperatureUnitChanged}
         />}
     </PopupFrame >
   );

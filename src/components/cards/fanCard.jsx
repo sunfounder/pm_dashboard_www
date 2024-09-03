@@ -33,9 +33,14 @@ const FanCard = (props) => {
       timestamp: timeFormatting(obj.time),
     }
     let temperature = obj.cpu_temperature;
-    if (props.unit === "F" && obj.cpu_temperature) {
-      temperature = celciusToFahrenheit(obj.cpu_temperature);
-      tmp.cpu_temperature = temperature;
+    // if (props.unit === "F" && obj.cpu_temperature) {
+    if (obj.cpu_temperature) {
+      if (props.unit === "F") {
+        temperature = celciusToFahrenheit(obj.cpu_temperature);
+        tmp.cpu_temperature = temperature;
+      } else {
+        tmp.cpu_temperature = obj.cpu_temperature;
+      }
     }
 
     if ("pwm_fan_speed" in obj) {

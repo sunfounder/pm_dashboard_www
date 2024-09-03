@@ -324,17 +324,17 @@ const DateTimeRangePicker = (props) => {
     props.onChange({ end: datetime.unix() });
   }
 
-  // useEffect(() => {
-  //   // let interval = setInterval(() => {
-  //   if (quickSelect !== "custom") {
-  //     let [start, end] = getTimeRange(quickSelect);
-  //     setStart(start);
-  //     setEnd(end);
-  //     props.onChange({ start: start, end: end });
-  //   }
-  //   // }, 1000);
-  //   // return () => clearInterval(interval);
-  // }, [quickSelect]);
+  useEffect(() => {
+    let interval = setInterval(() => {
+      if (quickSelect !== "custom") {
+        let [start, end] = getTimeRange(quickSelect);
+        setStart(start);
+        setEnd(end);
+        props.onChange({ start: start, end: end });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [quickSelect]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
