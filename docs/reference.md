@@ -25,55 +25,59 @@
   - [Peripherals](#peripherals)
   - [Config](#config)
   - [API](#api)
-    - [GET /get-version 获取当前版本号](#get-get-version-获取当前版本号)
-    - [GET /get-device-info 获取设备信息](#get-get-device-info-获取设备信息)
-    - [GET /test 测试服务状态](#get-test-测试服务状态)
-    - [GET /test-mqtt 测试MQTT连接](#get-test-mqtt-测试mqtt连接)
-    - [GET /get-history 获取历史数据](#get-get-history-获取历史数据)
-    - [GET /get-history-file 获取历史数据文件](#get-get-history-file-获取历史数据文件)
-    - [GET /get-time-range 获取时间范围](#get-get-time-range-获取时间范围)
-    - [GET /get-config 获取所有设置](#get-get-config-获取所有设置)
-    - [GET /get-log-list 获取日志列表](#get-get-log-list-获取日志列表)
-    - [GET /get-log 获取日志](#get-get-log-获取日志)
-    - [GET /get-wifi-config 获取Wi-Fi配置](#get-get-wifi-config-获取wi-fi配置)
+    - [GET /get-version](#get-get-version)
+    - [GET /get-device-info](#get-get-device-info)
+    - [GET /test](#get-test)
+    - [GET /test-mqtt](#get-test-mqtt)
+    - [GET /get-history](#get-get-history)
+    - [GET /get-history-file](#get-get-history-file)
+    - [GET /get-time-range](#get-get-time-range)
+    - [GET /get-config](#get-get-config)
+    - [GET /get-log-list](#get-get-log-list)
+    - [GET /get-log](#get-get-log)
+    - [GET /get-wifi-config](#get-get-wifi-config)
     - [GET /get-wifi-state](#get-get-wifi-state)
-    - [GET /get-wifi-scan 获取Wi-Fi扫描列表](#get-get-wifi-scan-获取wi-fi扫描列表)
-    - [GET /get-wifi-status 获取Wi-Fi状态](#get-get-wifi-status-获取wi-fi状态)
-    - [GET /get-wifi-ip 获取Wi-Fi IP](#get-get-wifi-ip-获取wi-fi-ip)
-    - [GET /get-ap-config 获取AP配置](#get-get-ap-config-获取ap配置)
-    - [GET /get-timestamp 获取当前时间戳](#get-get-timestamp-获取当前时间戳)
-    - [GET /get-default-on 获取是否默认开机](#get-get-default-on-获取是否默认开机)
-    - [GET /get-output 获取输出状态](#get-get-output-获取输出状态)
-    - [GET /get-disk-list 获取磁盘列表](#get-get-disk-list-获取磁盘列表)
-    - [GET /get-network-interface-list 获取网络接口列表](#get-get-network-interface-list-获取网络接口列表)
+    - [GET /get-wifi-scan](#get-get-wifi-scan)
+    - [GET /get-wifi-status](#get-get-wifi-status)
+    - [GET /get-wifi-ip](#get-get-wifi-ip)
+    - [GET /get-ap-config](#get-get-ap-config)
+    - [GET /get-timestamp](#get-get-timestamp)
+    - [GET /get-default-on](#get-get-default-on)
+    - [GET /get-output](#get-get-output)
+    - [GET /get-disk-list](#get-get-disk-list)
+    - [GET /get-network-interface-list](#get-get-network-interface-list)
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
-    - [POST /set-temperature-unit 设置温度单位](#post-set-temperature-unit-设置温度单位)
-    - [POST /set-output 设置输出](#post-set-output-设置输出)
-    - [POST /set-wifi-config Wi-Fi配置](#post-set-wifi-config-wi-fi配置)
-    - [POST /set-sta-switch Wi-Fi STA模式配置](#post-set-sta-switch-wi-fi-sta模式配置)
-    - [POST /set-wifi-restart 重启Wi-Fi](#post-set-wifi-restart-重启wi-fi)
-    - [POST /set-ap-config AP配置](#post-set-ap-config-ap配置)
-    - [POST /set-ap-restart 重启AP](#post-set-ap-restart-重启ap)
-    - [POST /ota-update OTA 更新](#post-ota-update-ota-更新)
-    - [POST /set-shutdown-percentage 设置关机电池百分比](#post-set-shutdown-percentage-设置关机电池百分比)
-    - [POST /set-power-off-percentage 设置断电电池百分比](#post-set-power-off-percentage-设置断电电池百分比)
-    - [POST /set-auto-time 设置自动时间](#post-set-auto-time-设置自动时间)
-    - [POST /set-timestamp 设置时间](#post-set-timestamp-设置时间)
-    - [POST /set-timezone 设置时区](#post-set-timezone-设置时区)
-    - [POST /set-ntp-server 设置NTP服务器](#post-set-ntp-server-设置ntp服务器)
-    - [POST /set-restart 重启设备](#post-set-restart-重启设备)
-    - [POST /set-fan-power 设置风扇功率](#post-set-fan-power-设置风扇功率)
-    - [POST /set-fan-mode 设置风扇模式](#post-set-fan-mode-设置风扇模式)
-    - [POST /set-sd-data-interval 设置SD卡数据间隔](#post-set-sd-data-interval-设置sd卡数据间隔)
-    - [POST /set-sd-data-retain 设置SD卡数据保留天数](#post-set-sd-data-retain-设置sd卡数据保留天数)
-    - [POST /set-rgb-brightness 设置RGB灯亮度](#post-set-rgb-brightness-设置rgb灯亮度)
-    - [POST /set-rgb-color 设置RGB灯颜色](#post-set-rgb-color-设置rgb灯颜色)
-    - [POST /set-rgb-enable 设置RGB灯开关](#post-set-rgb-enable-设置rgb灯开关)
-    - [POST /set-rgb-led-count 设置RGB灯数量](#post-set-rgb-led-count-设置rgb灯数量)
-    - [POST /set-rgb-speed 设置RGB灯速度](#post-set-rgb-speed-设置rgb灯速度)
-    - [POST /set-rgb-style 设置RGB灯样式](#post-set-rgb-style-设置rgb灯样式)
-    - [POST /set-oled-disk 设置OLED显示磁盘容量的磁盘路径](#post-set-oled-disk-设置oled显示磁盘容量的磁盘路径)
-    - [POST /set-oled-network-interface 设置OLED显示网络接口](#post-set-oled-network-interface-设置oled显示网络接口)
+    - [POST /set-temperature-unit](#post-set-temperature-unit)
+    - [POST /set-output](#post-set-output)
+    - [POST /set-wifi-config](#post-set-wifi-config)
+    - [POST /set-sta-switch](#post-set-sta-switch)
+    - [POST /set-wifi-restart](#post-set-wifi-restart)
+    - [POST /set-ap-config](#post-set-ap-config)
+    - [POST /set-ap-restart](#post-set-ap-restart)
+    - [POST /ota-update](#post-ota-update)
+    - [POST /set-shutdown-percentage](#post-set-shutdown-percentage)
+    - [POST /set-power-off-percentage](#post-set-power-off-percentage)
+    - [POST /set-auto-time](#post-set-auto-time)
+    - [POST /set-timestamp](#post-set-timestamp)
+    - [POST /set-timezone](#post-set-timezone)
+    - [POST /set-ntp-server](#post-set-ntp-server)
+    - [POST /set-restart](#post-set-restart)
+    - [POST /set-fan-led](#post-set-fan-led)
+    - [POST /set-fan-power](#post-set-fan-power)
+    - [POST /set-fan-mode](#post-set-fan-mode)
+    - [POST /set-sd-data-interval](#post-set-sd-data-interval)
+    - [POST /set-sd-data-retain](#post-set-sd-data-retain)
+    - [POST /set-rgb-brightness](#post-set-rgb-brightness)
+    - [POST /set-rgb-color](#post-set-rgb-color)
+    - [POST /set-rgb-enable](#post-set-rgb-enable)
+    - [POST /set-rgb-led-count](#post-set-rgb-led-count)
+    - [POST /set-rgb-speed](#post-set-rgb-speed)
+    - [POST /set-rgb-style](#post-set-rgb-style)
+    - [POST /set-oled-enable](#post-set-oled-enable)
+    - [POST /set-oled-disk](#post-set-oled-disk)
+    - [POST /set-oled-network-interface](#post-set-oled-network-interface)
+  - [Settings](#settings-1)
+    - [System](#system)
 
 ## 页面
 
@@ -463,27 +467,26 @@ PERIPHERALS = [
 21. pwm_fan_speed: PWM风扇速度（RPM）
 22. gpio_fan_state: GPIO风扇状态（bool）
 23. gpio_fan_mode: GPIO风扇模式（int）
-24. oled_disk: OLED显示磁盘容量的磁盘路径
-25. oled_ip: OLED显示IP地址的网卡
-26. shutdown_percentage: 关机百分比
-27. power_off_percentage: 断电百分比
-28. timezone: 时区
-29. auto_time_enable: 自动时间开关
-30. time: 时间
-31. sta_switch: wifi 开关
-32. sta_ssid_scan: Wi-Fi账号可搜索
-33. sta_ssid: Wi-Fi账号
-34. sta_psk: Wi-Fi密码
-35. ap_ssid: AP账号
-36. ap_psk: AP密码
-37. ota_auto: 自动升级
-38. ota_manual: 手动升级
-39. mac_address: Mac地址
-40. ip_address: IP地址
-41. sd_card_usage: SD卡容量占用
-42. download_history_file: 下载历史数据文件
-43. default_on: 是否默认开机的选项
-44. restart: 设备自己是否支持重启
+24. oled: OLED显示磁盘容量的磁盘路径
+25. shutdown_percentage: 关机百分比
+26. power_off_percentage: 断电百分比
+27. timezone: 时区
+28. auto_time_enable: 自动时间开关
+29. time: 时间
+30. sta_switch: wifi 开关
+31. sta_ssid_scan: Wi-Fi账号可搜索
+32. sta_ssid: Wi-Fi账号
+33. sta_psk: Wi-Fi密码
+34. ap_ssid: AP账号
+35. ap_psk: AP密码
+36. ota_auto: 自动升级
+37. ota_manual: 手动升级
+38. mac_address: Mac地址
+39. ip_address: IP地址
+40. sd_card_usage: SD卡容量占用
+41. download_history_file: 下载历史数据文件
+42. default_on: 是否默认开机的选项
+43. restart: 设备自己是否支持重启
 
 ## Config
 
@@ -510,12 +513,16 @@ PERIPHERALS = [
 
 api地址: `http://ip:34001/api/v1.0`
 
-### GET /get-version 获取当前版本号
+### GET /get-version
+
+获取当前版本号
 
 - Response: 
   - `{"status": true, "data": "1.0.0"}`
 
-### GET /get-device-info 获取设备信息
+### GET /get-device-info
+
+获取设备信息
 
 - Response: 
   ```json
@@ -532,12 +539,16 @@ api地址: `http://ip:34001/api/v1.0`
   }
   ```
 
-### GET /test 测试服务状态
+### GET /test
+
+测试服务状态
 
 - Response: 
   - `{"status": true, "data": "OK"}`
 
-### GET /test-mqtt 测试MQTT连接
+### GET /test-mqtt
+
+测试MQTT连接
 
 - Data: 
   - `host` - MQTT Broker Host
@@ -554,21 +565,27 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": false, "error": "[ERROR] username not found"}`
   - `{"status": false, "error": "[ERROR] password not found"}`
 
-### GET /get-history 获取历史数据
+### GET /get-history
+
+获取历史数据
 
 - Data:
   - `n` - Number of records to return
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-history-file 获取历史数据文件
+### GET /get-history-file
+
+获取历史数据文件
 
 - Data:
   - `date` - Date in format `YYYY-MM-DD`
 - Response:
   - file
 
-### GET /get-time-range 获取时间范围
+### GET /get-time-range
+
+获取时间范围
  
 - Data:
   - `start` - Start time
@@ -577,7 +594,9 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-config 获取所有设置
+### GET /get-config
+
+获取所有设置
 
 - Response:
 ```json
@@ -629,12 +648,16 @@ api地址: `http://ip:34001/api/v1.0`
   }
 ```
 
-### GET /get-log-list 获取日志列表
+### GET /get-log-list
+
+获取日志列表
 
 - Response:
   - `{"status": true, "data": []}`
 
-### GET /get-log 获取日志
+### GET /get-log
+
+获取日志
 
 - Data:
   - `filename` - Log file name
@@ -645,7 +668,9 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": false, "error": "[ERROR] file not found"}`
   - `{"status": true, "data": []}`
 
-### GET /get-wifi-config 获取Wi-Fi配置
+### GET /get-wifi-config
+
+获取Wi-Fi配置
 
 - Response:
   - `{"status": true, "data": {"sta_switch": true, "sta_ssid": "SSID","sta_psk": "password"}}`
@@ -658,12 +683,16 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": true, "data": "disconnected"}`
   - `{"status": true, "data": "connecting"}`
 
-### GET /get-wifi-scan 获取Wi-Fi扫描列表
+### GET /get-wifi-scan
+
+获取Wi-Fi扫描列表
 
 - Response:
   - `{"status": true, "data": [{rssi：-39, ssid：'SSID1', bssid：'F6:96:34:88:EF:DC', channel：6, secure：3}]}`  
 
-### GET /get-wifi-status 获取Wi-Fi状态
+### GET /get-wifi-status
+
+获取Wi-Fi状态
 
 - Response:
   - `{"status": true, "data": "0"}` IDLE_STATUS
@@ -674,37 +703,51 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": true, "data": "5"}` CONNECTION_LOST
   - `{"status": true, "data": "6"}` DISCONNECTED
 
-### GET /get-wifi-ip 获取Wi-Fi IP
+### GET /get-wifi-ip
+
+获取Wi-Fi IP
 
 - Response:
   - `{"status": true, "data": "192.168.1.1"}`
 
-### GET /get-ap-config 获取AP配置
+### GET /get-ap-config
+
+获取AP配置
 
 - Response:
   - `{"status": true, "data": {"ap_ssid": "SSID", "ap_psk": "password"}}`
 
-### GET /get-timestamp 获取当前时间戳
+### GET /get-timestamp
+
+获取当前时间戳
 
 - Response:
   - `{"status": true, "data": "1612137600"}`
 
-### GET /get-default-on 获取是否默认开机
+### GET /get-default-on
+
+获取是否默认开机
 
 - Response:
   - `{"status": true, "data": "true"}`
 
-### GET /get-output 获取输出状态
+### GET /get-output
+
+获取输出状态
 
 - Response:
   - `{"status": true, "data": 0}` -  0/1/2: Power off 断电/Shutdown 关机/Power on 开机
 
-### GET /get-disk-list 获取磁盘列表
+### GET /get-disk-list
+
+获取磁盘列表
 
 - Response:
   - `{"status": true, "data": ["sda1", "nvme0", 'mmblk0']}`
 
-### GET /get-network-interface-list 获取网络接口列表
+### GET /get-network-interface-list
+
+获取网络接口列表
 
 - Response:
   - `{"status": true, "data": ["eth0", "wlan0"]}`
@@ -717,14 +760,18 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": data}`
 
-### POST /set-temperature-unit 设置温度单位
+### POST /set-temperature-unit
+
+设置温度单位
 
 - Data:
   - `unit` - 单位 C/F
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-output 设置输出
+### POST /set-output
+
+设置输出
 
 - Data:
   - `switch` - Output switch 0/1/2: Power off 断电/Shutdown 关机/Power on 开机
@@ -732,24 +779,33 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-wifi-config Wi-Fi配置
+### POST /set-wifi-config
+
+Wi-Fi配置
 - Data:
   - `sta_switch` - Wi-Fi switch 0/1
   - `sta_ssid` - Wi-Fi SSID
   - `sta_psk` - Wi-Fi password
 - Response:
   - `{"status": true, "data": "OK"}`
-### POST /set-sta-switch Wi-Fi STA模式配置
+
+### POST /set-sta-switch
+
+Wi-Fi STA模式配置
 - Data:
   - `sta_switch` - Wi-Fi switch 0/1
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-wifi-restart 重启Wi-Fi
+### POST /set-wifi-restart
+
+重启Wi-Fi
 
 - Response:　没有返回
 
-### POST /set-ap-config AP配置
+### POST /set-ap-config
+
+AP配置
 
 - Data:
   - `ap_ssid` - AP SSID
@@ -757,143 +813,259 @@ api地址: `http://ip:34001/api/v1.0`
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-ap-restart 重启AP
+### POST /set-ap-restart
+
+重启AP
 
 - Response:　没有返回
 
-### POST /ota-update OTA 更新
+### POST /ota-update
+
+OTA 更新
 
 - Data:
   - `file` - OTA file
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-shutdown-percentage 设置关机电池百分比
+### POST /set-shutdown-percentage
+
+设置关机电池百分比
 
 - Data:
   - `shutdown-percentage` - 百分比
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-power-off-percentage 设置断电电池百分比
+### POST /set-power-off-percentage
+
+设置断电电池百分比
 
 - Data:
   - `power-off-percentage` - 百分比
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-auto-time 设置自动时间
+### POST /set-auto-time
+
+设置自动时间
 
 - Data:
   - `enable` - 自动时间开关 true/false
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-timestamp 设置时间
+### POST /set-timestamp
+
+设置时间
 
 - Data:
   - `timestamp` - 时间戳（秒）
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-timezone 设置时区
+### POST /set-timezone
+
+设置时区
 
 - Data:
   - `timezone` - 时区
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-ntp-server 设置NTP服务器
+### POST /set-ntp-server
+
+设置NTP服务器
 
 - Data:
   - `ntp_server` - NTP服务器
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-restart 重启设备
+### POST /set-restart
+
+重启设备
 
 - Response:　没有返回
 
-### POST /set-fan-power 设置风扇功率
+### POST /set-fan-led
+
+设置风扇LED开关
+
+- Data:
+  - `led` - LED开关 true/false
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-fan-power
+
+设置风扇功率
 
 - Data:
   - `fan_power` - 风扇功率
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-fan-mode 设置风扇模式
+### POST /set-fan-mode
+
+设置风扇模式
 
 - Data:
   - `fan_mode` - 风扇模式 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-sd-data-interval 设置SD卡数据间隔
+### POST /set-sd-data-interval
+
+设置SD卡数据间隔
 
 - Data:
   - `data_interval` - 数据间隔，单位秒
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-sd-data-retain 设置SD卡数据保留天数
+### POST /set-sd-data-retain
+
+设置SD卡数据保留天数
 
 - Data:
   - `data_retain` - 数据保留天数，单位天
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-rgb-brightness 设置RGB灯亮度
+### POST /set-rgb-brightness
+
+设置RGB灯亮度
 
 - Data:
   - `brightness` - 亮度，0-100
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-rgb-color 设置RGB灯颜色
+### POST /set-rgb-color
+
+设置RGB灯颜色
 
 - Data:
   - `color` - 颜色，格式为#RRGGBB
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-rgb-enable 设置RGB灯开关
+### POST /set-rgb-enable
+
+设置RGB灯开关
 
 - Data:
   - `enable` - 开关，true/false
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-rgb-led-count 设置RGB灯数量
+### POST /set-rgb-led-count
+
+设置RGB灯数量
 
 - Data:
   - `led_count` - 灯数量
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-rgb-speed 设置RGB灯速度
+### POST /set-rgb-speed
+
+设置RGB灯速度
 
 - Data:
   - `speed` - 速度，0-100
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-rgb-style 设置RGB灯样式
+### POST /set-rgb-style
+
+设置RGB灯样式
 
 - Data:
   - `style` - 样式，'solid', 'breathing', 'flow', 'flow_reverse', 'rainbow', 'rainbow_reverse', 'hue_cycle'
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-oled-disk 设置OLED显示磁盘容量的磁盘路径
+### POST /set-oled-enable
+
+设置OLED显示开关
+
+- Data:
+  - `enable` - 开关，true/false
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-oled-disk
+
+设置OLED显示磁盘容量的磁盘路径
 
 - Data:
   - `disk` - 磁盘路径 'total', 或者是磁盘路径
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-oled-network-interface 设置OLED显示网络接口
+### POST /set-oled-network-interface
+
+设置OLED显示网络接口
 
 - Data:
   - `interface` - 网卡名称， 'all', 或者是网络接口名称
 - Response:
   - `{"status": true, "data": "OK"}`
+
+## Settings
+
+### System
+
+- Temperature unit: C/F
+  - Peripheral: temperature_unit
+  - API: [set-temperature-unit](#post-set-temperature-unit)
+- OLED Enable: true/false
+  - Peripheral: oled
+  - API: [set-oled-enable](#post-set-oled-enable)
+- OLED Disk: total/disk path
+  - Peripheral: oled
+  - API: [set-oled-disk](#post-set-oled-disk)
+  - API: [get-disk-list](#get-get-disk-list)
+- OLED Network Interface: all/interface name
+  - Peripheral: oled
+  - API: [set-oled-network-interface](#post-set-oled-network-interface)
+  - API: [get-network-interface-list](#get-get-network-interface-list)
+- Fan LED: true/false
+  - Peripheral: gpio_fan_led
+  - API: [set-fan-led](#post-set-fan-led)
+- Fan Power: 0-100
+  - Peripheral: spc_fan_power
+  - API: [set-fan-power](#post-set-fan-power)
+- Fan Mode: 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
+  - Peripheral: gpio_fan_mode
+  - API: [set-fan-mode](#post-set-fan-mode)
+- RGB Enable: true/false
+  - Peripheral: ws2812
+  - API: [set-rgb-enable](#post-set-rgb-enable)
+- RGB LED Count: 1-4
+  - Peripheral: ws2812
+  - API: [set-rgb-led-count](#post-set-rgb-led-count)
+- RGB Color: #RRGGBB
+  - Peripheral: ws2812
+  - API: [set-rgb-color](#post-set-rgb-color)
+- RGB Speed: 0-100
+  - Peripheral: ws2812
+  - API: [set-rgb-speed](#post-set-rgb-speed)
+- RGB Style: solid/breathing/flow/flow_reverse/rainbow/rainbow_reverse/hue_cycle
+  - Peripheral: ws2812
+  - API: [set-rgb-style](#post-set-rgb-style)
+- SD Card Data Interval: 60-3600
+  - Peripheral: sd_card_usage
+  - API: [set-sd-data-interval](#post-set-sd-data-interval)
+- SD Card Data Retain: 1-7
+  - Peripheral: sd_card_usage
+  - API: [set-sd-data-retain](#post-set-sd-data-retain)
+- SD Card Usage:
+  - Peripheral: sd_card_usage
+  - API: [get-sd-usage](#get-sd-usage)
+- Shutdown Percentage: 0-100
+  - Peripheral: shutdown_percentage
+  - API: [set-shutdown-percentage](#post-set-shutdown-percentage)
+- 
