@@ -893,7 +893,7 @@ OTA 更新
 设置风扇LED开关
 
 - Data:
-  - `led` - LED开关 true/false
+  - `led` - LED开关 on/off/follow
 - Response:
   - `{"status": true, "data": "OK"}`
 
@@ -1022,17 +1022,20 @@ OTA 更新
   - Peripheral: temperature_unit
   - API: [set-temperature-unit](#post-set-temperature-unit)
 - OLED Enable: true/false
+  - 控制OLED是否开启
   - Peripheral: oled
   - API: [set-oled-enable](#post-set-oled-enable)
-- OLED Disk: total/disk path
+- OLED Disk: total/disk list
+  - 选择OLED显示的磁盘，是哪一个。
   - Peripheral: oled
   - API: [set-oled-disk](#post-set-oled-disk)
   - API: [get-disk-list](#get-get-disk-list)
 - OLED Network Interface: all/interface name
+  - 选择OLED上的IP显示，是哪一个网络接口的IP。
   - Peripheral: oled
   - API: [set-oled-network-interface](#post-set-oled-network-interface)
   - API: [get-network-interface-list](#get-get-network-interface-list)
-- Fan LED: true/false
+- Fan LED: on/off/follow
   - Peripheral: gpio_fan_led
   - API: [set-fan-led](#post-set-fan-led)
 - Fan Power: 0-100
