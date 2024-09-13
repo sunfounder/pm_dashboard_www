@@ -13,6 +13,7 @@ const defaultConfigData = {
     "fan_mode": "auto",
     "fan_state": true,
     "fan_speed": 65,
+
     "rgb_switch": true,
     "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
     "rgb_color": "#0a1aff",
@@ -49,11 +50,16 @@ const defaultConfigData = {
     "gpio_fan_mode": 1,
     "rgb_switch": true,
     "rgb_enable": true,
-    "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
+    "rgb_style": 'breathing',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
     "rgb_color": "#0a1aff",
     "rgb_speed": 50, //速度
     "rgb_pwm_frequency": 1000, //频率
     "rgb_pin": 10,  // 10,12,21,
+    "oled_enable": true,
+    "oled_disk": "total",
+    "oled_network_interface": "all",
+    "gpio_fan_led": 0,
+    "fan_led": "on",
   }
 }
 

@@ -20,6 +20,54 @@ import SectionFrame from "./sectionFrame.jsx";
 const GPIO_FAN_MODES = ['Always On', 'Performance', 'Cool', 'Balanced', 'Quiet'];
 const SectionSystem = (props) => {
   const [currentTime, setCurrentTime] = React.useState(0);
+  const [oledDiskList, setOledDiskList] = React.useState([
+    { value: "total", label: "Total" },
+  ]);
+  const [oledNetworkInterfaceList, setOledNetworkInterfaceList] = React.useState([
+    { value: "all", label: "All" },
+  ])
+
+  const getOledDiiskList = async () => {
+    const result = await props.request('get-disk-list');
+    if (result) {
+      const newDiskList = result.map(disk => ({
+        value: disk,
+        label: disk
+      }));
+      setOledDiskList([...oledDiskList, ...newDiskList]);
+    }
+  }
+
+  const getOledNetworkInterfaceList = async () => {
+    const result = await props.request('get-network-interface-list');
+    if (result) {
+      const newNetworkInterfaceList = result.map(networkInterface => ({
+        value: networkInterface,
+        label: networkInterface
+      }))
+      setOledNetworkInterfaceList([...oledNetworkInterfaceList, ...newNetworkInterfaceList]);
+    }
+  }
+
+  const handleOledDiskList = async (event) => {
+    let result = await props.sendData('set-oled-disk', { 'disk': event });
+    if (result === "OK") {
+      props.onChange('system', 'oled_disk', event);
+    }
+  }
+  const handleToggleOLEDEnabled = async (event) => {
+    let result = await props.sendData('set-oled-enable', { 'enable': event });
+    if (result === "OK") {
+      props.onChange('system', 'oled_enable', event);
+    }
+  }
+
+  const handleOledNetworkInterfaceList = async (event) => {
+    let result = await props.sendData('set-oled-network-interface', { 'interface': event });
+    if (result === "OK") {
+      props.onChange('system', 'oled_network_interface', event);
+    }
+  }
 
   const handleTemperatureUnit = async (event) => {
     let result = await props.sendData('set-temperature-unit', { 'unit': event });
@@ -90,6 +138,13 @@ const SectionSystem = (props) => {
     let result = await props.sendData('set-fan-mode', { 'fan_mode': event });
     if (result === "OK") {
       props.onChange('system', 'gpio_fan_mode', event);
+    }
+  }
+
+  const handleFanLEDModeCommitted = async (event) => {
+    let result = await props.sendData('set-fan-led', { 'led': event });
+    if (result === "OK") {
+      props.onChange('system', 'fan_led', event);
     }
   }
 
@@ -169,6 +224,10 @@ const SectionSystem = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open, props.config.timezone, props.config.auto_time_switch, props.config.ntpServer, props.peripherals]);
 
+  useEffect(() => {
+    getOledDiiskList();
+    getOledNetworkInterfaceList();
+  }, [])
 
   return (
     <SectionFrame title="System">
@@ -183,7 +242,36 @@ const SectionSystem = (props) => {
             { value: 'C', name: 'Celius' },
             { value: 'F', name: 'Fahrenheit' },
           ]}
-        />}
+        />
+      }
+      {/* oled */}
+      {
+        props.peripherals.includes("oled") &&
+        <>
+          {/* oled开关 */}
+          <SettingItemSwitch
+            title="OLED Enable"
+            subtitle="Whether to enable OLED"
+            onChange={(event) => handleToggleOLEDEnabled(event)}
+            value={props.config.oled_enable} />
+          {/* Disk 磁盘选项 */}
+          <SettingItemMenu
+            title="OLED Disk"
+            subtitle="Set OLED disk"
+            onChange={(event) => handleOledDiskList(event.target.value)}
+            value={props.config.oled_disk}
+            options={oledDiskList}
+          />
+          {/*OLED显示网络接口 */}
+          <SettingItemMenu
+            title="OLED Network Interface"
+            subtitle="Set Network Interface"
+            onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
+            value={props.config.oled_network_interface}
+            options={oledNetworkInterfaceList}
+          />
+        </>
+      }
       {/* RGB */}
       {
         props.peripherals.includes("ws2812") &&
@@ -261,6 +349,21 @@ const SectionSystem = (props) => {
           min={10}
           max={100}
         />}
+      {/* 风扇 led */}
+      {
+        props.peripherals.includes("gpio_fan_led") &&
+        <SettingItemToggleButton
+          title="Fan LED"
+          subtitle="Set Fan LED"
+          onChange={(event) => handleFanLEDModeCommitted(event.target.value)}
+          value={props.config.fan_led}
+          options={[
+            { value: 'on', name: 'on' },
+            { value: 'off', name: 'off' },
+            { value: 'follow', name: 'follow' },
+          ]}
+        />
+      }
       {/* 风扇模式 */}
       {(props.peripherals.includes("spc_fan_power")) &&
         <SettingItemSlider
