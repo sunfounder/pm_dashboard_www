@@ -41,7 +41,7 @@ const StorageCard = (props) => {
       title: diskName,
       unit: ""
     };
-    newDataEntry[diskName] = entry.monted === 0 ? "unmounted" : `${entry.percent}%`;
+    newDataEntry[diskName] = entry.monted === 0 ? "No Mounted" : `${entry.percent}%`;
   });
   return (
     <Card

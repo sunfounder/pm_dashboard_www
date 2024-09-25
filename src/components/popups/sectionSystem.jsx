@@ -356,7 +356,7 @@ const SectionSystem = (props) => {
           title="Fan LED"
           subtitle="Set Fan LED"
           onChange={(event) => handleFanLEDModeCommitted(event.target.value)}
-          value={props.config.fan_led}
+          value={props.config.gpio_fan_led}
           options={[
             { value: 'on', name: 'on' },
             { value: 'off', name: 'off' },
