@@ -1071,4 +1071,7 @@ OTA 更新
 - Shutdown Percentage: 0-100
   - Peripheral: shutdown_percentage
   - API: [set-shutdown-percentage](#post-set-shutdown-percentage)
-- 
+- Mac Address
+  - Peripheral: mac_address
+- IP Address
+  - Peripheral: ip_address
