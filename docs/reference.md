@@ -46,6 +46,8 @@
     - [GET /get-output](#get-get-output)
     - [GET /get-disk-list](#get-get-disk-list)
     - [GET /get-network-interface-list](#get-get-network-interface-list)
+    - [POST /clear-history](#post-clear-history)
+    - [POST /delete-log-file](#post-delete-log-file)
     - [POST /set-config DEPRECATED](#post-set-config-deprecated)
     - [POST /set-temperature-unit](#post-set-temperature-unit)
     - [POST /set-output](#post-set-output)
@@ -751,6 +753,22 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Response:
   - `{"status": true, "data": ["eth0", "wlan0"]}`
+
+### POST /clear-history
+
+清除历史数据
+
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /delete-log-file
+
+删除日志文件
+
+- Data:
+  - `filename` - Log file name
+- Response:
+  - `{"status": true, "data": "OK"}`
 
 ### POST /set-config DEPRECATED
 
