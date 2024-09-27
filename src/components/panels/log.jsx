@@ -19,13 +19,16 @@ import {
   ListItemText,
   ListItemIcon,
 } from '@mui/material';
+import Button from '@mui/material/Button';
 import Panel from './panel.jsx';
 import MuiToolTip from '@mui/material/Tooltip';
 import DownloadIcon from '@mui/icons-material/Download';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import WrapIcon from '@mui/icons-material/WrapText';
 import AutoScrollIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import AutoUpdateIcon from '@mui/icons-material/Autorenew.js';
 import DescriptionIcon from '@mui/icons-material/Description';
+import PopupFrame from '../popups/popupFrame.jsx';
 
 const LogPanel = (props) => {
   const [logList, setLogList] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-log-logList")) || []);
@@ -41,6 +44,8 @@ const LogPanel = (props) => {
   const [element, setElement] = useState(null);
   const [downloadElement, setDownloadElement] = useState(null);
   const [getLogFinished, setGetLogFinished] = useState(true);
+  const [popupStatus, setPopupStatus] = useState(false);
+  const [deleteFilename, setDeleteFilename] = useState(window.localStorage.getItem("pm-dashboard-log-logFile") || "");
 
   const contentRef = useRef(null);
 
@@ -73,6 +78,10 @@ const LogPanel = (props) => {
     if (!result) {
       props.showSnackBar("error", "Failed to get log list");
       return;
+    }
+    if (result.length === 0) {
+      setLogFile("");
+      window.localStorage.setItem("pm-dashboard-log-logFile", "");
     }
     result.sort();
     if (result.length > fileIndex) {
@@ -122,6 +131,37 @@ const LogPanel = (props) => {
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+
+  const handleDeleteLogFile = async (event, filename) => {
+    // 阻止事件冒泡
+    event.stopPropagation();
+    let sendFiename = filename ? filename : logFile;
+    setDeleteFilename(sendFiename);
+    setPopupStatus(!popupStatus);
+  }
+
+  const handleDeleteLogConfirm = async () => {
+    setPopupStatus(!popupStatus);
+    if (!deleteFilename) return;
+    let result = await props.sendData('delete-log-file', { 'filename': deleteFilename });
+    if (result === "OK") {
+      getLogList();
+      let logFile = logList[0];
+      if (logList[fileIndex + 1]) {
+        logFile = logList[fileIndex + 1];
+      } else if (!logList[fileIndex + 1] && logList.length > 2) {
+        logFile = logList[logList.length - 2];
+      }
+      setLogFile(logFile);
+      if (logList.length > 0) {
+        window.localStorage.setItem("pm-dashboard-log-logFile", logFile);
+      }
+    }
+  }
+
+  const handlePopup = () => {
+    setPopupStatus(!popupStatus);
   }
 
   useEffect(() => {
@@ -178,6 +218,9 @@ const LogPanel = (props) => {
               <DescriptionIcon />
             </ListItemIcon>
             <ListItemText primary={logName} secondary={moduleName} />
+            <ListItemIcon sx={{ display: "flex", alignItems: "center", justifyContent: "right" }}>
+              <DeleteForeverIcon onClick={(event) => handleDeleteLogFile(event, filename)} />
+            </ListItemIcon>
           </ListItemButton>
         })}
       </List>
@@ -186,27 +229,46 @@ const LogPanel = (props) => {
     props.onElementChange(element); // 组件加载时调用父组件的回调函数，并传递元素
   }, [element, props.onElementChange]);
 
-  useEffect(() => {
-    let newDownloadElement = <Tooltip title="Download log file">
-      <IconButton aria-label="download" color="red" onClick={handleDownload}>
-        <DownloadIcon />
-      </IconButton>
-    </Tooltip>;
-    setDownloadElement(newDownloadElement);
-    props.onDownloadElementChange(downloadElement); // 组件加载时调用父组件的回调函数，并传递元素
-  }, [downloadElement, props.onDownloadElementChange]);
+  // useEffect(() => {
+  //   let newDownloadElement = <Tooltip title="Download log file">
+  //     <IconButton aria-label="download" color="red" onClick={handleDownload}>
+  //       <DownloadIcon />
+  //     </IconButton>
+  //   </Tooltip>;
+  //   setDownloadElement(newDownloadElement);
+  //   props.onDownloadElementChange(downloadElement); // 组件加载时调用父组件的回调函数，并传递元素
+  // }, [downloadElement, props.onDownloadElementChange]);
 
   return (<Panel id="log-panel" title="Log" {...props} sx={{ height: "100%", overflow: "hidden" }}
   >
     <Box sx={{ display: "flex", width: "100%", height: "100%", gap: "2rem" }}>
       <Box id="log-content" sx={{ display: "flex", width: "100%", flexDirection: "column" }}>
-        <Toolbox lines={lines} level={level} filter={filter} wrap={wrap} autoUpdate={autoUpdate} autoScroll={autoScroll} onChange={handleConfigChange} handleDownload={handleDownload} />
+        <Toolbox
+          lines={lines}
+          level={level}
+          filter={filter}
+          wrap={wrap}
+          autoUpdate={autoUpdate}
+          autoScroll={autoScroll}
+          onChange={handleConfigChange}
+          handleDownload={handleDownload}
+          onDeleteLogFile={handleDeleteLogFile}
+        />
         <Box ref={contentRef} sx={{ flexGrow: 1, overflow: `${wrap ? "hidden" : "auto"} auto` }}>
           <Typography Typography whiteSpace="pre-line" sx={{ fontFamily: "Courier New", textWrap: wrap ? "wrap" : "nowrap" }}>
             {fileContent ? fileContent.join("") : ""}
           </Typography>
         </Box>
       </Box>
+      <PopupFrame open={popupStatus} onClose={handlePopup} title="Warning" width="30rem">
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Typography sx={{ margin: "0 1rem 1rem 1rem" }}>Do you want to delete the selected file? And this action cannot be undone.</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-around", marginBottom: "0.5rem" }}>
+          <Button onClick={handleDeleteLogConfirm}>Confirm</Button>
+          <Button onClick={handlePopup}>Cancel</Button>
+        </Box>
+      </PopupFrame>
     </Box >
   </Panel >
   );
@@ -301,6 +363,11 @@ const Toolbox = (props) => {
                 </Tooltip>
               </ToggleButton>
             </ToggleButtonGroup>
+            <IconButton id="delete" aria-label="delete" color="primary" >
+              <MuiToolTip title="Delete CSV">
+                <DeleteForeverIcon onClick={props.onDeleteLogFile} />
+              </MuiToolTip>
+            </IconButton>
             <IconButton id="download" aria-label="download" color="primary" onClick={props.handleDownload}>
               <MuiToolTip title="Download CSV">
                 <DownloadIcon />
@@ -355,6 +422,11 @@ const Toolbox = (props) => {
               </Tooltip>
             </ToggleButton>
           </ToggleButtonGroup>
+          <IconButton id="delete" aria-label="delete" color="primary" >
+            <MuiToolTip title="Delete CSV">
+              <DeleteForeverIcon onClick={props.onDeleteLogFile} />
+            </MuiToolTip>
+          </IconButton>
           <IconButton id="download" aria-label="download" color="primary" onClick={props.handleDownload}>
             <MuiToolTip title="Download CSV">
               <DownloadIcon />

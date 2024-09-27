@@ -9,5 +9,6 @@
 @media (max-width: 767px) {
   .chartBox {
     margin: 0 10px;
+    right: -6px !important;
   }
 }
