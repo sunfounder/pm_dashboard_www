@@ -2,7 +2,7 @@
 
 - [pm-dashboard-www 参考文档](#pm-dashboard-www-参考文档)
   - [页面](#页面)
-    - [Drawer](#drawer)
+    - [Drawer 抽屉](#drawer-抽屉)
       - [Dashboard](#dashboard)
         - [输入卡片](#输入卡片)
         - [输出卡片](#输出卡片)
@@ -14,6 +14,8 @@
         - [储存卡片](#储存卡片)
       - [History](#history)
       - [Log](#log)
+      - [选项区域](#选项区域)
+        - [Log 文件条目](#log-文件条目)
     - [右上角菜单键](#右上角菜单键)
       - [OTA](#ota)
         - [自动升级](#自动升级)
@@ -83,7 +85,7 @@
 
 ## 页面
 
-### Drawer
+### Drawer 抽屉
 
 抽屉, 抽屉上面显示3个按钮，分别是Dashboard, History, Log。下面显示History和Log的列表。如果没有History和Log则不显示Drawer。
 
@@ -264,6 +266,16 @@ Dashboard按照peripheral显示卡片，从[`/get-history`](#get-get-history)获
 #### Log
 
 待完成
+
+#### 选项区域
+
+选项区域根据上面的选项切换显示。History页面显示所有数据条目，Log页面显示所有日志条目。
+
+##### Log 文件条目
+
+Log文件条目列表，显示log名称和所属模块。右边有删除按钮，点击按钮弹窗确认删除。
+
+删除API: [`/delete-log-file`](#post-delete-log-file)
 
 ### 右上角菜单键
 
@@ -1093,3 +1105,7 @@ OTA 更新
   - Peripheral: mac_address
 - IP Address
   - Peripheral: ip_address
+- Clear History 清除历史及数据
+  - Peripheral: clear_history
+  - API: [clear-history](#post-clear-history)
+  - 弹窗警告确认： Are you sure to clear history and data? All histories and data will be lost. And this action cannot be undone.
