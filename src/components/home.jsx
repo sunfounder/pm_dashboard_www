@@ -244,7 +244,7 @@ const Home = (props) => {
   const getConfig = async () => {
     const result = await request('get-config', "GET");
     if (result) {
-      setTemperatureUnit(result.system.temperature_unit);
+      setTemperatureUnit(result.system ? result.system.temperature_unit : result.auto.temperature_unit);
     }
   }
 
