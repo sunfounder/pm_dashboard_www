@@ -18,9 +18,11 @@ const Chart = (props) => {
     }
     return value;
   };
+  // 对传入的数据进行倒序
+  const reversedData = [...props.data].reverse();
   return <Graph>
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart width={600} height={300} data={props.data}>
+      <LineChart width={600} height={300} data={reversedData}>
         <Tooltip
           contentStyle={{
             backgroundColor: theme.palette.background.paper,

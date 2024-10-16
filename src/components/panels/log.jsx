@@ -81,6 +81,7 @@ const LogPanel = (props) => {
     }
     if (result.length === 0) {
       setLogFile("");
+      setFileContent([]);
       window.localStorage.setItem("pm-dashboard-log-logFile", "");
     }
     result.sort();
@@ -152,6 +153,8 @@ const LogPanel = (props) => {
         logFile = logList[fileIndex + 1];
       } else if (!logList[fileIndex + 1] && logList.length > 2) {
         logFile = logList[logList.length - 2];
+        setFileIndex(logList.length - 2);
+        window.localStorage.setItem("pm-dashboard-log-fileIndex", logList.length - 2);
       }
       setLogFile(logFile);
       if (logList.length > 0) {
