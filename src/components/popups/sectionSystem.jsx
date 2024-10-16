@@ -4,6 +4,7 @@ import {
   Button,
   Box,
   Typography,
+  IconButton,
 } from '@mui/material';
 import {
   SettingItemToggleButton,
@@ -21,6 +22,7 @@ import {
 import PopupFrame from './popupFrame.jsx';
 import SectionFrame from "./sectionFrame.jsx";
 import ColorWheel from "./colorWheel.jsx";
+import { Circle } from '@mui/icons-material';
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const GPIO_FAN_MODES = ['Always On', 'Performance', 'Cool', 'Balanced', 'Quiet'];
 const SectionSystem = (props) => {
@@ -172,7 +174,7 @@ const SectionSystem = (props) => {
   const handleFanLEDModeCommitted = async (event) => {
     let result = await props.sendData('set-fan-led', { 'led': event });
     if (result === "OK") {
-      props.onChange('system', 'fan_led', event);
+      props.onChange('system', 'gpio_fan_led', event);
     }
   }
 
@@ -321,9 +323,13 @@ const SectionSystem = (props) => {
               onBlur={(event) => handleRgbColor(event.target.value)}
               start="#"
               children={
-                <Box sx={{ display: "flex", alignItems: "flex-end", paddingLeft: "0.5rem" }} onClick={handleColorDiskPopup}>
-                  <Box sx={{ width: "1.5rem", height: "1.5rem", backgroundColor: props.config.rgb_color, paddingBottom: "0" }}></Box>
-                </Box>
+                // <Box sx={{ display: "flex", alignItems: "flex-end", paddingLeft: "0.5rem" }}>
+                <IconButton aria-label="color-picker" onClick={handleColorDiskPopup}>
+                  <Circle sx={{ color: props.config.rgb_color }} />
+
+                </IconButton>
+                /* <Box sx={{ width: "1.5rem", height: "1.5rem", backgroundColor: props.config.rgb_color, paddingBottom: "0" }}></Box> */
+                // </Box>
               }
             />
             {/* RGB 亮度 */}
