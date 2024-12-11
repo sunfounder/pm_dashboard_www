@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import PopupFrame from './popupFrame.jsx';
 import SectionSystem from './sectionSystem.jsx';
 import SectionMQTT from './sectionMQTT.jsx';
-import SectionAuto from './sectionAuto.jsx';
+// import SectionAuto from './sectionAuto.jsx';
 import { SettingItemSwitch } from './settingItems.jsx';
 
 const defaultConfigData = {
@@ -86,10 +86,10 @@ const PopupSettings = (props) => {
     // props.onChange('mqtt', key, value);
     handleChanged('mqtt', key, value);
   }
-  const handleAutohanged = (key, value) => {
-    // props.onChange('auto', key, value);
-    handleChanged('auto', key, value);
-  }
+  // const handleAutohanged = (key, value) => {
+  //   // props.onChange('auto', key, value);
+  //   handleChanged('auto', key, value);
+  // }
 
   const handleChanged = (field, name, value) => {
     let newConfig = { ...config };
@@ -149,6 +149,7 @@ const PopupSettings = (props) => {
         props.peripherals.includes("sd_card_usage")) &&
         <SectionSystem
           config={config.system}
+          showSnackBar={props.showSnackBar}
           onChange={handleChanged}
           sendData={props.sendData}
           showAlert={props.showAlert}

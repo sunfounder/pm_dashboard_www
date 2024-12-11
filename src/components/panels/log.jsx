@@ -42,7 +42,7 @@ const LogPanel = (props) => {
   const [autoScroll, setAutoScroll] = useState(window.localStorage.getItem("pm-dashboard-log-autoScroll") === "true");
   const [wrap, setWrap] = useState(window.localStorage.getItem("pm-dashboard-log-wrap") === "true");
   const [element, setElement] = useState(null);
-  const [downloadElement, setDownloadElement] = useState(null);
+  // const [downloadElement, setDownloadElement] = useState(null);
   const [getLogFinished, setGetLogFinished] = useState(true);
   const [popupStatus, setPopupStatus] = useState(false);
   const [deleteFilename, setDeleteFilename] = useState(window.localStorage.getItem("pm-dashboard-log-logFile") || "");
@@ -160,6 +160,7 @@ const LogPanel = (props) => {
       if (logList.length > 0) {
         window.localStorage.setItem("pm-dashboard-log-logFile", logFile);
       }
+      props.showSnackBar("success", "Delete log file successfully");
     }
   }
 
@@ -268,8 +269,7 @@ const LogPanel = (props) => {
           <Typography sx={{ margin: "0 1rem 1rem 1rem" }}>Do you want to delete the selected file? And this action cannot be undone.</Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-around", marginBottom: "0.5rem" }}>
-          <Button onClick={handleDeleteLogConfirm}>Confirm</Button>
-          <Button onClick={handlePopup}>Cancel</Button>
+          <Button variant="contained" color='error' sx={{ width: "28rem" }} onClick={handleDeleteLogConfirm}>DELETE "{deleteFilename}" FILE</Button>
         </Box>
       </PopupFrame>
     </Box >

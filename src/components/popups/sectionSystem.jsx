@@ -49,6 +49,7 @@ const SectionSystem = (props) => {
     let result = await props.sendData('clear-history');
     if (result === "OK") {
       console.log("History cleared");
+      props.showSnackBar("success", "History data has been cleared successfully.");
     }
   }
 
@@ -511,7 +512,7 @@ const SectionSystem = (props) => {
           props.peripherals.includes("clear_history") &&
           <SettingItemButton
             title="Clear All Data"
-            subtitle="Clear all data in SD card"
+            subtitle="Clear all history data"
             color="error"
             variant="contained"
             onClick={handlePopup}
@@ -556,11 +557,10 @@ const SectionSystem = (props) => {
       </PopupFrame>
       <PopupFrame title="Warning" onClose={handlePopup} open={popupStatus} width="30rem" >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Typography sx={{ margin: "0 1rem 1rem 1rem" }}> Are you sure to clear history and data? All histories and data will be lost. And this action cannot be undone.</Typography>
+          <Typography sx={{ margin: "0 1rem 1rem 1rem" }}> Are you sure to clear history data? All histories data will be lost. And this action cannot be undone.</Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-around", marginBottom: "0.5rem" }}>
-          <Button sx={{ color: "red" }} onClick={handleClearHistory}>Confirm</Button>
-          <Button onClick={handlePopup}>Cancel</Button>
+          <Button variant="contained" color="error" sx={{ width: "28rem" }} onClick={handleClearHistory}>CLEAR ALL HISTORY DATA</Button>
         </Box>
       </PopupFrame>
     </>
