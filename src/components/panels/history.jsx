@@ -457,8 +457,9 @@ const DataListItem = (props) => {
   }
 
   const handleKeyChange = (event) => {
-    props.onClick(props.name, event.target.checked);
-  }
+    const isChecked = event.target.checked;
+    props.onClick(props.name, isChecked !== undefined ? isChecked : !props.checked);
+  };
 
   const handleColorChange = (key, color) => {
     props.onColorChange(key, color);
