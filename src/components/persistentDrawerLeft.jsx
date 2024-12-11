@@ -271,8 +271,8 @@ const PersistentDrawerLeft = (props) => {
         <Divider />
         <List>
           {title.map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ backgroundColor: selectedIndex === index ? '#eee' : 'inherit' }}>
-              <ListItemButton onClick={() => handleMenuItemClick(item, index)}>
+            <ListItem key={item.text} disablePadding  >
+              <ListItemButton selected={selectedIndex === index} onClick={() => handleMenuItemClick(item, index)}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
               </ListItemButton>
