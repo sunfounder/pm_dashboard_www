@@ -80,6 +80,7 @@
     - [POST /set-oled-enable](#post-set-oled-enable)
     - [POST /set-oled-disk](#post-set-oled-disk)
     - [POST /set-oled-network-interface](#post-set-oled-network-interface)
+    - [POST /set-oled-rotation](#post-set-oled-rotation)
   - [Settings](#settings-1)
     - [System](#system)
 
@@ -1044,6 +1045,16 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
 
+### POST /set-oled-rotation
+
+设置OLED显示方向
+
+- Data:
+  - `rotation` - 方向 0/180
+- Response:
+  - `{"status": true, "data": "OK"}`
+  - `{"status": false, "error": "[ERROR] rotation {rotation} not found, available values: 0 or 180"}`
+
 ## Settings
 
 ### System
@@ -1065,6 +1076,10 @@ OTA 更新
   - Peripheral: oled
   - API: [set-oled-network-interface](#post-set-oled-network-interface)
   - API: [get-network-interface-list](#get-get-network-interface-list)
+- OLED Rotation: 0/180
+  - 选择OLED显示方向
+  - Peripheral: oled
+  - API: [set-oled-rotation](#post-set-oled-rotation)
 - Fan LED: on/off/follow
   - Peripheral: gpio_fan_led
   - API: [set-fan-led](#post-set-fan-led)
