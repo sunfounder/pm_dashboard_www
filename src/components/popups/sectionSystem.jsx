@@ -88,6 +88,13 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleOLEDRotation = async (event) => {
+    let result = await props.sendData('set-oled-rotation', { 'rotation': Number(event) });
+    if (result === "OK") {
+      props.onChange('system', 'oled_rotation', Number(event));
+    }
+  }
+
   const handleOledNetworkInterfaceList = async (event) => {
     let result = await props.sendData('set-oled-network-interface', { 'interface': event });
     if (result === "OK") {
@@ -301,6 +308,17 @@ const SectionSystem = (props) => {
               onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
               value={props.config.oled_network_interface}
               options={oledNetworkInterfaceList}
+            />
+            {/* oled 显示方向 */}
+            <SettingItemToggleButton
+              title="OLED Rotation"
+              subtitle="Set OLED rotation"
+              onChange={(event) => handleOLEDRotation(event.target.value)}
+              value={props.config.oled_rotation}
+              options={[
+                { value: 0, name: '0°' },
+                { value: 180, name: '180°' },
+              ]}
             />
           </>
         }
