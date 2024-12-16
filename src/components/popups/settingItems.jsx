@@ -238,6 +238,9 @@ const SettingItemText = (props) => {
         onBlur={props.onBlur}
       >
       </TextField>
+      {
+        props.children && props.children
+      }
     </SettingItem>
   )
 }
@@ -537,6 +540,8 @@ const SettingItemButton = (props) => {
   return <SettingItem {...props} >
     <Button
       onClick={props.onClick}
+      variant={props.variant}
+      color={props.color}
       startIcon={props.loading && <CircularProgress size={30} />}
     >
       {props.buttonText}

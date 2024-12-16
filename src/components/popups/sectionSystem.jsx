@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ListItem,
   Button,
+  Box,
+  Typography,
+  IconButton,
 } from '@mui/material';
 import {
   SettingItemToggleButton,
@@ -14,11 +17,17 @@ import {
   SettingItemSDCardUsage,
   SettingItemNumber,
   SettingItemMenu,
+  SettingItemButton
 } from "./settingItems.jsx";
+import PopupFrame from './popupFrame.jsx';
 import SectionFrame from "./sectionFrame.jsx";
+import ColorWheel from "./colorWheel.jsx";
+import { Circle } from '@mui/icons-material';
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const GPIO_FAN_MODES = ['Always On', 'Performance', 'Cool', 'Balanced', 'Quiet'];
 const SectionSystem = (props) => {
+  const [colorDiskPopup, setColorDiskPopup] = useState(false);
+  const [popupStatus, setPopupStatus] = useState(false);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [oledDiskList, setOledDiskList] = React.useState([
     { value: "total", label: "Total" },
@@ -26,6 +35,23 @@ const SectionSystem = (props) => {
   const [oledNetworkInterfaceList, setOledNetworkInterfaceList] = React.useState([
     { value: "all", label: "All" },
   ])
+
+  const handleColorDiskPopup = () => {
+    setColorDiskPopup(!colorDiskPopup);
+  }
+
+  const handlePopup = () => {
+    setPopupStatus(!popupStatus);
+  }
+
+  const handleClearHistory = async () => {
+    setPopupStatus(!popupStatus);
+    let result = await props.sendData('clear-history');
+    if (result === "OK") {
+      console.log("History cleared");
+      props.showSnackBar("success", "History data has been cleared successfully.");
+    }
+  }
 
   const getOledDiiskList = async () => {
     const result = await props.request('get-disk-list');
@@ -84,6 +110,11 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleColorChange = (newColor) => {
+    let color = newColor.replace("#", "");
+    handleRgbColor(color);
+  }
+
   const handleRgbColor = async (event) => {
     if (event.length !== 6) {
       console.log("Invalid color");
@@ -91,7 +122,7 @@ const SectionSystem = (props) => {
       const color = "#" + event;
       let result = await props.sendData('set-rgb-color', { 'color': color });
       if (result === "OK") {
-        props.onChange('system', 'rgb_color', event);
+        props.onChange('system', 'rgb_color', color);
       }
     }
   }
@@ -144,7 +175,7 @@ const SectionSystem = (props) => {
   const handleFanLEDModeCommitted = async (event) => {
     let result = await props.sendData('set-fan-led', { 'led': event });
     if (result === "OK") {
-      props.onChange('system', 'fan_led', event);
+      props.onChange('system', 'gpio_fan_led', event);
     }
   }
 
@@ -230,272 +261,309 @@ const SectionSystem = (props) => {
   }, [])
 
   return (
-    <SectionFrame title="System">
-      {/* 温度单位 */}
-      {props.peripherals.includes("temperature_unit") &&
-        <SettingItemToggleButton
-          title="Temperature Unit"
-          subtitle="Set prefer temperature unit"
-          onChange={(event) => handleTemperatureUnit(event.target.value)}
-          value={props.config.temperature_unit}
-          options={[
-            { value: 'C', name: 'Celius' },
-            { value: 'F', name: 'Fahrenheit' },
-          ]}
-        />
-      }
-      {/* oled */}
-      {
-        props.peripherals.includes("oled") &&
-        <>
-          {/* oled开关 */}
-          <SettingItemSwitch
-            title="OLED Enable"
-            subtitle="Whether to enable OLED"
-            onChange={(event) => handleToggleOLEDEnabled(event)}
-            value={props.config.oled_enable} />
-          {/* Disk 磁盘选项 */}
-          <SettingItemMenu
-            title="OLED Disk"
-            subtitle="Set OLED disk"
-            onChange={(event) => handleOledDiskList(event.target.value)}
-            value={props.config.oled_disk}
-            options={oledDiskList}
-          />
-          {/*OLED显示网络接口 */}
-          <SettingItemMenu
-            title="OLED Network Interface"
-            subtitle="Set Network Interface"
-            onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
-            value={props.config.oled_network_interface}
-            options={oledNetworkInterfaceList}
-          />
-        </>
-      }
-      {/* RGB */}
-      {
-        props.peripherals.includes("ws2812") &&
-        <>
-          {/* RGB 开关 */}
-          <SettingItemSwitch
-            title="RGB Enable"
-            subtitle="Whether to enable RGB"
-            // onChange={(event) => props.onChange('rgb_enable', event)}
-            onChange={(event) => handleToggleRGBEnabled(event)}
-            value={props.config.rgb_enable} />
-          {/* RGB 颜色 */}
-          <SettingItemText
-            title="RGB Color"
-            subtitle="Set RGB color"
-            value={props.config.rgb_color.replace("#", "")}
-            // onChange={(event) => props.onChange('rgb_color', event)}
-            onBlur={(event) => handleRgbColor(event.target.value)}
-            start="#"
-          />
-          {/* RGB 亮度 */}
-          <SettingItemSlider
-            title="RGB Brightness"
-            subtitle="Set RGB brightness."
-            valueFormat={(value) => `${value}%`}
-            // onChange={(event) => props.onChange('rgb_brightness', event)}
-            onCommitted={(event) => handleRgbBrightness(event)}
-            value={props.config.rgb_brightness}
-            sx={{ marginTop: 2, }}
-            min={0}
-            max={100}
-          />
-          {/* RGB 模式*/}
-          <SettingItemMenu
-            title="RGB Style"
-            subtitle="Set RGB animation style"
-            // onChange={(event) => props.onChange('system', 'rgb_style', event.target.value)}
-            onChange={(event) => handleRGBAnimation(event.target.value)}
-            value={props.config.rgb_style}
+    <>
+      <SectionFrame title="System">
+        {/* 温度单位 */}
+        {props.peripherals.includes("temperature_unit") &&
+          <SettingItemToggleButton
+            title="Temperature Unit"
+            subtitle="Set prefer temperature unit"
+            onChange={(event) => handleTemperatureUnit(event.target.value)}
+            value={props.config.temperature_unit}
             options={[
-              { value: "", label: "None" },
-              { value: "solid", label: "Solid" },
-              { value: "breathing", label: "Breathing" },
-              { value: "flow", label: "Flow" },
-              { value: "flow_reverse", label: "Flow Reverse" },
-              { value: "rainbow", label: "Rainbow" },
-              { value: "rainbow_reverse", label: "Rainbow Reverse" },
-              { value: "hue_cycle", label: "Hue Cycle" },
+              { value: 'C', name: 'Celius' },
+              { value: 'F', name: 'Fahrenheit' },
             ]}
           />
-          {/* RGB 速度 */}
+        }
+        {/* oled */}
+        {
+          props.peripherals.includes("oled") &&
+          <>
+            {/* oled开关 */}
+            <SettingItemSwitch
+              title="OLED Enable"
+              subtitle="Whether to enable OLED"
+              onChange={(event) => handleToggleOLEDEnabled(event)}
+              value={props.config.oled_enable} />
+            {/* Disk 磁盘选项 */}
+            <SettingItemMenu
+              title="OLED Disk"
+              subtitle="Set OLED disk"
+              onChange={(event) => handleOledDiskList(event.target.value)}
+              value={props.config.oled_disk}
+              options={oledDiskList}
+            />
+            {/*OLED显示网络接口 */}
+            <SettingItemMenu
+              title="OLED Network Interface"
+              subtitle="Set Network Interface"
+              onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
+              value={props.config.oled_network_interface}
+              options={oledNetworkInterfaceList}
+            />
+          </>
+        }
+        {/* RGB */}
+        {
+          props.peripherals.includes("ws2812") &&
+          <>
+            {/* RGB 开关 */}
+            <SettingItemSwitch
+              title="RGB Enable"
+              subtitle="Whether to enable RGB"
+              // onChange={(event) => props.onChange('rgb_enable', event)}
+              onChange={(event) => handleToggleRGBEnabled(event)}
+              value={props.config.rgb_enable} />
+            {/* RGB 颜色 */}
+            <SettingItemText
+              title="RGB Color"
+              subtitle="Set RGB color"
+              value={props.config.rgb_color.replace("#", "")}
+              // onChange={(event) => props.onChange('rgb_color', event)}
+              onBlur={(event) => handleRgbColor(event.target.value)}
+              start="#"
+              children={
+                // <Box sx={{ display: "flex", alignItems: "flex-end", paddingLeft: "0.5rem" }}>
+                <IconButton aria-label="color-picker" onClick={handleColorDiskPopup}>
+                  <Circle sx={{ color: props.config.rgb_color }} />
+
+                </IconButton>
+                /* <Box sx={{ width: "1.5rem", height: "1.5rem", backgroundColor: props.config.rgb_color, paddingBottom: "0" }}></Box> */
+                // </Box>
+              }
+            />
+            {/* RGB 亮度 */}
+            <SettingItemSlider
+              title="RGB Brightness"
+              subtitle="Set RGB brightness."
+              valueFormat={(value) => `${value}%`}
+              // onChange={(event) => props.onChange('rgb_brightness', event)}
+              onCommitted={(event) => handleRgbBrightness(event)}
+              value={props.config.rgb_brightness}
+              sx={{ marginTop: 2, }}
+              min={0}
+              max={100}
+            />
+            {/* RGB 模式*/}
+            <SettingItemMenu
+              title="RGB Style"
+              subtitle="Set RGB animation style"
+              // onChange={(event) => props.onChange('system', 'rgb_style', event.target.value)}
+              onChange={(event) => handleRGBAnimation(event.target.value)}
+              value={props.config.rgb_style}
+              options={[
+                { value: "", label: "None" },
+                { value: "solid", label: "Solid" },
+                { value: "breathing", label: "Breathing" },
+                { value: "flow", label: "Flow" },
+                { value: "flow_reverse", label: "Flow Reverse" },
+                { value: "rainbow", label: "Rainbow" },
+                { value: "rainbow_reverse", label: "Rainbow Reverse" },
+                { value: "hue_cycle", label: "Hue Cycle" },
+              ]}
+            />
+            {/* RGB 速度 */}
+            <SettingItemSlider
+              title="RGB Speed"
+              subtitle="Set RGB animation speed"
+              valueFormat={(value) => `${value}%`}
+              // onChange={(event) => props.onChange('rgb_speed', event)}
+              onCommitted={(event) => handleRgbSpeed(event)}
+              value={props.config.rgb_speed}
+              sx={{ marginTop: 2, }}
+              min={0}
+              max={100}
+            />
+          </>
+        }
+
+        {/* 关机百分比 */}
+        {props.peripherals.includes("shutdown_percentage") &&
           <SettingItemSlider
-            title="RGB Speed"
-            subtitle="Set RGB animation speed"
+            title="Shutdown Stratagy"
+            subtitle="Shutdown, if no input and battery percentage falls below this."
             valueFormat={(value) => `${value}%`}
-            // onChange={(event) => props.onChange('rgb_speed', event)}
-            onCommitted={(event) => handleRgbSpeed(event)}
-            value={props.config.rgb_speed}
+            onCommitted={handleShutdownPercentageCommitted}
+            value={props.config.shutdown_percentage}
             sx={{ marginTop: 2, }}
+            min={10}
+            max={100}
+          />}
+        {/* 风扇 led */}
+        {
+          props.peripherals.includes("gpio_fan_led") &&
+          <SettingItemToggleButton
+            title="Fan LED"
+            subtitle="Set Fan LED"
+            onChange={(event) => handleFanLEDModeCommitted(event.target.value)}
+            value={props.config.gpio_fan_led}
+            options={[
+              { value: 'on', name: 'on' },
+              { value: 'off', name: 'off' },
+              { value: 'follow', name: 'follow' },
+            ]}
+          />
+        }
+        {/* 风扇模式 */}
+        {(props.peripherals.includes("spc_fan_power")) &&
+          <SettingItemSlider
+            title="Fan Power"
+            subtitle="Set Fan Power"
+            valueFormat={(value) => `${value}%`}
+            onCommitted={handleFanModeCommitted}
+            value={props.config.fan_power}
+            sx={{ marginBottom: 0 }}
+            step={25}
             min={0}
             max={100}
+            marks
+          />}
+        {
+          // gpio风扇
+          props.peripherals.includes("gpio_fan_mode") &&
+          <SettingItemSlider
+            title="GPIO Fan Mode"
+            subtitle="Set GPIO fan mode"
+            // valueFormat={(value) => GPIO_FAN_MODES[4 - value]}
+            // value={4 - props.config.gpio_fan_mode}
+            valueFormat={(value) => GPIO_FAN_MODES[value]}
+            onCommitted={handleGPIOFanModeCommitted}
+            value={props.config.gpio_fan_mode}
+            sx={{ marginBottom: 0 }}
+            min={0}
+            max={4}
+            step={1}
+            marks
           />
-        </>
-      }
-
-      {/* 关机百分比 */}
-      {props.peripherals.includes("shutdown_percentage") &&
-        <SettingItemSlider
-          title="Shutdown Stratagy"
-          subtitle="Shutdown, if no input and battery percentage falls below this."
-          valueFormat={(value) => `${value}%`}
-          onCommitted={handleShutdownPercentageCommitted}
-          value={props.config.shutdown_percentage}
-          sx={{ marginTop: 2, }}
-          min={10}
-          max={100}
-        />}
-      {/* 风扇 led */}
-      {
-        props.peripherals.includes("gpio_fan_led") &&
-        <SettingItemToggleButton
-          title="Fan LED"
-          subtitle="Set Fan LED"
-          onChange={(event) => handleFanLEDModeCommitted(event.target.value)}
-          value={props.config.gpio_fan_led}
-          options={[
-            { value: 'on', name: 'on' },
-            { value: 'off', name: 'off' },
-            { value: 'follow', name: 'follow' },
-          ]}
-        />
-      }
-      {/* 风扇模式 */}
-      {(props.peripherals.includes("spc_fan_power")) &&
-        <SettingItemSlider
-          title="Fan Power"
-          subtitle="Set Fan Power"
-          valueFormat={(value) => `${value}%`}
-          onCommitted={handleFanModeCommitted}
-          value={props.config.fan_power}
-          sx={{ marginBottom: 0 }}
-          step={25}
-          min={0}
-          max={100}
-          marks
-        />}
-      {
-        // gpio风扇
-        props.peripherals.includes("gpio_fan_mode") &&
-        <SettingItemSlider
-          title="GPIO Fan Mode"
-          subtitle="Set GPIO fan mode"
-          // valueFormat={(value) => GPIO_FAN_MODES[4 - value]}
-          // value={4 - props.config.gpio_fan_mode}
-          valueFormat={(value) => GPIO_FAN_MODES[value]}
-          onCommitted={handleGPIOFanModeCommitted}
-          value={props.config.gpio_fan_mode}
-          sx={{ marginBottom: 0 }}
-          min={0}
-          max={4}
-          step={1}
-          marks
-        />
-      }
-      {/* 当前时间 */}
-      {props.peripherals.includes("time") &&
-        <SettingItemTime
-          title="Time"
-          subtitle=""
-          value={currentTime}
-          editable={!props.peripherals.includes("auto_time_enable") || !props.config.auto_time_switch}
-          request={props.request}
-          onAccept={handleTimeAccepted}
-        />}
-      {/* 时区选择 */}
-      {props.peripherals.includes("timezone") &&
-        <SettingItemTimezone
-          title="Timezone"
-          subtitle=""
-          value={props.config.timezone}
-          onChange={handleTimezoneChange}
-        />}
-      {/* 自动设置时间 */}
-      {props.peripherals.includes("auto_time_enable") &&
-        <SettingItemSwitch
-          title="Auto Time Setting"
-          value={props.config.auto_time_switch}
-          onChange={handleAutoTimeSwitchChange}
-        />}
-      {/* NTP 服务器 */}
-      {props.peripherals.includes("auto_time_enable") &&
-        <SettingItemText
-          title="NTP Server"
-          subtitle=""
-          disabled={!props.config.auto_time_switch}
-          value={props.config.ntp_server}
-          submitable={true}
-          onSubmit={handleNTPServerChange}
-        />}
-      {/* SD 卡占用 */}
-      {props.peripherals.includes("sd_card_usage") &&
-        <>
-          <SettingItemSDCardUsage
-            title="Micro SD card usage"
+        }
+        {/* 当前时间 */}
+        {props.peripherals.includes("time") &&
+          <SettingItemTime
+            title="Time"
             subtitle=""
-            used={props.config.sd_card_used}
-            total={props.config.sd_card_total}
-          />
-          <SettingItemNumber
-            width="30%"
-            title="SD Data Interval"
-            subtitle="Set SD data interval in seconds"
-            value={props.config ? props.config.sd_card_data_interval : ""}
-            disabled={props.config.sd_card_total === 0}
-            min={1}
-            max={3600}
-            end="S"
-            onBlur={handleSDDataIntervalBlur}
-          // onChange={(e) => props.onChange('system', 'sd_card_data_interval', e)}
-          />
-          <SettingItemNumber
-            width="30%"
-            title="SD Data Retain"
-            subtitle="Set SD data retain days"
-            value={props.config ? props.config.sd_card_data_retain : ""}
-            disabled={props.config.sd_card_total === 0}
-            min={1}
-            max={1000}
-            end="Days"
-            onBlur={handleSDDataRetainBlur}
-          // onChange={(e) => props.onChange('system', 'sd_card_data_retain', e)}
-          />
-        </>
-      }
-      {/* Mac地址 */}
-      {props.peripherals.includes("mac_address") &&
-        <SettingItem
-          title="Mac Address"
-          subtitle={props.config.mac_address}
-        />}
-      {/* IP地址 */}
-      {props.peripherals.includes("ip_address") &&
-        <SettingItem
-          title="IP Address"
-          subtitle={props.config.ip_address}
-        />}
-      {/* 重启设备 */}
-      {props.peripherals.includes("restart") &&
-        <ListItem>
-          <Button
-            variant='outlined'
+            value={currentTime}
+            editable={!props.peripherals.includes("auto_time_enable") || !props.config.auto_time_switch}
+            request={props.request}
+            onAccept={handleTimeAccepted}
+          />}
+        {/* 时区选择 */}
+        {props.peripherals.includes("timezone") &&
+          <SettingItemTimezone
+            title="Timezone"
+            subtitle=""
+            value={props.config.timezone}
+            onChange={handleTimezoneChange}
+          />}
+        {/* 自动设置时间 */}
+        {props.peripherals.includes("auto_time_enable") &&
+          <SettingItemSwitch
+            title="Auto Time Setting"
+            value={props.config.auto_time_switch}
+            onChange={handleAutoTimeSwitchChange}
+          />}
+        {/* NTP 服务器 */}
+        {props.peripherals.includes("auto_time_enable") &&
+          <SettingItemText
+            title="NTP Server"
+            subtitle=""
+            disabled={!props.config.auto_time_switch}
+            value={props.config.ntp_server}
+            submitable={true}
+            onSubmit={handleNTPServerChange}
+          />}
+        {/* SD 卡占用 */}
+        {props.peripherals.includes("sd_card_usage") &&
+          <>
+            <SettingItemSDCardUsage
+              title="Micro SD card usage"
+              subtitle=""
+              used={props.config.sd_card_used}
+              total={props.config.sd_card_total}
+            />
+            <SettingItemNumber
+              width="30%"
+              title="SD Data Interval"
+              subtitle="Set SD data interval in seconds"
+              value={props.config ? props.config.sd_card_data_interval : ""}
+              disabled={props.config.sd_card_total === 0}
+              min={1}
+              max={3600}
+              end="S"
+              onBlur={handleSDDataIntervalBlur}
+            // onChange={(e) => props.onChange('system', 'sd_card_data_interval', e)}
+            />
+            <SettingItemNumber
+              width="30%"
+              title="SD Data Retain"
+              subtitle="Set SD data retain days"
+              value={props.config ? props.config.sd_card_data_retain : ""}
+              disabled={props.config.sd_card_total === 0}
+              min={1}
+              max={1000}
+              end="Days"
+              onBlur={handleSDDataRetainBlur}
+            // onChange={(e) => props.onChange('system', 'sd_card_data_retain', e)}
+            />
+          </>
+        }
+        {/* 清除所有数据 */}
+        {
+          props.peripherals.includes("clear_history") &&
+          <SettingItemButton
+            title="Clear All Data"
+            subtitle="Clear all history data"
             color="error"
-            onClick={() => {
-              props.restartPrompt(
-                'Restart Device',
-                'Do you want to restart device?',
-                props.onCancel
-              );
-            }}
-            sx={{ width: '100%' }} >
-            Restart
-          </Button>
-        </ListItem>}
-    </SectionFrame>
+            variant="contained"
+            onClick={handlePopup}
+            buttonText="Clear"
+          />
+        }
+        {/* Mac地址 */}
+        {props.peripherals.includes("mac_address") &&
+          <SettingItem
+            title="Mac Address"
+            subtitle={props.config.mac_address}
+          />}
+        {/* IP地址 */}
+        {props.peripherals.includes("ip_address") &&
+          <SettingItem
+            title="IP Address"
+            subtitle={props.config.ip_address}
+          />}
+        {/* 重启设备 */}
+        {
+          props.peripherals.includes("restart") &&
+          <ListItem>
+            <Button
+              variant='outlined'
+              color="error"
+              onClick={() => {
+                props.restartPrompt(
+                  'Restart Device',
+                  'Do you want to restart device?',
+                  props.onCancel
+                );
+              }}
+              sx={{ width: '100%' }} >
+              Restart
+            </Button>
+          </ListItem>}
+      </SectionFrame>
+      <PopupFrame title="ColorPicker" onClose={handleColorDiskPopup} open={colorDiskPopup} width="24rem">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: "2rem" }}>
+          <ColorWheel onColorChange={handleColorChange} color={props.config.rgb_color}></ColorWheel>
+        </Box>
+      </PopupFrame>
+      <PopupFrame title="Warning" onClose={handlePopup} open={popupStatus} width="30rem" >
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Typography sx={{ margin: "0 1rem 1rem 1rem" }}> Are you sure to clear history data? All histories data will be lost. And this action cannot be undone.</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-around", marginBottom: "0.5rem" }}>
+          <Button variant="contained" color="error" sx={{ width: "28rem" }} onClick={handleClearHistory}>CLEAR ALL HISTORY DATA</Button>
+        </Box>
+      </PopupFrame>
+    </>
   )
 }
 

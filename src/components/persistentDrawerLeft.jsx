@@ -83,9 +83,26 @@ const PersistentDrawerLeft = (props) => {
   const [downloadElement, setDownloadElement] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
+  const [settingButton, setSettingButton] = useState(false);
 
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+    let dropdown = [
+      'ota_auto',
+      'ota_manual',
+      'sta_switch',
+      'sta_ssid_scan',
+      'sta_ssid',
+      'sta_psk',
+      'ap_ssid',
+      'ap_psk'
+    ];
+    const hasCommonItem = dropdown.some(item => props.peripherals.includes(item));
+    if (!hasCommonItem) {
+      handleSettingPage();
+    } else {
+      setSettingButton(true);
+      setAnchorElUser(event.currentTarget);
+    }
   };
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -223,10 +240,13 @@ const PersistentDrawerLeft = (props) => {
                   Download History
                 </MenuItem>
               } */}
-              <MenuItem onClick={handleSettingPage} disableRipple>
-                <SettingsIcon sx={{ marginRight: '10px' }} />
-                Settings
-              </MenuItem>
+              {
+                settingButton &&
+                <MenuItem onClick={handleSettingPage} disableRipple>
+                  <SettingsIcon sx={{ marginRight: '10px' }} />
+                  Settings
+                </MenuItem>
+              }
             </Menu>
           </Box>
         </Toolbar>
@@ -251,8 +271,8 @@ const PersistentDrawerLeft = (props) => {
         <Divider />
         <List>
           {title.map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ backgroundColor: selectedIndex === index ? '#eee' : 'inherit' }}>
-              <ListItemButton onClick={() => handleMenuItemClick(item, index)}>
+            <ListItem key={item.text} disablePadding  >
+              <ListItemButton selected={selectedIndex === index} onClick={() => handleMenuItemClick(item, index)}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
               </ListItemButton>
