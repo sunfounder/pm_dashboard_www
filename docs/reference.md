@@ -222,13 +222,20 @@ Dashboard按照peripheral显示卡片，从[`/get-history`](#get-get-history)获
     - 数据: `gpio_fan_state`
     - peripheral: `gpio_fan_state`
     - Yes/No
-4. 温度: 
-    - 数据: `temperature`
-    - peripheral: `temperature`
+4. CPU温度: 
+    - 数据: `cpu_temperature`
+    - peripheral: `cpu_temperature`
     - 显示图表
     - 单位: `temperature_unit`
     - 最小值: 0
-    - 最大值: 100
+    - 最大值: 125
+5. GPU温度：
+    - 数据: `gpu_temperature`
+    - peripheral: `gpu_temperature`
+    - 显示图表
+    - 单位: `temperature_unit`
+    - 最小值: 0
+    - 最大值: 125
 
 ##### CPU卡片
 
@@ -369,6 +376,13 @@ AP 设置弹窗，打开弹窗获取AP信息
       - 如果`auto_time_enable`peripheral是false或者`auto_time_enable`的值是false,才可用,否则变灰,无法点击.
       - 点击显示日期时间选择框
     - 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
+  - 数据间隔
+    - peripheral: `data_interval`
+    - config分类: `system`
+    - key: `data_interval`
+    - 输入框
+    - 最小1秒，最大3600秒
+    - 描述: The interval between data uploads.
   - 时区选择 Timezone: 
     - peripheral: `timezone`
     - config分类: `system`
@@ -457,7 +471,8 @@ PERIPHERALS = [
     "default_on",
     "restart",
     "temperature_unit",
-    "temperature",
+    "cpu_temperature",
+    "gpu_temperature",
 ]
 ```
 1. storage: 系统储存
@@ -503,8 +518,9 @@ PERIPHERALS = [
 41. download_history_file: 下载历史数据文件
 42. default_on: 是否默认开机的选项
 43. restart: 设备自己是否支持重启
-44. temperature: 显示温度
-45. temperature_unit: 温度单位
+44. cpu_temperature: CPU温度
+45. gpu_temperature: GPU温度
+46. temperature_unit: 温度单位
 
 ## Config
 
