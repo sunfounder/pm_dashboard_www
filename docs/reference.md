@@ -7,7 +7,7 @@
         - [输入卡片](#输入卡片)
         - [输出卡片](#输出卡片)
         - [电池卡片](#电池卡片)
-        - [风扇卡片](#风扇卡片)
+        - [温度卡片](#温度卡片)
         - [CPU卡片](#cpu卡片)
         - [内存卡片](#内存卡片)
         - [网络卡片](#网络卡片)
@@ -201,7 +201,7 @@ Dashboard按照peripheral显示卡片，从[`/get-history`](#get-get-history)获
     - peripheral: `is_charging`
     - Yes/No
 
-##### 风扇卡片
+##### 温度卡片
 
 数据: 
 1. PWM风扇速度: 
@@ -398,10 +398,10 @@ AP 设置弹窗，打开弹窗获取AP信息
     - key: ip_address
     - 显示IP地址
   - SD卡容量占用
-  - peripheral: sd_card_usage
-  - config分类: system
-  - key: sd_card_usage
-  - 条装图显示SD卡容量占用
+    - peripheral: sd_card_usage
+    - config分类: system
+    - key: sd_card_usage
+    - 条装图显示SD卡容量占用
 
 
 ## Peripherals
@@ -456,7 +456,8 @@ PERIPHERALS = [
     "download_history_file",
     "default_on",
     "restart",
-    "temperature_unit"
+    "temperature_unit",
+    "temperature",
 ]
 ```
 1. storage: 系统储存
@@ -502,6 +503,8 @@ PERIPHERALS = [
 41. download_history_file: 下载历史数据文件
 42. default_on: 是否默认开机的选项
 43. restart: 设备自己是否支持重启
+44. temperature: 显示温度
+45. temperature_unit: 温度单位
 
 ## Config
 
