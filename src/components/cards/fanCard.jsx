@@ -42,7 +42,7 @@ const FanCard = (props) => {
     // if (props.unit === "F" && obj.cpu_temperature) {
     if (obj.cpu_temperature) {
       if (props.unit === "F") {
-        temperature = celciusToFahrenheit(obj.cpu_temperature);
+        temperature = obj.cpu_temperature ? celciusToFahrenheit(obj.cpu_temperature) : null;
         tmp.cpu_temperature = temperature;
       } else {
         tmp.cpu_temperature = obj.cpu_temperature;
@@ -70,6 +70,16 @@ const FanCard = (props) => {
       detail.gpu_temperature = gpuDetail;
       gpuDetail.unit = props.unit ? (props.unit === "C" ? "℃" : "℉") : "℃";
       gpuDetail.color = theme.palette.power.main;
+      gpuDetail.min = 0;
+      gpuDetail.max = 100;
+    }
+    if (obj.gpu_temperature) {
+      if (props.unit === "F") {
+        temperature = obj.gpu_temperature ? celciusToFahrenheit(obj.gpu_temperature) : null;
+        tmp.gpu_temperature = temperature;
+      } else {
+        tmp.gpu_temperature = obj.gpu_temperature;
+      }
     }
     return tmp;
   });
@@ -89,7 +99,7 @@ const FanCard = (props) => {
     chartData = newData.map(({ state, mode, power, ...rest }) => rest)
   }
 
-
+  // console.log("newData", newData);
   return (
     <Card
       color="fan"

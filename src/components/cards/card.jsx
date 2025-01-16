@@ -33,7 +33,8 @@ const Card = (props) => {
             </div>
             <div className="details">
               {Object.keys(details).map((key) => {
-                let newData = data[data.length - 1];
+                // let newData = data[data.length - 1];
+                let newData = data[0];
                 if (!newData)
                   return null;
                 if (!Object.keys(newData).includes(key)) {
