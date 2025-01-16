@@ -80,7 +80,11 @@ const DashboardPanel = (props) => {
         }
         {
           // (props.peripherals.includes('pwm_fan')) &&
-          (props.peripherals.includes('pwm_fan_speed')) &&
+          (
+            props.peripherals.includes('pwm_fan_speed') ||
+            props.peripherals.includes('cpu_temperature') ||
+            props.peripherals.includes('gpu_temperature') ||
+            props.peripherals.includes('temperature')) &&
           <FanCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
         {
           (props.peripherals.includes('is_battery_plugged_in') ||

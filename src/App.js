@@ -14,6 +14,9 @@ import {
   red,
   yellow,
   grey,
+  lightBlue,
+  orange,
+  purple,
 } from '@mui/material/colors';
 
 import './App.css';
@@ -50,6 +53,32 @@ const darkTheme = createTheme({
     },
     storage: {
       main: lightGreen[500],
+      mounted: [
+        cyan[500],
+        blue[500],
+        lightGreen[500],
+        lightBlue[500],
+        green[500],
+        amber[500],
+        yellow[500],
+        pink[500],
+        purple[500],
+        indigo[500],
+        orange[500],
+      ],
+      notMounted: [
+        cyan[100],
+        blue[100],
+        lightGreen[100],
+        lightBlue[100],
+        green[100],
+        amber[100],
+        yellow[100],
+        pink[100],
+        purple[100],
+        indigo[100],
+        orange[100],
+      ],
     },
     memory: {
       main: cyan[500],
@@ -127,6 +156,32 @@ const lightTheme = createTheme({
     },
     storage: {
       main: lightGreen[600],
+      mounted: [
+        cyan[600],
+        blue[600],
+        lightGreen[600],
+        lightBlue[600],
+        green[600],
+        amber[600],
+        yellow[600],
+        pink[600],
+        purple[600],
+        indigo[600],
+        orange[600],
+      ],
+      notMounted: [
+        cyan[200],
+        blue[200],
+        lightGreen[200],
+        lightBlue[200],
+        green[200],
+        amber[200],
+        yellow[200],
+        pink[200],
+        purple[200],
+        indigo[200],
+        orange[200],
+      ]
     },
     memory: {
       main: cyan[600],

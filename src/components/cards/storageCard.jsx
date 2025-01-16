@@ -32,14 +32,15 @@ const StorageCard = (props) => {
   // 重组 detail 和 newData 数据
   let newDataEntry = {};
   let newDiskData = []
-  diskData.forEach(entry => {
+  diskData.forEach((entry, index) => {
     let diskName = entry.type;
     if (entry.total === 0) return;
     if (entry.monted === null) return;
     newDiskData.push(entry);
     detail[diskName] = {
       title: diskName,
-      unit: ""
+      unit: "",
+      color: theme.palette.storage.mounted[index],
     };
     newDataEntry[diskName] = entry.monted === 0 ? "No Mounted" : `${entry.percent}%`;
   });
