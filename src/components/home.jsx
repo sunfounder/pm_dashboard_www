@@ -238,6 +238,7 @@ const Home = (props) => {
     if (deviceInfo) {
       setPeripherals(deviceInfo.peripherals);
       setDeviceName(deviceInfo.name);
+      document.title = `${deviceInfo.name}`;
     }
   }
 
