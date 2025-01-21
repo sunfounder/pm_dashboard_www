@@ -313,18 +313,20 @@ const SettingItemSlider = (props) => {
     setValue(props.value);
   }, [props.value])
 
+  let label = props.valueFormat ? props.valueFormat(value) : value;
+
   return (
     <SettingItem {...props} wrap >
       <Box
         sx={{ width: "100%" }}
       >
+        {props.upperLabel && <Typography sx={{padding: "0 3", width: "100%", textAlign: "right"}}>{label}</Typography>}
         <Slider
           onChangeCommitted={handleChangeCommitted}
           onChange={handleChange}
           value={value}
           valueLabelFormat={props.valueFormat}
-          // getAriaValueText={props.valueFormat}
-          valueLabelDisplay="auto"
+          valueLabelDisplay={props.upperLabel? "off" : "auto"}
           marks={props.marks}
           step={props.step}
           min={props.min}

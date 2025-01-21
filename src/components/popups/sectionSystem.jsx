@@ -372,6 +372,7 @@ const SectionSystem = (props) => {
               sx={{ marginTop: 2, }}
               min={0}
               max={100}
+              upperLabel
             />
             {/* RGB 模式*/}
             <SettingItemMenu
@@ -402,6 +403,7 @@ const SectionSystem = (props) => {
               sx={{ marginTop: 2, }}
               min={0}
               max={100}
+              upperLabel
             />
           </>
         }
@@ -417,6 +419,7 @@ const SectionSystem = (props) => {
             sx={{ marginTop: 2, }}
             min={10}
             max={100}
+            upperLabel
           />}
         {/* 风扇 led */}
         {
@@ -446,6 +449,7 @@ const SectionSystem = (props) => {
             min={0}
             max={100}
             marks
+            upperLabel
           />}
         {
           // gpio风扇
@@ -454,8 +458,6 @@ const SectionSystem = (props) => {
             title="GPIO Fan Mode"
             subtitle="Set GPIO fan mode"
             valueFormat={(index) => GPIO_FAN_MODES[index].label}
-            // valueFormat={(value) => GPIO_FAN_MODES[value]}
-            // value={4 - props.config.gpio_fan_mode}
             value={gpioFanModeIndex}
             defaultValue={4 - props.config.gpio_fan_mode}
             onCommitted={handleGPIOFanModeCommitted}
@@ -464,6 +466,7 @@ const SectionSystem = (props) => {
             max={4}
             step={1}
             marks
+            upperLabel
           />
         }
         {/* 当前时间 */}
