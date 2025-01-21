@@ -35,15 +35,16 @@ const StorageCard = (props) => {
   diskData.forEach((entry, index) => {
     let diskName = entry.type;
     if (entry.total === 0) return;
-    if (entry.monted === null) return;
+    if (entry.mounted === null) return;
     newDiskData.push(entry);
     detail[diskName] = {
       title: diskName,
       unit: "",
       color: theme.palette.storage.mounted[index],
     };
-    newDataEntry[diskName] = entry.monted === 0 ? "No Mounted" : `${entry.percent}%`;
+    newDataEntry[diskName] = entry.mounted === 0 ? "No Mounted" : `${entry.percent}%`;
   });
+
   return (
     <Card
       color="storage"
