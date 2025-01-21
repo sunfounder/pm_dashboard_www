@@ -34,10 +34,10 @@ const darkTheme = createTheme({
       main: yellow[500],
     },
     temperature: {
-      main: red[500],
-    },
-    fan: {
       main: green[500],
+      cpu: red[500],
+      gpu: orange[500],
+      speed: blue[500],
     },
     iconFg: {
       main: grey[900],
@@ -137,16 +137,16 @@ const lightTheme = createTheme({
       main: yellow[600],
     },
     temperature: {
-      main: red[600],
+      main: green[600],
+      cpu: red[600],
+      gpu: orange[600],
+      speed: blue[600],
     },
     iconFg: {
       main: grey[200],
     },
     externalInput: {
       main: indigo[600],
-    },
-    fan: {
-      main: green[600],
     },
     battery: {
       main: deepPurple[600],
