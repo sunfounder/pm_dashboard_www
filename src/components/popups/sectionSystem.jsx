@@ -24,9 +24,17 @@ import SectionFrame from "./sectionFrame.jsx";
 import ColorWheel from "./colorWheel.jsx";
 import { Circle } from '@mui/icons-material';
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
-const GPIO_FAN_MODES = ['Always On', 'Performance', 'Cool', 'Balanced', 'Quiet'];
+const GPIO_FAN_MODES = [
+  { value: 4, label: 'Quiet' },
+  { value: 3, label: 'Balanced' },
+  { value: 2, label: 'Cool' },
+  { value: 1, label: 'Performance' },
+  { value: 0, label: 'Always On' },
+]
+
 const SectionSystem = (props) => {
   const [colorDiskPopup, setColorDiskPopup] = useState(false);
+  const [gpioFanModeIndex, setGpioFanModeIndex] = useState(4-props.config.gpio_fan_mode);
   const [popupStatus, setPopupStatus] = useState(false);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [oledDiskList, setOledDiskList] = React.useState([
@@ -172,17 +180,19 @@ const SectionSystem = (props) => {
     }
   }
 
-  const handleGPIOFanModeCommitted = async (event) => {
-    let result = await props.sendData('set-fan-mode', { 'fan_mode': event });
+  const handleGPIOFanModeCommitted = async (index) => {
+    let value = GPIO_FAN_MODES[index].value;
+    let result = await props.sendData('set-fan-mode', { 'fan_mode': value });
     if (result === "OK") {
-      props.onChange('system', 'gpio_fan_mode', event);
+      props.onChange('system', 'gpio_fan_mode', value);
+      setGpioFanModeIndex(index);
     }
   }
 
-  const handleFanLEDModeCommitted = async (event) => {
-    let result = await props.sendData('set-fan-led', { 'led': event });
+  const handleFanLEDModeCommitted = async (value) => {
+    let result = await props.sendData('set-fan-led', { 'led': value });
     if (result === "OK") {
-      props.onChange('system', 'gpio_fan_led', event);
+      props.onChange('system', 'gpio_fan_led', value);
     }
   }
 
@@ -443,11 +453,12 @@ const SectionSystem = (props) => {
           <SettingItemSlider
             title="GPIO Fan Mode"
             subtitle="Set GPIO fan mode"
-            // valueFormat={(value) => GPIO_FAN_MODES[4 - value]}
+            valueFormat={(index) => GPIO_FAN_MODES[index].label}
+            // valueFormat={(value) => GPIO_FAN_MODES[value]}
             // value={4 - props.config.gpio_fan_mode}
-            valueFormat={(value) => GPIO_FAN_MODES[value]}
+            value={gpioFanModeIndex}
+            defaultValue={4 - props.config.gpio_fan_mode}
             onCommitted={handleGPIOFanModeCommitted}
-            value={props.config.gpio_fan_mode}
             sx={{ marginBottom: 0 }}
             min={0}
             max={4}
