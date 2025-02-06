@@ -230,7 +230,8 @@ const HistoryPanel = (props) => {
     }>
       <Box sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden", gap: "2rem" }}>
         <Card sx={{ width: "100%" }}>
-          <Chart data={data} keys={selectedKeys} colors={colors} unit={props.temperatureUnit === "C" ? " °C" : " °F"} />
+          {/* <Chart data={data} keys={selectedKeys} colors={colors} unit={props.temperatureUnit === "C" ? " °C" : " °F"} /> */}
+          <Chart data={data} keys={selectedKeys} colors={colors} />
         </Card>
       </Box >
     </Panel>
@@ -569,7 +570,7 @@ const Chart = (props) => {
               stroke={props.colors[key]}
               key={index}
               isAnimationActive={false}
-              unit={props.unit}
+              // unit={props.unit}
               dot={false} />
           );
         })}

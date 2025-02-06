@@ -316,7 +316,7 @@ const SettingItemSlider = (props) => {
   return (
     <SettingItem {...props} wrap >
       <Box
-        sx={{ width: "100%" }}
+        sx={{ width: "80%" }}
       >
         <Slider
           onChangeCommitted={handleChangeCommitted}

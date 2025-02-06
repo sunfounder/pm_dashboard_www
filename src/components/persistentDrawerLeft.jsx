@@ -286,7 +286,7 @@ const PersistentDrawerLeft = (props) => {
       </Drawer>
       <Main className='main' open={open} sx={{ padding: 0, width: "100vw", marginLeft: "0px" }}>
         <DrawerHeader />
-        <Box sx={{ height: '95%' }}>
+        <Box sx={{ height: '95%', paddingBottom: '40px' }}>
           {props.tabIndex === 0 && <DashboardPanel {...props} temperatureUnit={props.temperatureUnit} />}
           {
             props.tabIndex === 1 &&
