@@ -34,7 +34,7 @@ const StorageCard = (props) => {
   let newDiskData = []
   diskData.forEach((entry, index) => {
     let diskName = entry.type;
-    if (entry.total === 0) return;
+    if (entry.total === 0 || entry.total === null) return;
     if (entry.mounted === null) return;
     newDiskData.push(entry);
     detail[diskName] = {
