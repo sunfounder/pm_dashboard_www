@@ -223,7 +223,6 @@ const Home = (props) => {
   }
 
   const testConnection = async () => {
-    console.log("test connection");
     let result = await request("test", "GET", {}, true);
     if (result) {
       setConnected(true);
@@ -234,10 +233,10 @@ const Home = (props) => {
 
   const getDeviceInfo = async () => {
     let deviceInfo = await request("get-device-info", "GET");
-    // console.log("deviceInfo", deviceInfo);
     if (deviceInfo) {
       setPeripherals(deviceInfo.peripherals);
       setDeviceName(deviceInfo.name);
+      document.title = `${deviceInfo.name}`;
     }
   }
 

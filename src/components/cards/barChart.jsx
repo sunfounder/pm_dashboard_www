@@ -83,7 +83,7 @@ const BarChart = (props) => {
                 time: item.time,
                 free: item.free,
                 total: item.total,
-                monted: item.monted,
+                mounted: item.mounted,
                 percent: item.percent,
                 color: theme.palette.storage.mounted[index],
                 textColor: theme.palette.storage.mounted[index]
@@ -97,9 +97,9 @@ const BarChart = (props) => {
                 time: item.time,
                 free: item.free,
                 total: item.total,
-                monted: item.monted,
+                mounted: item.mounted,
                 percent: item.percent,
-                color: item.monted ? '#EEEEEE' : theme.palette.storage.notMounted[index],
+                color: item.mounted ? '#EEEEEE' : theme.palette.storage.notMounted[index],
                 textColor: theme.palette.storage.mounted[index]
               }
             ];
@@ -116,8 +116,8 @@ const BarChart = (props) => {
                 outerRadius={outerRadius}
                 startAngle={180}
                 endAngle={0}
+                style={{outline: 'none'}}
                 cx="50%"
-                // cy="65%"
                 cy={`${100 - calculatedCY}%`}
               >
                 {formattedItem.map((entry, entryIndex) => (

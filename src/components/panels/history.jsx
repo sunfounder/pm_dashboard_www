@@ -120,10 +120,6 @@ const HistoryPanel = (props) => {
         if ('cpu_temperature' in row) {
           row.cpu_temperature = row.cpu_temperature ? celciusToFahrenheit(row.cpu_temperature) : null;
         }
-      });
-    }
-    if (props.temperatureUnit === "F") {
-      data.forEach((row) => {
         if ('gpu_temperature' in row) {
           row.gpu_temperature = row.gpu_temperature ? celciusToFahrenheit(row.gpu_temperature) : null;
         }
@@ -230,7 +226,6 @@ const HistoryPanel = (props) => {
     }>
       <Box sx={{ display: "flex", width: "100%", height: "100%", overflow: "hidden", gap: "2rem" }}>
         <Card sx={{ width: "100%" }}>
-          {/* <Chart data={data} keys={selectedKeys} colors={colors} unit={props.temperatureUnit === "C" ? " °C" : " °F"} /> */}
           <Chart data={data} keys={selectedKeys} colors={colors} />
         </Card>
       </Box >
@@ -570,7 +565,6 @@ const Chart = (props) => {
               stroke={props.colors[key]}
               key={index}
               isAnimationActive={false}
-              // unit={props.unit}
               dot={false} />
           );
         })}

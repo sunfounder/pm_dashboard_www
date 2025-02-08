@@ -5,7 +5,7 @@ import { formatBytes } from '../../js/utils';
 
 import Panel from './panel.jsx';
 import ExternalInputCard from '../cards/externalInputCard.jsx';
-import FanCard from '../cards/fanCard.jsx';
+import TemperatureCard from '../cards/temperatureCard.jsx';
 import BatteryCard from '../cards/batteryCard.jsx';
 import RaspberryPiPowerCard from '../cards/raspberryPiPowerCard.jsx';
 import StorageCard from '../cards/storageCard.jsx';
@@ -85,7 +85,7 @@ const DashboardPanel = (props) => {
             props.peripherals.includes('cpu_temperature') ||
             props.peripherals.includes('gpu_temperature') ||
             props.peripherals.includes('temperature')) &&
-          <FanCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
+          <TemperatureCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
         {
           (props.peripherals.includes('is_battery_plugged_in') ||
             props.peripherals.includes('battery_percentage') ||
