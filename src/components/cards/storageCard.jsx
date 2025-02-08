@@ -42,7 +42,7 @@ const StorageCard = (props) => {
       unit: "",
       color: theme.palette.storage.mounted[index],
     };
-    newDataEntry[diskName] = entry.mounted === 0 ? "No Mounted" : `${entry.percent}%`;
+    newDataEntry[diskName] = entry.monted === 0 ? "No Monted" : `${entry.percent}%`;
   });
 
   return (

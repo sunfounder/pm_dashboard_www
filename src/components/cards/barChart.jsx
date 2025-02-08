@@ -61,7 +61,11 @@ const BarChart = (props) => {
       return (
         <div className="custom-tooltip" style={{ backgroundColor: "white", borderRadius: "5px" }}>
           <p className="time" >{`${payload[0].payload.time}`}</p>
-          <p className="label" style={{ color: color }}>{`${payload[0].payload.type} : ${payload[0].payload.freeUnit}B / ${payload[0].payload.totalUnit}B`}</p>
+          <p className="label" style={{ color: color }}>{
+            payload[0].payload.freeUnit == "0.00 " ?
+              (`${payload[0].payload.type} :  ${payload[0].payload.totalUnit}B`) :
+              (`${payload[0].payload.type} : ${payload[0].payload.freeUnit}B / ${payload[0].payload.totalUnit}B`)
+          }</p>
         </div>
       );
     }
@@ -116,7 +120,7 @@ const BarChart = (props) => {
                 outerRadius={outerRadius}
                 startAngle={180}
                 endAngle={0}
-                style={{outline: 'none'}}
+                style={{ outline: 'none' }}
                 cx="50%"
                 cy={`${100 - calculatedCY}%`}
               >
