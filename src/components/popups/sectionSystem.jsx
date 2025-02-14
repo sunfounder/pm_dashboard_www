@@ -34,7 +34,7 @@ const GPIO_FAN_MODES = [
 
 const SectionSystem = (props) => {
   const [colorDiskPopup, setColorDiskPopup] = useState(false);
-  const [gpioFanModeIndex, setGpioFanModeIndex] = useState(4-props.config.gpio_fan_mode);
+  const [gpioFanModeIndex, setGpioFanModeIndex] = useState(4 - props.config.gpio_fan_mode);
   const [popupStatus, setPopupStatus] = useState(false);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [oledDiskList, setOledDiskList] = React.useState([
@@ -275,7 +275,11 @@ const SectionSystem = (props) => {
   useEffect(() => {
     getOledDiiskList();
     getOledNetworkInterfaceList();
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    setGpioFanModeIndex(4 - props.config.gpio_fan_mode);
+  }, [props.config.gpio_fan_mode]);
 
   return (
     <>
