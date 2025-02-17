@@ -367,12 +367,12 @@ const Toolbox = (props) => {
               </ToggleButton>
             </ToggleButtonGroup>
             <IconButton id="delete" aria-label="delete" color="primary" >
-              <MuiToolTip title="Delete CSV">
+              <MuiToolTip title="Delete">
                 <DeleteForeverIcon onClick={props.onDeleteLogFile} />
               </MuiToolTip>
             </IconButton>
             <IconButton id="download" aria-label="download" color="primary" onClick={props.handleDownload}>
-              <MuiToolTip title="Download CSV">
+              <MuiToolTip title="Download">
                 <DownloadIcon />
               </MuiToolTip>
             </IconButton>
@@ -426,12 +426,12 @@ const Toolbox = (props) => {
             </ToggleButton>
           </ToggleButtonGroup>
           <IconButton id="delete" aria-label="delete" color="primary" >
-            <MuiToolTip title="Delete CSV">
+            <MuiToolTip title="Delete">
               <DeleteForeverIcon onClick={props.onDeleteLogFile} />
             </MuiToolTip>
           </IconButton>
           <IconButton id="download" aria-label="download" color="primary" onClick={props.handleDownload}>
-            <MuiToolTip title="Download CSV">
+            <MuiToolTip title="Download">
               <DownloadIcon />
             </MuiToolTip>
           </IconButton>

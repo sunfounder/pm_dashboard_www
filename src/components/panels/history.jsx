@@ -218,7 +218,7 @@ const HistoryPanel = (props) => {
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <DateTimeRangePicker onChange={handleTimeRangeChange} onError={(msg) => props.showSnackBar("error", msg)} />
         <IconButton id="download" aria-label="download" color="primary" onClick={handleDownloadCSV}>
-          <MuiToolTip title="Download CSV">
+          <MuiToolTip title="Download">
             <DownloadIcon />
           </MuiToolTip>
         </IconButton>
