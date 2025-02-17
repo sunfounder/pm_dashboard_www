@@ -77,6 +77,7 @@
     - [POST /set-rgb-led-count](#post-set-rgb-led-count)
     - [POST /set-rgb-speed](#post-set-rgb-speed)
     - [POST /set-rgb-style](#post-set-rgb-style)
+    - [POST /set-oled-sleep-timeout](#post-set-oled-sleep-timeout)
     - [POST /set-oled-enable](#post-set-oled-enable)
     - [POST /set-oled-disk](#post-set-oled-disk)
     - [POST /set-oled-network-interface](#post-set-oled-network-interface)
@@ -1037,6 +1038,15 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
 
+### POST /set-oled-sleep-timeout
+
+设置 OLED 休眠超时时间
+
+- Data:
+  - `timeout` - 超时时间，单位秒
+- Response:
+  - `{"status": true, "data": "OK"}`
+
 ### POST /set-oled-enable
 
 设置OLED显示开关
@@ -1081,6 +1091,10 @@ OTA 更新
 - Temperature unit: C/F
   - Peripheral: temperature_unit
   - API: [set-temperature-unit](#post-set-temperature-unit)
+- OLED Sleep Timeout: 0-3600s
+  - 控制OLED休眠时长
+  - Peripheral: oled_sleep
+  - API: [set-oled-sleep_timeout](#post-set-oled-sleep-timeout)
 - OLED Enable: true/false
   - 控制OLED是否开启
   - Peripheral: oled
