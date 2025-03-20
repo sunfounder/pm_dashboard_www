@@ -77,10 +77,17 @@ const BarChart = (props) => {
       <ResponsiveContainer width="100%" height="100%">
         <PieChart width={400} height={400}>
           {props.data.map((item, index) => {
+            // 占用百分比
+            const occupancy = item.used / item.total * 100;
+            if (occupancy > 0 && occupancy < 1) {
+              // 最少显示1%
+              item.used = item.total * 0.01;
+            }
             const formattedItem = [
               {
                 name: "used",
-                value: Number(formatBytes(item.used).replace(/[^0-9.]/g, '')),
+                // value: Number(formatBytes(item.used).replace(/[^0-9.]/g, '')),
+                value: item.used,
                 freeUnit: formatBytes(item.used),
                 totalUnit: formatBytes(item.total),
                 type: item.type,
@@ -94,7 +101,8 @@ const BarChart = (props) => {
               },
               {
                 name: "free",
-                value: Number(formatBytes(item.free).replace(/[^0-9.]/g, '')) === 0 ? Number(formatBytes(item.total).replace(/[^0-9.]/g, '')) : Number(formatBytes(item.free).replace(/[^0-9.]/g, '')),
+                // value: Number(formatBytes(item.free).replace(/[^0-9.]/g, '')) === 0 ? Number(formatBytes(item.total).replace(/[^0-9.]/g, '')) : Number(formatBytes(item.free).replace(/[^0-9.]/g, '')),
+                value: item.free === 0 ? item.total : item.free,
                 freeUnit: formatBytes(item.used),
                 totalUnit: formatBytes(item.total),
                 type: item.type,

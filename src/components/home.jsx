@@ -36,6 +36,7 @@ const Home = (props) => {
   const [connected, setConnected] = useState(false);
   // 最新的一组数据
   const [latestData, setLatestData] = useState({});
+  const [mountSwitchChecked, setMountSwitchChecked] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-mountSwitch")) || false);
 
   const request = async (url, method, payload, ignore) => {
     if (!connected && !ignore) {
@@ -96,6 +97,11 @@ const Home = (props) => {
   const handleTabChange = (event, newValue) => {
     window.localStorage.setItem("pm-dashboard-tabIndex", newValue);
     setTabIndex(newValue);
+  }
+
+  const handleMountSwitch = (checked) => {
+    setMountSwitchChecked(checked);
+    window.localStorage.setItem("pm-dashboard-mountSwitch", checked);
   }
 
   const handleSettingPage = () => {
@@ -308,6 +314,7 @@ const Home = (props) => {
         {...commonProps}
         temperatureUnit={temperatureUnit}
         connected={connected}
+        mountSwitchChecked={mountSwitchChecked}
         sendData={sendData}
         showAlert={showAlert}
         onPopupWiFi={handlePopupWiFi}
@@ -319,6 +326,8 @@ const Home = (props) => {
         open={settingPageDisplay}
         request={request}
         onCancel={handleCancel}
+        onMountSwitch={handleMountSwitch}
+        mountSwitchChecked={mountSwitchChecked}
         onModeChange={props.onModeChange}
         onTemperatureUnitChanged={handleTemperatureUnitChanged}
         peripherals={peripherals}

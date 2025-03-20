@@ -123,6 +123,11 @@ const PopupSettings = (props) => {
         subtitle="Whether to enable Dark Theme mode"
         onChange={handleDarkMode}
         value={themeSwitchChecked} />
+      <SettingItemSwitch
+        title="Show unmounted disk"
+        subtitle="Whether unmounted disks should be displayed"
+        onChange={props.onMountSwitch}
+        value={props.mountSwitchChecked} />
       {/* Auto */}
       {/* {props.peripherals.includes("auto") && */}
       {/* {props.peripherals.includes("ws2812") &&
