@@ -31,7 +31,8 @@
     - [GET /get-device-info](#get-get-device-info)
     - [GET /test](#get-test)
     - [GET /test-mqtt](#get-test-mqtt)
-    - [GET /get-history](#get-get-history)
+    - [GET /get-data](#get-get-data)
+    - [GET /get-history DEPRECATED](#get-get-history-deprecated)
     - [GET /get-history-file](#get-get-history-file)
     - [GET /get-time-range](#get-get-time-range)
     - [GET /get-config](#get-get-config)
@@ -348,6 +349,15 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 主题设置
   - toggle 开关
   - 点击切换主题
+- 储存卡片显示未挂载硬盘
+  - toggle 开关
+  - 点击切换是否显示未挂载硬盘
+- 处理器卡片显示多核信息
+  - toggle 按键组：合并/多核
+  - 点击切换是否显示多核信息
+- 电池输出警告：在切换到电池输出时，显示警告信息
+  - toggle 开关
+  - 点击切换是否显示电池输出警告
 - System分类
   - 温度单位设置
     - peripheral判断: `temperature_unit`
@@ -600,7 +610,16 @@ api地址: `http://ip:34001/api/v1.0`
   - `{"status": false, "error": "[ERROR] username not found"}`
   - `{"status": false, "error": "[ERROR] password not found"}`
 
-### GET /get-history
+### GET /get-data
+
+获取数据
+
+- Data:
+  - `n` - 获取最新的多少个数据，默认是1
+- Response:
+  - `{"status": true, "data": []}`
+
+### GET /get-history DEPRECATED
 
 获取历史数据
 
@@ -1088,6 +1107,15 @@ OTA 更新
 
 ### System
 
+- Dark Mode: true/false
+  - 控制UI的主题
+  - 存在localstorage里面，切换页面的主题
+- Show unmounted disks: true/false
+  - 控制是否显示未挂载的磁盘
+  - 存在localstorage里面，切换储存卡片的显示
+- Show all cores: true/false
+  - 控制是否显示所有的CPU核心
+  - 存在localstorage里面，切换CPU卡片的显示
 - Temperature unit: C/F
   - Peripheral: temperature_unit
   - API: [set-temperature-unit](#post-set-temperature-unit)
