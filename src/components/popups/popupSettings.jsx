@@ -125,9 +125,19 @@ const PopupSettings = (props) => {
         value={themeSwitchChecked} />
       <SettingItemSwitch
         title="Show unmounted disk"
-        subtitle="Whether unmounted disks should be displayed"
+        subtitle="Show unmounted disks on Storage card"
         onChange={props.onMountSwitch}
         value={props.mountSwitchChecked} />
+      <SettingItemSwitch
+        title="Show all cores"
+        subtitle="Show all cores on Processor card"
+        onChange={props.onProcessorSwitch}
+        value={props.processorChartAmount} />
+      <SettingItemSwitch
+        title="Show battery warning"
+        subtitle="Whether to display battery warning"
+        onChange={props.onCloseForever}
+        value={props.bannerPermanent} />
       {/* Auto */}
       {/* {props.peripherals.includes("auto") && */}
       {/* {props.peripherals.includes("ws2812") &&
@@ -152,6 +162,7 @@ const PopupSettings = (props) => {
         props.peripherals.includes("mac_address") ||
         props.peripherals.includes("ip_address") ||
         props.peripherals.includes("ws2812") ||
+        props.peripherals.includes("oled") ||
         props.peripherals.includes("sd_card_usage")) &&
         <SectionSystem
           config={config.system}

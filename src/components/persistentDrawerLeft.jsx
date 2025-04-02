@@ -166,7 +166,7 @@ const PersistentDrawerLeft = (props) => {
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {
-              props.peripherals.includes('history') && props.peripherals.includes('log') &&
+              (props.peripherals.includes('history') || props.peripherals.includes('log')) &&
               <IconButton
                 color="inherit"
                 aria-label="open drawer"

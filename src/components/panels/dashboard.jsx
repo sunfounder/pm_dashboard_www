@@ -20,7 +20,12 @@ const DashboardPanel = (props) => {
   const [updateDataInterval, setUpdateDataInterval] = useState(1000);
 
   const updateData = async () => {
-    let _data = await props.request("get-history", "GET", { n: 20 });
+    let _data;
+    if (props.peripherals.includes('history')) {
+      _data = await props.request("get-history", "GET", { n: 20 });
+    } else {
+      _data = await props.request("get-data", "GET");
+    }
     if (_data) {
       if (!Array.isArray(_data)) {
         if (!_data.time) {
@@ -98,12 +103,12 @@ const DashboardPanel = (props) => {
           props.peripherals.includes('output_voltage') ||
           props.peripherals.includes('output_current') ||
           props.peripherals.includes('output_switch')) &&
-          <RaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} />}
+          <RaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} showBanner={props.showBanner} />}
 
         {props.peripherals.includes('storage') && <StorageCard data={data} mountSwitchChecked={props.mountSwitchChecked} />}
         {props.peripherals.includes('memory') && <MemoryCard data={data} />}
         {props.peripherals.includes('network') && <NetworkCard data={data} />}
-        {props.peripherals.includes('cpu') && <ProcessorCard data={data} />}
+        {props.peripherals.includes('cpu') && <ProcessorCard data={data} processorChartAmount={props.processorChartAmount} />}
       </Box >
     </Panel >
   </Box>

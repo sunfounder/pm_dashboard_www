@@ -5,6 +5,7 @@ import PopupWiFi from './popups/popupWiFi.jsx';
 import PopupAP from './popups/popupAP.jsx';
 import Snackbars from './snackbar.jsx';
 import Alert from './alert';
+import ActionAlerts from './actionAlerts.jsx';
 import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 import { HOST } from '../js/config.js';
@@ -36,7 +37,16 @@ const Home = (props) => {
   const [connected, setConnected] = useState(false);
   // 最新的一组数据
   const [latestData, setLatestData] = useState({});
+  // 是否显示挂载开关
   const [mountSwitchChecked, setMountSwitchChecked] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-mountSwitch")) || false);
+  // 是否显示多核
+  const [processorChartAmount, setProcessorChartAmount] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-multiCore") || false));
+  // 是否显示横幅提示
+  const [bannerShow, setBannerShow] = useState(false);
+  // 横幅是否永久显示
+  const [bannerPermanent, setBannerPermanent] = useState(false);
+  const [bannerText, setBannerText] = useState("");
+  const [bannerSeverity, setBannerSeverity] = useState("success");
 
   const request = async (url, method, payload, ignore) => {
     if (!connected && !ignore) {
@@ -104,6 +114,11 @@ const Home = (props) => {
     window.localStorage.setItem("pm-dashboard-mountSwitch", checked);
   }
 
+  const handleProcessorChartChange = (checked) => {
+    localStorage.setItem("pm-dashboard-multiCore", checked);
+    setProcessorChartAmount(checked);
+  }
+
   const handleSettingPage = () => {
     setSettingPageDisplay(!settingPageDisplay);
   }
@@ -124,6 +139,23 @@ const Home = (props) => {
     setSnackbarText(text);
     setSnackbarSeverity(severity);
     setSnackbarShow(true);
+  }
+
+  const showBanner = (severity, text) => {
+    setBannerText(text);
+    setBannerSeverity(severity);
+    setBannerShow(true);
+  }
+
+  const handleBannerClose = () => {
+    setBannerShow(false);
+    localStorage.setItem("pm-dashboard-bannerLastData", JSON.stringify(true));
+  }
+
+  // 不再提示横幅
+  const handleBannerCloseForever = (checked) => {
+    setBannerPermanent(checked);
+    window.localStorage.setItem("pm-dashboard-banner", checked);
   }
 
   const handleSnackbarClose = (event, reason) => {
@@ -226,6 +258,7 @@ const Home = (props) => {
     onSettingPage: handleSettingPage,
     showSnackBar: showSnackBar,
     sendData: sendData,
+    showBanner: showBanner,
   }
 
   const testConnection = async () => {
@@ -315,6 +348,7 @@ const Home = (props) => {
         temperatureUnit={temperatureUnit}
         connected={connected}
         mountSwitchChecked={mountSwitchChecked}
+        processorChartAmount={processorChartAmount}
         sendData={sendData}
         showAlert={showAlert}
         onPopupWiFi={handlePopupWiFi}
@@ -327,7 +361,12 @@ const Home = (props) => {
         request={request}
         onCancel={handleCancel}
         onMountSwitch={handleMountSwitch}
+        onProcessorSwitch={handleProcessorChartChange}
+        onCloseForever={handleBannerCloseForever}
         mountSwitchChecked={mountSwitchChecked}
+        processorChartAmount={processorChartAmount}
+        bannerShow={bannerShow}
+        bannerPermanent={bannerPermanent}
         onModeChange={props.onModeChange}
         onTemperatureUnitChanged={handleTemperatureUnitChanged}
         peripherals={peripherals}
@@ -380,6 +419,12 @@ const Home = (props) => {
         onClose={handleAlertClose}
         onCancel={alertCancelCallback ? handleAlertCancel : undefined}
         onConfirm={alertConfirmCallback ? handleAlertConfirm : undefined}
+      />
+      <ActionAlerts
+        open={bannerShow}
+        severity={bannerSeverity}
+        message={bannerText}
+        onClose={handleBannerClose}
       />
     </Box >
   );
