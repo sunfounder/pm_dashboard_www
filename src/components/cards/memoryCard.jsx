@@ -32,7 +32,7 @@ const MemoryCard = (props) => {
     free: obj.memory_free,
   }));
   if (newData.length > 0) {
-    max = newData[newData.length - 1].total;
+    max = newData[newData.length - 1].total ? newData[newData.length - 1].total : newData[0].total;
   }
   let chartData = newData.map(({ total, percent, ...rest }) => rest);
   return (

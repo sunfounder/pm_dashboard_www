@@ -32,7 +32,7 @@ const Home = (props) => {
   const [alertConfirmCallback, setAlertConfirmCallback] = useState(null);
   const [alertCancelCallback, setAlertCancelCallback] = useState(null);
   //全局提示框显示状态
-  const [tabIndex, setTabIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
+  const [tabIndex, setTabIndex] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-tabIndex")) || { text: "Dashboard", index: 0 });
   // 连接失败状态
   const [connected, setConnected] = useState(false);
   // 最新的一组数据
@@ -104,9 +104,10 @@ const Home = (props) => {
     }
   }
 
-  const handleTabChange = (event, newValue) => {
-    window.localStorage.setItem("pm-dashboard-tabIndex", newValue);
-    setTabIndex(newValue);
+  const handleTabChange = (item, newValue) => {
+    const data = { text: item.text, index: newValue, }
+    window.localStorage.setItem("pm-dashboard-tabIndex", JSON.stringify(data));
+    setTabIndex(data);
   }
 
   const handleMountSwitch = (checked) => {

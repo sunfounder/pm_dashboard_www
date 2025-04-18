@@ -13,7 +13,28 @@ import MemoryCard from '../cards/memoryCard.jsx';
 import ProcessorCard from '../cards/processorCard.jsx';
 import NetworkCard from '../cards/networkCard.jsx';
 
-const TEST_DATA = [];
+const TEST_DATA = [
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+  { time: new Date().getTime() },
+];
 
 const DashboardPanel = (props) => {
   const [data, setData] = useState(TEST_DATA);
@@ -33,9 +54,12 @@ const DashboardPanel = (props) => {
         }
         let newData = [...data];
         if (newData.length >= 20) {
-          newData.shift();
+          // newData.shift();
+          newData.pop();
         }
-        newData.push(_data);
+        // newData.push(_data);
+        // Pironman 5 NAS数据往后走，所以使用pop和unshift
+        newData.unshift(_data);
         setData(newData);
       } else {
         setData(_data);

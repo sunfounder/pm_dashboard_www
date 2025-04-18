@@ -59,6 +59,7 @@ const defaultConfigData = {
     "oled_disk": "total",
     "oled_network_interface": "all",
     "oled_rotation": 0,
+    "oled_sleep_timeout": 0,
     "gpio_fan_led": "on",
   }
 }

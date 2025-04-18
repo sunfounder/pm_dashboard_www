@@ -82,7 +82,7 @@ const PersistentDrawerLeft = (props) => {
   const [element, setelement] = useState(null);
   const [downloadElement, setDownloadElement] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(parseInt(window.localStorage.getItem("pm-dashboard-tabIndex")) || 0);
+  const [selectedIndex, setSelectedIndex] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-tabIndex")) || { text: "Dashboard", index: 0 });
   const [settingButton, setSettingButton] = useState(false);
 
   const handleOpenUserMenu = (event) => {
@@ -145,8 +145,9 @@ const PersistentDrawerLeft = (props) => {
   }
 
   const handleMenuItemClick = (item, index) => {
+    const data = { text: item, index: index };
     props.onTabChange(item, index);
-    setSelectedIndex(index);
+    setSelectedIndex(data);
   }
 
   const handleChildElement = (element) => {
@@ -272,7 +273,7 @@ const PersistentDrawerLeft = (props) => {
         <List>
           {title.map((item, index) => (
             <ListItem key={item.text} disablePadding  >
-              <ListItemButton selected={selectedIndex === index} onClick={() => handleMenuItemClick(item, index)}>
+              <ListItemButton selected={selectedIndex.index === index} onClick={() => handleMenuItemClick(item, index)}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
               </ListItemButton>
@@ -281,22 +282,22 @@ const PersistentDrawerLeft = (props) => {
         </List>
         <Divider />
         {/* 左侧列表 */}
-        {props.tabIndex !== 0 && element}
+        {props.tabIndex.index !== 0 && element}
 
       </Drawer>
       <Main className='main' open={open} sx={{ padding: 0, width: "100vw", marginLeft: "0px" }}>
         <DrawerHeader />
         <Box sx={{ height: '95%', paddingBottom: '40px' }}>
-          {props.tabIndex === 0 && <DashboardPanel {...props} temperatureUnit={props.temperatureUnit} />}
+          {props.tabIndex.text === "Dashboard" && <DashboardPanel {...props} temperatureUnit={props.temperatureUnit} />}
           {
-            props.tabIndex === 1 &&
+            props.tabIndex.text === 'History' &&
             <HistoryPanel
               {...props}
               temperatureUnit={props.temperatureUnit}
               onElementChange={handleChildElement}
               onDownloadElementChange={handleDownloadElement}
             />}
-          {props.tabIndex === 2 &&
+          {props.tabIndex.text === "Log" &&
             <LogPanel
               {...props}
               onElementChange={handleChildElement}

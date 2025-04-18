@@ -232,6 +232,17 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleOLEDSleepTimeoutBlur = async (event) => {
+    let value = event.target.value;
+    // 限制输入的类型
+    if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
+    if (value < 1 || value > 3600) return;
+    let result = await props.sendData('set-oled-sleep-timeout', { 'timeout': value });
+    if (result === "OK") {
+      props.onChange('system', 'oled_sleep_timeout', value);
+    }
+  }
+
   const handleSDDataRetainSend = async (value) => {
     let result = await props.sendData('set-sd-data-retain', { 'retain': value });
     if (result === "OK") {
@@ -334,6 +345,21 @@ const SectionSystem = (props) => {
                 { value: 180, name: '180°' },
               ]}
             />
+            {/* oled 休眠时长 */}
+            {
+              props.peripherals.includes("oled_sleep") &&
+              <SettingItemNumber
+                width="30%"
+                title="OLED Sleep Timeout"
+                subtitle="Set OLED sleep timeout"
+                value={props.config ? props.config.oled_sleep_timeout : ""}
+                disabled={props.config.oled_sleep_timeout === 0}
+                min={1}
+                max={3600}
+                end="S"
+                onBlur={handleOLEDSleepTimeoutBlur}
+              />
+            }
           </>
         }
         {/* RGB */}

@@ -14,7 +14,7 @@ const options = ['Dashboard', 'History', 'Log'];
 const SplitButton = (props) => {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
-  const [selectedIndex, setSelectedIndex] = useState(JSON.parse(localStorage.getItem("pm-dashboard-tabIndex")) || 0);
+  const [selectedIndex, setSelectedIndex] = useState(JSON.parse(localStorage.getItem("pm-dashboard-tabIndex")) || { text: "Dashboard", index: 0 });
 
   const handleClick = () => {
     console.info(`You clicked ${options[selectedIndex]}`);
@@ -44,7 +44,7 @@ const SplitButton = (props) => {
         ref={anchorRef}
         aria-label="Button group with a nested menu"
       >
-        <Button onClick={handleClick}>{options[selectedIndex]}</Button>
+        <Button onClick={handleClick}>{options[selectedIndex.index]}</Button>
         <Button
           size="small"
           aria-controls={open ? 'split-button-menu' : undefined}
@@ -80,7 +80,7 @@ const SplitButton = (props) => {
                   {options.map((option, index) => (
                     <MenuItem
                       key={option}
-                      selected={index === selectedIndex}
+                      selected={index === selectedIndex.index}
                       onClick={(event) => handleMenuItemClick(event, index)}
                     >
                       {option}
