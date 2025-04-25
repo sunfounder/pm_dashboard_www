@@ -43,7 +43,8 @@ const DashboardPanel = (props) => {
   const updateData = async () => {
     let _data;
     if (props.peripherals.includes('history')) {
-      _data = await props.request("get-history", "GET", { n: 20 });
+      // _data = await props.request("get-history", "GET", { n: 20 });
+      _data = await props.request("get-data", "GET", { n: 20 });
     } else {
       _data = await props.request("get-data", "GET");
     }
@@ -70,13 +71,13 @@ const DashboardPanel = (props) => {
   // 自动获取数据
   useEffect(() => {
     let interval;
-    if (props.connected) {
+    if (props.connected && props.peripherals.length > 0) {
       interval = setInterval(() => {
         updateData();
       }, updateDataInterval);
     }
     return () => clearInterval(interval);
-  }, [updateDataInterval, props.connected, data]);
+  }, [updateDataInterval, props.connected, data, props.peripherals]);
 
   useEffect(() => {
     if (data.length > 0) {
