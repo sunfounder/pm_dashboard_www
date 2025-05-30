@@ -83,6 +83,9 @@
     - [POST /set-oled-disk](#post-set-oled-disk)
     - [POST /set-oled-network-interface](#post-set-oled-network-interface)
     - [POST /set-oled-rotation](#post-set-oled-rotation)
+    - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
+    - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
+    - [GET /get-disk-list](#get-get-disk-list-1)
   - [Settings](#settings-1)
     - [System](#system)
 
@@ -1102,6 +1105,57 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
   - `{"status": false, "error": "[ERROR] rotation {rotation} not found, available values: 0 or 180"}`
+
+### POST /start-ups-power-failure-simulation
+
+电池测试
+
+- Data:
+  -`time` - 测试时间，单位秒
+-Response:
+  - `{"status": true, "data": "OK"}`
+
+
+### GET /get-ups-power-failure-simulation
+
+获取电池测试结果
+
+- Response:
+  - `{"status": true, "data": {}}`
+JSON数据格式如下：
+```json
+   {
+    "available_bat_capacity": 1040.0,
+    "available_time": 8747,
+    "available_time_str": "2hour 25 min 47 sec",
+    "bat_current_avg": 0.428,
+    "bat_current_max": 0.696,
+    "bat_power_avg": 3.446,
+    "bat_power_max": 5.539,
+    "bat_voltage_avg": 8.056,
+    "bat_voltage_max": 8.106,
+    "battery_percentage": 93,
+    "output_current_avg": 0.573,
+    "output_current_max": 0.956,
+    "output_power_avg": 3.011,
+    "output_power_max": 5.04,
+    "output_voltage_avg": 5.258,
+    "output_voltage_max": 5.278,
+    "shutdown_percentage": 28
+    }
+```
+
+设置温度单位
+
+- Data:
+  - `unit` - 温度单位 'C' or 'F'
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### GET /get-disk-list
+
+获取磁盘列表
+
 
 ## Settings
 

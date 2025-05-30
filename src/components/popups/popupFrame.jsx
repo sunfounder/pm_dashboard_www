@@ -39,11 +39,14 @@ const PopupFrame = (props) => {
           },
         }}
       >
-        <CardHeader title={props.title} action={
-          <IconButton onClick={props.onClose}>
-            <Close />
-          </IconButton>
-        } />
+        <CardHeader title={props.title}
+          action={
+            props.onClose &&
+            <IconButton onClick={props.onClose}>
+              <Close />
+            </IconButton>
+          }
+        />
         <Box sx={{ overflow: 'auto', height: 'auto', overflowX: "hidden", paddingRight: 0 }}>
           {props.children}
         </Box>

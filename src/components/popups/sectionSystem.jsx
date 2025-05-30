@@ -21,6 +21,7 @@ import {
 } from "./settingItems.jsx";
 import PopupFrame from './popupFrame.jsx';
 import SectionFrame from "./sectionFrame.jsx";
+import PopupPowerFailureSimulation from "./popupPowerFailureSimulation.jsx";
 import ColorWheel from "./colorWheel.jsx";
 import { Circle } from '@mui/icons-material';
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
@@ -36,13 +37,14 @@ const SectionSystem = (props) => {
   const [colorDiskPopup, setColorDiskPopup] = useState(false);
   const [gpioFanModeIndex, setGpioFanModeIndex] = useState(4 - props.config.gpio_fan_mode);
   const [popupStatus, setPopupStatus] = useState(false);
-  const [currentTime, setCurrentTime] = React.useState(0);
-  const [oledDiskList, setOledDiskList] = React.useState([
+  const [currentTime, setCurrentTime] = useState(0);
+  const [oledDiskList, setOledDiskList] = useState([
     { value: "total", label: "Total" },
   ]);
-  const [oledNetworkInterfaceList, setOledNetworkInterfaceList] = React.useState([
+  const [oledNetworkInterfaceList, setOledNetworkInterfaceList] = useState([
     { value: "all", label: "All" },
   ])
+  const [batteryTest, setBatteryTest] = useState(false);
 
   const handleColorDiskPopup = () => {
     setColorDiskPopup(!colorDiskPopup);
@@ -59,6 +61,10 @@ const SectionSystem = (props) => {
       console.log("History cleared");
       props.showSnackBar("success", "History data has been cleared successfully.");
     }
+  }
+
+  const handleBatteryTestPopup = async () => {
+    setBatteryTest(!batteryTest);
   }
 
   const getOledDiiskList = async () => {
@@ -222,7 +228,6 @@ const SectionSystem = (props) => {
   }
   const handleSDDataIntervalBlur = async (event) => {
     let value = event.target.value;
-    // const data = props.config.sd_card_data_interval;
     // 限制输入的类型
     if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
     if (value < 1 || value > 3600) return;
@@ -237,9 +242,9 @@ const SectionSystem = (props) => {
     // 限制输入的类型
     if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
     if (value < 1 || value > 3600) return;
-    let result = await props.sendData('set-oled-sleep-timeout', { 'timeout': value });
+    let result = await props.sendData('set-oled-sleep-timeout', { 'timeout': parseInt(value) });
     if (result === "OK") {
-      props.onChange('system', 'oled_sleep_timeout', value);
+      props.onChange('system', 'oled_sleep_timeout', parseInt(value));
     }
   }
 
@@ -437,7 +442,6 @@ const SectionSystem = (props) => {
             />
           </>
         }
-
         {/* 关机百分比 */}
         {props.peripherals.includes("shutdown_percentage") &&
           <SettingItemSlider
@@ -593,6 +597,18 @@ const SectionSystem = (props) => {
             title="IP Address"
             subtitle={props.config.ip_address}
           />}
+        {/* 电池测试 */}
+        {
+          props.peripherals.includes("power-failure-simulation") &&
+          <SettingItemButton
+            title="Power Failure Simulation"
+            subtitle="Simulate a 1-minute power failure and get a UPS performance report."
+            color="primary"
+            variant="contained"
+            onClick={handleBatteryTestPopup}
+            buttonText="Test"
+          />
+        }
         {/* 重启设备 */}
         {
           props.peripherals.includes("restart") &&
@@ -625,6 +641,13 @@ const SectionSystem = (props) => {
           <Button variant="contained" color="error" sx={{ width: "28rem" }} onClick={handleClearHistory}>CLEAR ALL HISTORY DATA</Button>
         </Box>
       </PopupFrame>
+      {/* 电池 */}
+      <PopupPowerFailureSimulation
+        request={props.request}
+        batteryTest={batteryTest}
+        sendData={props.sendData}
+        handleBatteryTestPopup={handleBatteryTestPopup}
+      />
     </>
   )
 }
