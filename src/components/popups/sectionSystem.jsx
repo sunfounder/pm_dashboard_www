@@ -233,7 +233,7 @@ const SectionSystem = (props) => {
   }
 
   const handleOLEDSleepTimeoutBlur = async (event) => {
-    let value = event.target.value;
+    let value = Number(event.target.value);
     // 限制输入的类型
     if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
     if (value < 1 || value > 3600) return;
@@ -353,9 +353,9 @@ const SectionSystem = (props) => {
                 title="OLED Sleep Timeout"
                 subtitle="Set OLED sleep timeout"
                 value={props.config ? props.config.oled_sleep_timeout : ""}
-                disabled={props.config.oled_sleep_timeout === 0}
+                // disabled={props.config.oled_sleep_timeout === 0}
                 min={1}
-                max={3600}
+                max={600}
                 end="S"
                 onBlur={handleOLEDSleepTimeoutBlur}
               />
@@ -384,7 +384,7 @@ const SectionSystem = (props) => {
               children={
                 // <Box sx={{ display: "flex", alignItems: "flex-end", paddingLeft: "0.5rem" }}>
                 <IconButton aria-label="color-picker" onClick={handleColorDiskPopup}>
-                  <Circle sx={{ color: props.config.rgb_color }} />
+                  <Circle sx={{ color: props.config.rgb_color?.startsWith('#') ? props.config.rgb_color : `#${props.config.rgb_color}` }} />
 
                 </IconButton>
                 /* <Box sx={{ width: "1.5rem", height: "1.5rem", backgroundColor: props.config.rgb_color, paddingBottom: "0" }}></Box> */

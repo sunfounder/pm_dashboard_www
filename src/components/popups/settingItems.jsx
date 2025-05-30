@@ -143,7 +143,7 @@ const SettingItemNumber = (props) => {
     if (typeof value === "string" && value !== "") {
       if (! /^\d+$/.test(value)) {
         if (props.onError) props.onError(true);
-        return { status: false, message: `Number is required` };
+        return { status: false, message: `An integer is required` };
       }
     }
     // 如果没有传入最大最小值表示不使用
@@ -179,6 +179,7 @@ const SettingItemNumber = (props) => {
     helperText={helperText}
     onChange={handleChange}
     onBlur={props.onBlur}
+    type="number"
   />
 }
 
@@ -320,13 +321,13 @@ const SettingItemSlider = (props) => {
       <Box
         sx={{ width: "80%" }}
       >
-        {props.upperLabel && <Typography sx={{padding: "0 3", width: "100%", textAlign: "right"}}>{label}</Typography>}
+        {props.upperLabel && <Typography sx={{ padding: "0 3", width: "100%", textAlign: "right" }}>{label}</Typography>}
         <Slider
           onChangeCommitted={handleChangeCommitted}
           onChange={handleChange}
           value={value}
           valueLabelFormat={props.valueFormat}
-          valueLabelDisplay={props.upperLabel? "off" : "auto"}
+          valueLabelDisplay={props.upperLabel ? "off" : "auto"}
           marks={props.marks}
           step={props.step}
           min={props.min}
