@@ -169,7 +169,10 @@ const LogPanel = (props) => {
   }
 
   useEffect(() => {
-    getLogList();
+    console.log("log file changed", props);
+    if (props.connected) {
+      getLogList();
+    }
   }, [getLogList]);
 
   // 自动更新
