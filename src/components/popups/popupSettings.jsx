@@ -4,7 +4,9 @@ import PopupFrame from './popupFrame.jsx';
 import SectionSystem from './sectionSystem.jsx';
 import SectionMQTT from './sectionMQTT.jsx';
 // import SectionAuto from './sectionAuto.jsx';
-import { SettingItemSwitch } from './settingItems.jsx';
+import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
+
+const VERSIONS = "1.1.0"
 
 const defaultConfigData = {
   "auto": {
@@ -142,6 +144,11 @@ const PopupSettings = (props) => {
           onChange={props.onCloseForever}
           value={props.bannerPermanent} />
       }
+      {/* 版本号versions */}
+      <SettingItem
+        title="Web UI Version"
+        subtitle={VERSIONS}
+      />
       {/* Auto */}
       {/* {props.peripherals.includes("auto") && */}
       {/* {props.peripherals.includes("ws2812") &&
