@@ -169,7 +169,9 @@ const LogPanel = (props) => {
   }
 
   useEffect(() => {
-    getLogList();
+    if (props.connected) {
+      getLogList();
+    }
   }, [getLogList]);
 
   // 自动更新
