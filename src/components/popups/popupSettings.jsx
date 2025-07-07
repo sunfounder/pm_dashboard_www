@@ -4,7 +4,9 @@ import PopupFrame from './popupFrame.jsx';
 import SectionSystem from './sectionSystem.jsx';
 import SectionMQTT from './sectionMQTT.jsx';
 // import SectionAuto from './sectionAuto.jsx';
-import { SettingItemSwitch } from './settingItems.jsx';
+import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
+
+const VERSIONS = "1.1.0"
 
 const defaultConfigData = {
   "auto": {
@@ -134,11 +136,19 @@ const PopupSettings = (props) => {
         subtitle="Show all cores on Processor card"
         onChange={props.onProcessorSwitch}
         value={props.processorChartAmount} />
-      <SettingItemSwitch
-        title="Show battery warning"
-        subtitle="Whether to display battery warning"
-        onChange={props.onCloseForever}
-        value={props.bannerPermanent} />
+      {
+        props.peripherals.includes('battery_voltage') &&
+        <SettingItemSwitch
+          title="Show battery warning"
+          subtitle="Whether to display battery warning"
+          onChange={props.onCloseForever}
+          value={props.bannerPermanent} />
+      }
+      {/* 版本号versions */}
+      <SettingItem
+        title="Web UI Version"
+        subtitle={VERSIONS}
+      />
       {/* Auto */}
       {/* {props.peripherals.includes("auto") && */}
       {/* {props.peripherals.includes("ws2812") &&
