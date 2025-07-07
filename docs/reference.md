@@ -92,6 +92,7 @@
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
+    - [POST /set-debug-level](#post-set-debug-level)
     - [POST /set-restart-service](#post-set-restart-service)
   - [Settings](#settings-1)
     - [System](#system)
@@ -1262,6 +1263,15 @@ JSON数据格式如下：
 
 获取磁盘列表
 
+### POST /set-debug-level
+
+设置调试等级
+
+- Data:
+  - `level` - 调试等级，"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+- Response:
+  - `{"status": true, "data": "OK"}`
+
 ### POST /set-restart-service
 
 重启服务
@@ -1377,3 +1387,7 @@ JSON数据格式如下：
   - Peripheral: clear_history
   - API: [clear-history](#post-clear-history)
   - 弹窗警告确认： Are you sure to clear history and data? All histories and data will be lost. And this action cannot be undone.
+- Restart Service
+  - Peripheral: restart_service
+  - API: [set-restart-service](#post-set-restart-service)
+  - 弹窗警告确认： Are you sure to restart Pironman5 service?
