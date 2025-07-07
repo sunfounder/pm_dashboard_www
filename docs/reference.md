@@ -78,6 +78,12 @@
     - [POST /set-rgb-led-count](#post-set-rgb-led-count)
     - [POST /set-rgb-speed](#post-set-rgb-speed)
     - [POST /set-rgb-style](#post-set-rgb-style)
+    - [POST /set-rgb-matrix-enable](#post-set-rgb-matrix-enable)
+    - [POST /set-rgb-matrix-style](#post-set-rgb-matrix-style)
+    - [POST /set-rgb-matrix-color](#post-set-rgb-matrix-color)
+    - [POST /set-rgb-matrix-color2](#post-set-rgb-matrix-color2)
+    - [POST /set-rgb-matrix-brightness](#post-set-rgb-matrix-brightness)
+    - [POST /set-rgb-matrix-speed](#post-set-rgb-matrix-speed)
     - [POST /set-oled-sleep-timeout](#post-set-oled-sleep-timeout)
     - [POST /set-oled-enable](#post-set-oled-enable)
     - [POST /set-oled-disk](#post-set-oled-disk)
@@ -86,6 +92,7 @@
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
+    - [POST /set-restart-service](#post-set-restart-service)
   - [Settings](#settings-1)
     - [System](#system)
 
@@ -430,6 +437,48 @@ AP 设置弹窗，打开弹窗获取AP信息
     - config分类: system
     - key: sd_card_usage
     - 条装图显示SD卡容量占用
+  - Debug level
+    - peripheral: debug_level
+    - config分类: system
+    - key: debug_level
+    - 下拉框选择：['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+  - RGB点阵开关
+    - peripheral: rgb_matrix
+    - config分类: system
+    - key: rgb_matrix_enable
+    - toggle 开关
+  - RGB点阵样式
+    - peripheral: rgb_matrix
+    - config分类: system
+    - key: rgb_matrix_style
+    - 下拉框选择：['solid', 'breathing', 'rainbow', 'rainbow_reverse', 'spin', 'dual_spin', 'rainbow_spin', 'shift_spin']
+  - RGB点阵颜色
+    - peripheral: rgb_matrix
+    - config分类: system
+    - key: rgb_matrix_color
+    - 颜色选择器
+  - RGB点阵颜色2
+    - peripheral: rgb_matrix
+    - config分类: system
+    - key: rgb_matrix_color2
+    - 颜色选择器
+    - 只有在dual_spin模式下会显示
+  - RGB点阵速度
+    - peripheral: rgb_matrix
+    - config分类: system
+    - key: rgb_matrix_speed
+    - 滑动条
+    - 最小值1
+    - 最大值100
+    - 在solid模式下不显示
+  - RGB点阵亮度
+    - peripheral: rgb_matrix
+    - config分类: system
+    - key: rgb_matrix_brightness
+    - 滑动条
+    - 最小值1
+    - 最大值100
+    - 在breathing 模式下不显示
 
 
 ## Peripherals
@@ -456,6 +505,7 @@ PERIPHERALS = [
     "is_input_plugged_in",
     "is_battery_plugged_in",
     "is_charging",
+    "power-failure-simulation",
 
     "spc_fan_power",
     "pwm_fan_speed",
@@ -463,6 +513,8 @@ PERIPHERALS = [
     "gpio_fan_mode",
     "oled_disk",
     "oled_ip",
+    "oled_sleep",
+    "rgb_matrix",
 
     "shutdown_percentage",
     "power_off_percentage",
@@ -1060,6 +1112,60 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
 
+### POST /set-rgb-matrix-enable
+
+设置RGB灯矩阵开关
+
+- Data:
+  - `enable` - 开关，true/false
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-matrix-style
+
+设置RGB灯矩阵样式
+
+- Data:
+  - `style` - 样式，['solid', 'breathing', 'rainbow', 'rainbow_reverse', 'spin', 'dual_spin', 'rainbow_spin', 'shift_spin']
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-matrix-color
+
+设置RGB灯矩阵颜色
+
+- Data:
+  - `color` - 颜色，格式为#RRGGBB
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-matrix-color2
+
+设置RGB灯矩阵第二个颜色
+
+- Data:
+  - `color` - 颜色，格式为#RRGGBB
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-matrix-brightness
+
+设置RGB灯矩阵亮度
+
+- Data:
+  - `brightness` - 亮度，0-100
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-rgb-matrix-speed
+
+设置RGB灯矩阵动画速度
+
+- Data:
+  - `speed` - 速度，0-100
+- Response:
+  - `{"status": true, "data": "OK"}`
+
 ### POST /set-oled-sleep-timeout
 
 设置 OLED 休眠超时时间
@@ -1156,6 +1262,14 @@ JSON数据格式如下：
 
 获取磁盘列表
 
+### POST /set-restart-service
+
+重启服务
+
+- Data:
+  - `restart` - 重启Pironman5服务，true
+- Response:
+  - `{"status": true, "data": "OK"}`
 
 ## Settings
 
@@ -1219,6 +1333,30 @@ JSON数据格式如下：
 - RGB Style: solid/breathing/flow/flow_reverse/rainbow/rainbow_reverse/hue_cycle
   - Peripheral: ws2812
   - API: [set-rgb-style](#post-set-rgb-style)
+- RGB Matrix Enable: true/false
+  - Peripheral: rgb_matrix
+  - API: [set-rgb-matrix-enable](#post-set-rgb-matrix-enable)
+- RGB Matrix Style: solid/breathing/rainbow/rainbow_reverse/spin/dual_spin/rainbow_spin/shift_spin
+  - Peripheral: rgb_matrix
+  - API: [set-rgb-matrix-style](#post-set-rgb-matrix-style)
+- RGB Matrix Color: #RRGGBB
+  - Peripheral: rgb_matrix
+  - API: [set-rgb-matrix-color](#post-set-rgb-matrix-color)
+- RGB Matrix Color2: #RRGGBB
+  - Peripheral: rgb_matrix
+  - 其他条件：
+    - 只有在style为dual_spin时，才会生效
+  - API: [set-rgb-matrix-color2](#post-set-rgb-matrix-color2)
+- RGB Matrix Brightness: 0-100
+  - Peripheral: rgb_matrix
+  - 其他条件：
+    - 模式是breathing时隐藏
+  - API: [set-rgb-matrix-brightness](#post-set-rgb-matrix-brightness)
+- RGB Matrix Speed: 0-100
+  - Peripheral: rgb_matrix
+  - 其他条件：
+    - 模式是solid时隐藏
+  - API: [set-rgb-matrix-speed](#post-set-rgb-matrix-speed)
 - SD Card Data Interval: 60-3600
   - Peripheral: sd_card_usage
   - API: [set-sd-data-interval](#post-set-sd-data-interval)
