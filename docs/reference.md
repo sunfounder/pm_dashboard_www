@@ -89,6 +89,7 @@
     - [POST /set-oled-disk](#post-set-oled-disk)
     - [POST /set-oled-network-interface](#post-set-oled-network-interface)
     - [POST /set-oled-rotation](#post-set-oled-rotation)
+    - [POST /set-oled-pages](#post-set-oled-pages)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
@@ -480,7 +481,23 @@ AP 设置弹窗，打开弹窗获取AP信息
     - 最小值1
     - 最大值100
     - 在breathing 模式下不显示
-
+  - OLED分类
+    - peripheral: oled
+    - OLED 开关
+      - key: oled_enable
+      - toggle 开关
+    - OLED 旋转
+      - key: oled_rotation
+      - button group: 0, 180
+    - OLED 页面
+      - key: oled_pages
+      - 弹窗编辑
+        - 从peripheral获取可用页面， oled_pages开头的都是页面
+        - 列表列出所有可用页面
+        - 每一项可以打勾开关，表示是否显示，取消勾后显示浅灰色，自动弹到下方
+        - 每一项可以拖动切换位置
+        - 点击保存按钮，发送api[`/set-oled-pages`](#post-set-oled-pages)
+        - 点击取消按钮，关闭弹窗
 
 ## Peripherals
 
@@ -1213,6 +1230,16 @@ OTA 更新
   - `{"status": true, "data": "OK"}`
   - `{"status": false, "error": "[ERROR] rotation {rotation} not found, available values: 0 or 180"}`
 
+### POST /set-oled-pages
+
+设置OLED显示页面
+
+- Data:
+  - `pages` - 页面列表
+- Response:
+  - `{"status": true, "data": "OK"}`
+  - `{"status": false, "error": "[ERROR] page {page} not found, available values: {available_pages}"}`
+
 ### POST /start-ups-power-failure-simulation
 
 电池测试
@@ -1297,85 +1324,94 @@ JSON数据格式如下：
 - Temperature unit: C/F
   - Peripheral: temperature_unit
   - API: [set-temperature-unit](#post-set-temperature-unit)
-- OLED Sleep Timeout: 0-3600s
-  - 控制OLED休眠时长
-  - Peripheral: oled_sleep
-  - API: [set-oled-sleep_timeout](#post-set-oled-sleep-timeout)
-- OLED Enable: true/false
-  - 控制OLED是否开启
-  - Peripheral: oled
-  - API: [set-oled-enable](#post-set-oled-enable)
-- OLED Disk: total/disk list
-  - 选择OLED显示的磁盘，是哪一个。
-  - Peripheral: oled
-  - API: [set-oled-disk](#post-set-oled-disk)
-  - API: [get-disk-list](#get-get-disk-list)
-- OLED Network Interface: all/interface name
-  - 选择OLED上的IP显示，是哪一个网络接口的IP。
-  - Peripheral: oled
-  - API: [set-oled-network-interface](#post-set-oled-network-interface)
-  - API: [get-network-interface-list](#get-get-network-interface-list)
-- OLED Rotation: 0/180
-  - 选择OLED显示方向
-  - Peripheral: oled
-  - API: [set-oled-rotation](#post-set-oled-rotation)
-- Fan LED: on/off/follow
-  - Peripheral: gpio_fan_led
-  - API: [set-fan-led](#post-set-fan-led)
-- Fan Power: 0-100
-  - Peripheral: spc_fan_power
-  - API: [set-fan-power](#post-set-fan-power)
-- Fan Mode: 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
-  - Peripheral: gpio_fan_mode
-  - API: [set-fan-mode](#post-set-fan-mode)
-- RGB Enable: true/false
-  - Peripheral: ws2812
-  - API: [set-rgb-enable](#post-set-rgb-enable)
-- RGB LED Count: 1-4
-  - Peripheral: ws2812
-  - API: [set-rgb-led-count](#post-set-rgb-led-count)
-- RGB Color: #RRGGBB
-  - Peripheral: ws2812
-  - API: [set-rgb-color](#post-set-rgb-color)
-- RGB Speed: 0-100
-  - Peripheral: ws2812
-  - API: [set-rgb-speed](#post-set-rgb-speed)
-- RGB Style: solid/breathing/flow/flow_reverse/rainbow/rainbow_reverse/hue_cycle
-  - Peripheral: ws2812
-  - API: [set-rgb-style](#post-set-rgb-style)
-- RGB Matrix Enable: true/false
-  - Peripheral: rgb_matrix
-  - API: [set-rgb-matrix-enable](#post-set-rgb-matrix-enable)
-- RGB Matrix Style: solid/breathing/rainbow/rainbow_reverse/spin/dual_spin/rainbow_spin/shift_spin
-  - Peripheral: rgb_matrix
-  - API: [set-rgb-matrix-style](#post-set-rgb-matrix-style)
-- RGB Matrix Color: #RRGGBB
-  - Peripheral: rgb_matrix
-  - API: [set-rgb-matrix-color](#post-set-rgb-matrix-color)
-- RGB Matrix Color2: #RRGGBB
-  - Peripheral: rgb_matrix
-  - 其他条件：
-    - 只有在style为dual_spin时，才会生效
-  - API: [set-rgb-matrix-color2](#post-set-rgb-matrix-color2)
-- RGB Matrix Brightness: 0-100
-  - Peripheral: rgb_matrix
-  - 其他条件：
-    - 模式是breathing时隐藏
-  - API: [set-rgb-matrix-brightness](#post-set-rgb-matrix-brightness)
-- RGB Matrix Speed: 0-100
-  - Peripheral: rgb_matrix
-  - 其他条件：
-    - 模式是solid时隐藏
-  - API: [set-rgb-matrix-speed](#post-set-rgb-matrix-speed)
-- SD Card Data Interval: 60-3600
-  - Peripheral: sd_card_usage
-  - API: [set-sd-data-interval](#post-set-sd-data-interval)
-- SD Card Data Retain: 1-7
-  - Peripheral: sd_card_usage
-  - API: [set-sd-data-retain](#post-set-sd-data-retain)
-- SD Card Usage:
-  - Peripheral: sd_card_usage
-  - API: [get-sd-usage](#get-sd-usage)
+- OLED 分组
+  - OLED Sleep Timeout: 0-3600s
+    - 控制OLED休眠时长
+    - Peripheral: oled_sleep
+    - API: [set-oled-sleep_timeout](#post-set-oled-sleep-timeout)
+  - OLED Enable: true/false
+    - 控制OLED是否开启
+    - Peripheral: oled
+    - API: [set-oled-enable](#post-set-oled-enable)
+  - OLED Disk: total/disk list
+    - 选择OLED显示的磁盘，是哪一个。
+    - Peripheral: oled
+    - API: [set-oled-disk](#post-set-oled-disk)
+    - API: [get-disk-list](#get-get-disk-list)
+  - OLED Network Interface: all/interface name
+    - 选择OLED上的IP显示，是哪一个网络接口的IP。
+    - Peripheral: oled
+    - API: [set-oled-network-interface](#post-set-oled-network-interface)
+    - API: [get-network-interface-list](#get-get-network-interface-list)
+  - OLED Rotation: 0/180
+    - 选择OLED显示方向
+    - Peripheral: oled
+    - API: [set-oled-rotation](#post-set-oled-rotation)
+  - OLED Pages: page list
+    - 选择OLED显示的页面
+    - Peripheral: oled
+    - API: [set-oled-pages](#post-set-oled-pages)
+- Fan分组
+  - Fan LED: on/off/follow
+    - Peripheral: gpio_fan_led
+    - API: [set-fan-led](#post-set-fan-led)
+  - Fan Power: 0-100
+    - Peripheral: spc_fan_power
+    - API: [set-fan-power](#post-set-fan-power)
+  - Fan Mode: 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
+    - Peripheral: gpio_fan_mode
+    - API: [set-fan-mode](#post-set-fan-mode)
+- RGB 分组
+  - RGB Enable: true/false
+    - Peripheral: ws2812
+    - API: [set-rgb-enable](#post-set-rgb-enable)
+  - RGB LED Count: 1-4
+    - Peripheral: ws2812
+    - API: [set-rgb-led-count](#post-set-rgb-led-count)
+  - RGB Color: #RRGGBB
+    - Peripheral: ws2812
+    - API: [set-rgb-color](#post-set-rgb-color)
+  - RGB Speed: 0-100
+    - Peripheral: ws2812
+    - API: [set-rgb-speed](#post-set-rgb-speed)
+  - RGB Style: solid/breathing/flow/flow_reverse/rainbow/rainbow_reverse/hue_cycle
+    - Peripheral: ws2812
+    - API: [set-rgb-style](#post-set-rgb-style)
+- RGB Matrix 分组
+  - RGB Matrix Enable: true/false
+    - Peripheral: rgb_matrix
+    - API: [set-rgb-matrix-enable](#post-set-rgb-matrix-enable)
+  - RGB Matrix Style: solid/breathing/rainbow/rainbow_reverse/spin/dual_spin/rainbow_spin/shift_spin
+    - Peripheral: rgb_matrix
+    - API: [set-rgb-matrix-style](#post-set-rgb-matrix-style)
+  - RGB Matrix Color: #RRGGBB
+    - Peripheral: rgb_matrix
+    - API: [set-rgb-matrix-color](#post-set-rgb-matrix-color)
+  - RGB Matrix Color2: #RRGGBB
+    - Peripheral: rgb_matrix
+    - 其他条件：
+      - 只有在style为dual_spin时，才会生效
+    - API: [set-rgb-matrix-color2](#post-set-rgb-matrix-color2)
+  - RGB Matrix Brightness: 0-100
+    - Peripheral: rgb_matrix
+    - 其他条件：
+      - 模式是breathing时隐藏
+    - API: [set-rgb-matrix-brightness](#post-set-rgb-matrix-brightness)
+  - RGB Matrix Speed: 0-100
+    - Peripheral: rgb_matrix
+    - 其他条件：
+      - 模式是solid时隐藏
+    - API: [set-rgb-matrix-speed](#post-set-rgb-matrix-speed)
+- SD卡分组
+  - SD Card Data Interval: 60-3600
+    - Peripheral: sd_card_usage
+    - API: [set-sd-data-interval](#post-set-sd-data-interval)
+  - SD Card Data Retain: 1-7
+    - Peripheral: sd_card_usage
+    - API: [set-sd-data-retain](#post-set-sd-data-retain)
+  - SD Card Usage:
+    - Peripheral: sd_card_usage
+    - API: [get-sd-usage](#get-sd-usage)
 - Shutdown Percentage: 0-100
   - Peripheral: shutdown_percentage
   - API: [set-shutdown-percentage](#post-set-shutdown-percentage)
