@@ -159,12 +159,6 @@ const SectionSystem = (props) => {
     }
   }
 
-  // const handleOledDiskList = async (event) => {
-  //   let result = await props.sendData('set-oled-disk', { 'disk': event });
-  //   if (result === "OK") {
-  //     props.onChange('system', 'oled_disk', event);
-  //   }
-  // }
   const handleToggleOLEDEnabled = async (event) => {
     let result = await props.sendData('set-oled-enable', { 'enable': event });
     if (result === "OK") {
@@ -192,13 +186,6 @@ const SectionSystem = (props) => {
       handleOLEDLayoutPopup();
     }
   }
-
-  // const handleOledNetworkInterfaceList = async (event) => {
-  //   let result = await props.sendData('set-oled-network-interface', { 'interface': event });
-  //   if (result === "OK") {
-  //     props.onChange('system', 'oled_network_interface', event);
-  //   }
-  // }
 
   const handleTemperatureUnit = async (event) => {
     let result = await props.sendData('set-temperature-unit', { 'unit': event });
@@ -470,22 +457,6 @@ const SectionSystem = (props) => {
                   subtitle="Whether to enable OLED"
                   onChange={(event) => handleToggleOLEDEnabled(event)}
                   value={props.config.oled_enable} />
-                {/* Disk 磁盘选项 */}
-                {/* <SettingItemMenu
-                  title="OLED Disk"
-                  subtitle="Set OLED disk"
-                  onChange={(event) => handleOledDiskList(event.target.value)}
-                  value={props.config.oled_disk}
-                  options={oledDiskList}
-                /> */}
-                {/*OLED显示网络接口 */}
-                {/* <SettingItemMenu
-                  title="OLED Network Interface"
-                  subtitle="Set Network Interface"
-                  onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
-                  value={props.config.oled_network_interface}
-                  options={oledNetworkInterfaceList}
-                /> */}
                 {/* oled 显示方向 */}
                 <SettingItemToggleButton
                   title="OLED Rotation"
@@ -939,7 +910,6 @@ const SectionSystem = (props) => {
           setOLEDPages={props.config.oled_pages}
           onDrag={handleDrag}
         />
-
       </PopupFrame>
     </>
   )
