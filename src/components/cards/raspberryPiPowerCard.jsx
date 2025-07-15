@@ -59,12 +59,13 @@ const RaspberryPiPowerCard = (props) => {
   // 处理显示警告信息
   if (props.data.length > 0) {
     let localStorageData = JSON.parse(localStorage.getItem("pm-dashboard-banner"));
-    let lastData = JSON.parse(localStorage.getItem("pm-dashboard-bannerLastData"));
-    if (props.data[0].power_source === 1 && !localStorageData && lastData == null) {
+    if (localStorageData === null) localStorageData = true;
+    let lastData = JSON.parse(sessionStorage.getItem("pm-dashboard-bannerLastData"));
+    if (props.data[0].power_source === 1 && localStorageData && lastData == null) {
       props.showBanner("warning", "Running on battery 🔋");
     }
     if (props.data[0].power_source === 0) {
-      localStorage.removeItem("pm-dashboard-bannerLastData");
+      sessionStorage.removeItem("pm-dashboard-bannerLastData");
     }
   }
   let newData = props.data.map(obj => {

@@ -24,7 +24,8 @@ const PopupPowerFailureSimulation = (props) => {
   const [progress, setProgress] = useState(0); // 进度条
   const [linearProgress, setLinearProgress] = useState(false); //进度条显示
   const [seconds, setSeconds] = useState(5); // 倒计时秒数
-  const [powerFailureSimulationDisabled, setPowerFailureSimulationDisabled] = useState(false);
+  const [powerFailureSimulationDisabled, setPowerFailureSimulationDisabled] = useState(true);  //禁用确认按钮
+  const [cancelDisabled, setCancelDisabled] = useState(false);  //禁用取消按钮
   const [powerFailureSimulationResult, setPowerFailureSimulationResult] = useState(""); //电池测试结果
   const [tip, setTip] = useState(false); //提示
   const [batteryData, setBatteryData] = useState({
@@ -65,8 +66,11 @@ const PopupPowerFailureSimulation = (props) => {
   }
 
   const handleBatteryTest = async () => {
+    props.onBatteryTestStatus(true);
+    setPowerFailureSimulationDisabled(true);
     setSeconds(5);
     setPowerFailureSimulationResult("");
+    setCancelDisabled(true);
     if (seconds > 0) {
       const timer = setInterval(() => {
         setSeconds(prev => {
@@ -79,7 +83,6 @@ const PopupPowerFailureSimulation = (props) => {
         });
       }, 1000);
     }
-    setPowerFailureSimulationDisabled(true);
     // 等待5秒后开始测试
     setTimeout(async () => {
       const result = await props.sendData('start-ups-power-failure-simulation', { "time": batteryTestTimeout });
@@ -92,7 +95,6 @@ const PopupPowerFailureSimulation = (props) => {
     setTimeout(async () => {
       const intervalId = setInterval(async () => {
         let result = await props.request('get-ups-power-failure-simulation');
-        console.log(result);
         result["bat_consumption"] = batteryPercentage - result["battery_percentage"];
         if (result) {
           let data_list = [
@@ -147,12 +149,12 @@ const PopupPowerFailureSimulation = (props) => {
           }
           setPowerFailureSimulationResult(newData);
         }
-        console.log("测试结果：", result);
         if (result) {
           setProgress(100);
-          setPowerFailureSimulationDisabled(false);
+          setCancelDisabled(false);
           setLinearProgress(false);
           clearInterval(intervalId);
+          setTip(false);
         };
       }, 1000);
     }, batteryTestTimeout * 1000 + 5000);
@@ -190,6 +192,9 @@ const PopupPowerFailureSimulation = (props) => {
         power_source: data.power_source,
       }
       setBatteryData(data);
+      if (data.inputStatus === "Plugged in" && data.battery_percentage > 80 && !props.batteryTestStatus) {
+        setPowerFailureSimulationDisabled(false);
+      }
       if (data.power_source === 1) {
         setTip(true);
       }
@@ -199,28 +204,25 @@ const PopupPowerFailureSimulation = (props) => {
   }
 
   useEffect(() => {
-    if (props.batteryTest) {
+    if (props.batteryTestPopup) {
       console.log("打开")
       getBatteryPercentage();
-      if (!batteryPercentage.battery_percentage >= 80) {
-        setPowerFailureSimulationDisabled(true);
-      }
     } else {
       console.log("关闭")
       setProgress(0);
       setSeconds(5);
       setLinearProgress(false);
-      setPowerFailureSimulationDisabled(false);
+      setPowerFailureSimulationDisabled(true);
       setPowerFailureSimulationResult(""); // 清空测试结果
       setTip(false);
     }
 
-  }, [props.batteryTest]);
+  }, [props.batteryTestPopup]);
 
 
   useEffect(() => {
     let getDtataID
-    if (props.batteryTest) {
+    if (props.batteryTestPopup) {
       getDtataID = setInterval(() => {
         getBatteryData();
       }, 1000);
@@ -230,32 +232,25 @@ const PopupPowerFailureSimulation = (props) => {
     return () => {
       clearInterval(getDtataID);
     };
-  }, [props.batteryTest]);
-
+  }, [props.batteryTestPopup]);
 
   return (
-    <PopupFrame title="⚡ Power Failure Simulation" open={props.batteryTest} width="39rem" >
+    <PopupFrame title="⚡ Power Failure Simulation" open={props.batteryTestPopup} width="39rem" >
       <Box sx={{ display: "flex", justifyContent: "center", flexDirection: "column" }}>
         {
-          powerFailureSimulationDisabled && seconds > 0 &&
+          seconds > 0 && props.batteryTestStatus &&
           <Typography Typography variant="h6" sx={{ margin: "0 1rem 1rem 1rem", textAlign: "center" }}>
             Power failure simutaion in <span variant="h1">{seconds}</span>
           </Typography>
         }
         {
-          powerFailureSimulationDisabled && !tip && powerFailureSimulationResult === "" && seconds === 0 &&
+          cancelDisabled && seconds === 0 &&
           <Typography variant="h6" sx={{ margin: "0 1rem 1rem 1rem" }}>
-            Disconnecting power.
+            Power is disconnected, reading datas...
           </Typography>
         }
         {
-          tip && powerFailureSimulationResult === "" &&
-          <Typography variant="h6" sx={{ margin: "0 1rem 1rem 1rem" }}>
-            Power is disconnected, reading datas.
-          </Typography>
-        }
-        {
-          !powerFailureSimulationDisabled && powerFailureSimulationResult === "" && batteryPercentage > 80 &&
+          !props.batteryTestStatus && powerFailureSimulationResult === "" &&
           <>
             <Typography sx={{ margin: "0.5rem 1rem" }}>
               Start a 1-minute power failure simulation. Current battery capacity is {batteryPercentage}%.
@@ -272,17 +267,23 @@ const PopupPowerFailureSimulation = (props) => {
             <Typography sx={{ margin: "0.5rem 1rem" }}>
               Click "Confirm" below to start the test.
             </Typography>
+            {
+              batteryPercentage < 80 &&
+              <Typography sx={{ margin: "0.5rem 1rem" }}>
+                ⚠️ Battery level below 80%, please charge before battery test.
+              </Typography>
+            }
+            {
+              batteryData.inputStatus === "Unplugged" &&
+              <Typography sx={{ margin: "0.5rem 1rem" }}>
+                ⚠️ Currently, there is no power connected. Please connect the power for testing.
+              </Typography>
+            }
           </>
-        }
-        {
-          batteryPercentage < 80 &&
-          <Typography sx={{ margin: "0 1rem 1rem 1rem" }}>
-            Battery level below 80%, please charge before battery test.
-          </Typography>
         }
       </Box>
       {
-        powerFailureSimulationDisabled &&
+        cancelDisabled &&
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "0.1rem", flexWrap: "wrap" }}>
           <Card sx={{ minWidth: "10rem", margin: "0.5rem", flexGrow: "1", alignSelf: "stretch" }}>
             <Typography sx={{ margin: "0 1rem" }} variant="h6">Input</Typography>
@@ -312,10 +313,6 @@ const PopupPowerFailureSimulation = (props) => {
                 <ListItemText primary="Power" sx={{ textAlign: "left" }} />
                 <ListItemText primary={batteryData.battery_power} sx={{ textAlign: "right" }} />
               </ListItem>
-              {/* <ListItem>
-                <ListItemText primary="Percentage" sx={{ textAlign: "left" }} />
-                <ListItemText primary={batteryData.battery_percentage + "%"} sx={{ textAlign: "right" }} />
-              </ListItem> */}
             </List>
           </Card>
           <Card sx={{ minWidth: "10rem", margin: "0.5rem", flexGrow: "1", alignSelf: "stretch" }}>
@@ -373,14 +370,14 @@ const PopupPowerFailureSimulation = (props) => {
           <Button
             variant="outlined"
             color="primary"
-            disabled={progress !== 0 && powerFailureSimulationDisabled}
+            disabled={cancelDisabled}
             sx={{ minWidth: "5rem", maxWidth: "8rem" }}
             onClick={props.handleBatteryTestPopup}>
             Cancel
           </Button>
         }
         {
-          powerFailureSimulationResult === "" &&
+          !props.batteryTestStatus &&
           <Button
             variant="contained"
             color="primary"

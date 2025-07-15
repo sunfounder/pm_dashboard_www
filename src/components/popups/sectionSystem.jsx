@@ -4,7 +4,7 @@ import {
   Button,
   Box,
   Typography,
-  IconButton,
+  Divider
 } from '@mui/material';
 import {
   SettingItemToggleButton,
@@ -17,13 +17,16 @@ import {
   SettingItemSDCardUsage,
   SettingItemNumber,
   SettingItemMenu,
-  SettingItemButton
+  SettingItemButton,
+  SettingItemColorPicker,
+  SettingItemList,
+  SettingItemMenuIcon
 } from "./settingItems.jsx";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import PopupFrame from './popupFrame.jsx';
 import SectionFrame from "./sectionFrame.jsx";
 import PopupPowerFailureSimulation from "./popupPowerFailureSimulation.jsx";
-import ColorWheel from "./colorWheel.jsx";
-import { Circle } from '@mui/icons-material';
+import DataGridPro from "./dataGridPro.jsx"
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const GPIO_FAN_MODES = [
   { value: 4, label: 'Quiet' },
@@ -33,8 +36,56 @@ const GPIO_FAN_MODES = [
   { value: 0, label: 'Always On' },
 ]
 
+
 const SectionSystem = (props) => {
-  const [colorDiskPopup, setColorDiskPopup] = useState(false);
+  let oledPages = props.peripherals.filter(item => item.startsWith("oled_page")).map(item => item.replace("oled_page_", ""))
+  const descriptions = {
+    mix: {
+      id: "mix",
+      title: "System Mix",
+      description: "Displays CPU usage, CPU temperature, and IP address"
+    },
+    performance: {
+      id: "performance",
+      title: "Performance Metrics",
+      description: "Displays CPU usage, CPU temperature, RAM usage, and fan speed"
+    },
+    rpi_power: {
+      id: "rpi_power",
+      title: "Raspberry Pi Power",
+      description: "Displays power details of Raspberry Pi: voltage, current, and power"
+    },
+    input: {
+      id: "input",
+      title: "Input Power",
+      description: "Displays input power details: voltage, current, and power"
+    },
+    battery: {
+      id: "battery",
+      title: "Battery Status",
+      description: "Displays battery details: voltage, current, power, and charging state"
+    },
+    disk: {
+      id: "disk",
+      title: "Disk Usage",
+      description: "Displays disk usage for all disks"
+    },
+    ips: {
+      id: "ips",
+      title: "IP Addresses",
+      description: "Displays IP addresses for all physical interfaces (IP-only display)"
+    }
+  };
+
+  // 映射成对应的标题和描述
+  oledPages = oledPages.map(page => ({
+    id: descriptions[page].id,
+    title: descriptions[page].title,
+    description: descriptions[page].description
+  }));
+  // console.log("SectionSystem", props);
+  // const [colorDiskPopup, setColorDiskPopup] = useState(false);
+  // const [colorDisk, setColorDisk] = useState("000000");
   const [gpioFanModeIndex, setGpioFanModeIndex] = useState(4 - props.config.gpio_fan_mode);
   const [popupStatus, setPopupStatus] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -44,11 +95,24 @@ const SectionSystem = (props) => {
   const [oledNetworkInterfaceList, setOledNetworkInterfaceList] = useState([
     { value: "all", label: "All" },
   ])
-  const [batteryTest, setBatteryTest] = useState(false);
+  const [batteryTestPopup, setBatteryTestPopup] = useState(false);
+  const [batteryTestStatus, setBatteryTestStatus] = useState(false);
+  // const [rgbMatrixListShow, setRgbMatrixListShow] = useState(false);
+  const [OLEDLayouPopup, setOLEDLayouPopup] = useState(false);
+  const [sendOLEDPages, setSendOLEDPages] = useState([]);
 
-  const handleColorDiskPopup = () => {
-    setColorDiskPopup(!colorDiskPopup);
+
+  const handleOLEDLayoutPopup = () => {
+    setOLEDLayouPopup(!OLEDLayouPopup);
   }
+  // const handleColorDiskPopup = (color) => {
+  //   setColorDiskPopup(!colorDiskPopup);
+  //   setColorDisk(color ? color : "#0a1aff");
+  // }
+
+  // const handRgbMatrixList = () => {
+  //   setRgbMatrixListShow(!rgbMatrixListShow);
+  // }
 
   const handlePopup = () => {
     setPopupStatus(!popupStatus);
@@ -64,7 +128,13 @@ const SectionSystem = (props) => {
   }
 
   const handleBatteryTestPopup = async () => {
-    setBatteryTest(!batteryTest);
+    setBatteryTestPopup(!batteryTestPopup);
+    setBatteryTestStatus(false);
+  }
+
+  const handleBatteryTestStatus = (data) => {
+    console.log("开始测试", batteryTestStatus, data);
+    setBatteryTestStatus(data);
   }
 
   const getOledDiiskList = async () => {
@@ -89,12 +159,12 @@ const SectionSystem = (props) => {
     }
   }
 
-  const handleOledDiskList = async (event) => {
-    let result = await props.sendData('set-oled-disk', { 'disk': event });
-    if (result === "OK") {
-      props.onChange('system', 'oled_disk', event);
-    }
-  }
+  // const handleOledDiskList = async (event) => {
+  //   let result = await props.sendData('set-oled-disk', { 'disk': event });
+  //   if (result === "OK") {
+  //     props.onChange('system', 'oled_disk', event);
+  //   }
+  // }
   const handleToggleOLEDEnabled = async (event) => {
     let result = await props.sendData('set-oled-enable', { 'enable': event });
     if (result === "OK") {
@@ -109,12 +179,26 @@ const SectionSystem = (props) => {
     }
   }
 
-  const handleOledNetworkInterfaceList = async (event) => {
-    let result = await props.sendData('set-oled-network-interface', { 'interface': event });
+  const handleDrag = (data) => {
+    console.log("handleDrag", data);
+    setSendOLEDPages(data);
+  }
+
+  const handleDragSave = async () => {
+    console.log("handleDragSave", sendOLEDPages);
+    let result = await props.sendData('set-oled-pages', { 'pages': sendOLEDPages });
     if (result === "OK") {
-      props.onChange('system', 'oled_network_interface', event);
+      props.showSnackBar("success", "Pages saved successfully.");
+      handleOLEDLayoutPopup();
     }
   }
+
+  // const handleOledNetworkInterfaceList = async (event) => {
+  //   let result = await props.sendData('set-oled-network-interface', { 'interface': event });
+  //   if (result === "OK") {
+  //     props.onChange('system', 'oled_network_interface', event);
+  //   }
+  // }
 
   const handleTemperatureUnit = async (event) => {
     let result = await props.sendData('set-temperature-unit', { 'unit': event });
@@ -131,10 +215,11 @@ const SectionSystem = (props) => {
     }
   }
 
-  const handleColorChange = (newColor) => {
-    let color = newColor.replace("#", "");
-    handleRgbColor(color);
-  }
+  // const handleColorChange = (newColor) => {
+  //   console.log("newColor", newColor);
+  //   let color = newColor.replace("#", "");
+  //   handleRgbColor(color);
+  // }
 
   const handleRgbColor = async (event) => {
     if (event.length !== 6) {
@@ -166,6 +251,58 @@ const SectionSystem = (props) => {
     let result = await props.sendData('set-rgb-style', { 'style': event });
     if (result === "OK") {
       props.onChange('system', 'rgb_style', event);
+    }
+  }
+
+  const handleToggleRGBMatrix = async (event) => {
+    let result = await props.sendData('set-rgb-matrix-enable', { 'enable': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_matrix_enable', event);
+    }
+  }
+
+  const handleRGBMatrixStyle = async (event) => {
+    let result = await props.sendData('set-rgb-matrix-style', { 'style': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_matrix_style', event);
+    }
+  }
+
+  const handleRGBMatrixColor = async (event) => {
+    if (event.length !== 6) {
+      console.log("Invalid color");
+    } else {
+      const color = "#" + event;
+      let result = await props.sendData('set-rgb-matrix-color', { 'color': color });
+      if (result === "OK") {
+        props.onChange('system', 'rgb_matrix_color', color);
+      }
+    }
+  }
+
+  const handleRGBMatrixReset = async (event) => {
+    if (event.length !== 6) {
+      console.log("Invalid color");
+    } else {
+      const color = "#" + event;
+      let result = await props.sendData('set-rgb-matrix-color2', { 'color': color });
+      if (result === "OK") {
+        props.onChange('system', 'rgb_matrix_color2', color);
+      }
+    }
+  }
+
+  const handleRGBMatrixSpeed = async (event) => {
+    let result = await props.sendData('set-rgb-matrix-speed', { 'speed': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_matrix_speed', event);
+    }
+  }
+
+  const handleRGBMatrixBrightness = async (event) => {
+    let result = await props.sendData('set-rgb-matrix-brightness', { 'brightness': event });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_matrix_brightness', event);
     }
   }
 
@@ -277,6 +414,13 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleDebugLevel = async (event) => {
+    let result = await props.sendData('set-debug-level', { 'level': event });
+    if (result === "OK") {
+      props.onChange('system', 'debug_level', event);
+    }
+  }
+
   useEffect(() => {
     if (props.peripherals.includes("time")) {
       getCurrentTime();
@@ -316,56 +460,70 @@ const SectionSystem = (props) => {
         {/* oled */}
         {
           props.peripherals.includes("oled") &&
-          <>
-            {/* oled开关 */}
-            <SettingItemSwitch
-              title="OLED Enable"
-              subtitle="Whether to enable OLED"
-              onChange={(event) => handleToggleOLEDEnabled(event)}
-              value={props.config.oled_enable} />
-            {/* Disk 磁盘选项 */}
-            <SettingItemMenu
-              title="OLED Disk"
-              subtitle="Set OLED disk"
-              onChange={(event) => handleOledDiskList(event.target.value)}
-              value={props.config.oled_disk}
-              options={oledDiskList}
-            />
-            {/*OLED显示网络接口 */}
-            <SettingItemMenu
-              title="OLED Network Interface"
-              subtitle="Set Network Interface"
-              onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
-              value={props.config.oled_network_interface}
-              options={oledNetworkInterfaceList}
-            />
-            {/* oled 显示方向 */}
-            <SettingItemToggleButton
-              title="OLED Rotation"
-              subtitle="Set OLED rotation"
-              onChange={(event) => handleOLEDRotation(event.target.value)}
-              value={props.config.oled_rotation}
-              options={[
-                { value: 0, name: '0°' },
-                { value: 180, name: '180°' },
-              ]}
-            />
-            {/* oled 休眠时长 */}
-            {
-              props.peripherals.includes("oled_sleep") &&
-              <SettingItemNumber
-                width="30%"
-                title="OLED Sleep Timeout"
-                subtitle="Set OLED sleep timeout"
-                value={props.config ? props.config.oled_sleep_timeout : ""}
-                // disabled={props.config.oled_sleep_timeout === 0}
-                min={1}
-                max={600}
-                end="S"
-                onBlur={handleOLEDSleepTimeoutBlur}
-              />
+          <SettingItemList
+            primary="OLED"
+            children={
+              <>
+                {/* oled开关 */}
+                <SettingItemSwitch
+                  title="OLED Enable"
+                  subtitle="Whether to enable OLED"
+                  onChange={(event) => handleToggleOLEDEnabled(event)}
+                  value={props.config.oled_enable} />
+                {/* Disk 磁盘选项 */}
+                {/* <SettingItemMenu
+                  title="OLED Disk"
+                  subtitle="Set OLED disk"
+                  onChange={(event) => handleOledDiskList(event.target.value)}
+                  value={props.config.oled_disk}
+                  options={oledDiskList}
+                /> */}
+                {/*OLED显示网络接口 */}
+                {/* <SettingItemMenu
+                  title="OLED Network Interface"
+                  subtitle="Set Network Interface"
+                  onChange={(event) => handleOledNetworkInterfaceList(event.target.value)}
+                  value={props.config.oled_network_interface}
+                  options={oledNetworkInterfaceList}
+                /> */}
+                {/* oled 显示方向 */}
+                <SettingItemToggleButton
+                  title="OLED Rotation"
+                  subtitle="Set OLED rotation"
+                  onChange={(event) => handleOLEDRotation(event.target.value)}
+                  value={props.config.oled_rotation}
+                  options={[
+                    { value: 0, name: '0°' },
+                    { value: 180, name: '180°' },
+                  ]}
+                />
+                {/* oled 休眠时长 */}
+                {
+                  props.peripherals.includes("oled_sleep") &&
+                  <SettingItemNumber
+                    width="30%"
+                    title="OLED Sleep Timeout"
+                    subtitle="Set OLED sleep timeout"
+                    value={props.config ? props.config.oled_sleep_timeout : ""}
+                    // disabled={props.config.oled_sleep_timeout === 0}
+                    min={1}
+                    max={600}
+                    end="S"
+                    onBlur={handleOLEDSleepTimeoutBlur}
+                  />
+                }
+                {/* oled 布局 */}
+                <SettingItemMenuIcon
+                  title="OLED Pages"
+                  subtitle="Set OLED pages"
+                  icon={
+                    <ArrowForwardIosIcon sx={{ width: 16 }} onClick={handleOLEDLayoutPopup} />
+                  }
+                />
+                <Divider />
+              </>
             }
-          </>
+          />
         }
         {/* RGB */}
         {
@@ -379,18 +537,12 @@ const SectionSystem = (props) => {
               onChange={(event) => handleToggleRGBEnabled(event)}
               value={props.config.rgb_enable} />
             {/* RGB 颜色 */}
-            <SettingItemText
+            <SettingItemColorPicker
               title="RGB Color"
               subtitle="Set RGB color"
+              color={props.config.rgb_color}
               value={props.config.rgb_color.replace("#", "")}
-              // onChange={(event) => props.onChange('rgb_color', event)}
-              onBlur={(event) => handleRgbColor(event.target.value)}
-              start="#"
-              children={
-                <IconButton aria-label="color-picker" onClick={handleColorDiskPopup}>
-                  <Circle sx={{ color: props.config.rgb_color?.startsWith('#') ? props.config.rgb_color : `#${props.config.rgb_color}` }} />
-                </IconButton>
-              }
+              onRgbColor={handleRgbColor}
             />
             {/* RGB 亮度 */}
             <SettingItemSlider
@@ -437,6 +589,100 @@ const SectionSystem = (props) => {
               upperLabel
             />
           </>
+        }
+        {/* RGB点阵 */}
+        {
+          props.peripherals.includes("rgb_matrix") &&
+          <SettingItemList
+            primary="RGB Matrix"
+            children={
+              <>
+                {/* RGB点阵开关 */}
+                <SettingItemSwitch
+                  title="RGB Enabled"
+                  subtitle="Enable or disable the RGB Matrix"
+                  onChange={(event) => handleToggleRGBMatrix(event)}
+                  value={props.config.rgb_matrix_enable} />
+                {/*RGB点阵 样式 */}
+                <SettingItemMenu
+                  title="Animation Style"
+                  subtitle="Choose the animation style for the RGB Matrix"
+                  onChange={(event) => handleRGBMatrixStyle(event.target.value)}
+                  value={props.config.rgb_matrix_style}
+                  options={[
+                    { value: "solid", label: "Solid" },
+                    { value: "breathing", label: "Breathing" },
+                    { value: "rainbow", label: "Rainbow" },
+                    { value: "rainbow_reverse", label: "Rainbow reverse" },
+                    { value: "spin", label: "Spin" },
+                    { value: "dual_spin", label: "Dual spin" },
+                    { value: "rainbow_spin", label: "Rainbow spin" },
+                    { value: "shift_spin", label: "Shift spin" },
+                  ]}
+                />
+                {/* GB点阵 颜色 */}
+                {
+                  props.config.rgb_matrix_style !== "rainbow" &&
+                  props.config.rgb_matrix_style !== "rainbow_reverse" &&
+                  props.config.rgb_matrix_style !== "rainbow_spin" &&
+                  props.config.rgb_matrix_style !== "shift_spin" &&
+                  <SettingItemColorPicker
+                    title="Primary Color"
+                    subtitle="Select the primary color for the animation"
+                    color={props.config.rgb_matrix_color}
+                    value={props.config.rgb_matrix_color.replace("#", "")}
+                    onRgbColor={handleRGBMatrixColor}
+                  />
+                }
+                {/* GB点阵 颜色2 */}
+                {
+                  props.config.rgb_matrix_style === "dual_spin" &&
+                  props.config.rgb_matrix_style !== "rainbow" &&
+                  props.config.rgb_matrix_style !== "rainbow_reverse" &&
+                  props.config.rgb_matrix_style !== "rainbow_spin" &&
+                  props.config.rgb_matrix_style !== "shift_spin" &&
+                  <SettingItemColorPicker
+                    title="Secondary Color"
+                    subtitle="Select the secondary color for the animation."
+                    color={props.config.rgb_matrix_color2}
+                    value={props.config.rgb_matrix_color2.replace("#", "")}
+                    onRgbColor={handleRGBMatrixReset}
+                  />
+                }
+                {/* RGB点阵速度 */}
+                {
+                  props.config.rgb_matrix_style !== "solid" &&
+                  <SettingItemSlider
+                    title="Animation Speed"
+                    subtitle="Adjust the speed of the animation"
+                    valueFormat={(value) => `${value}%`}
+                    onCommitted={(event) => handleRGBMatrixSpeed(event)}
+                    value={props.config.rgb_matrix_speed}
+                    sx={{ marginTop: 2, }}
+                    min={0}
+                    max={100}
+                    upperLabel
+                  />
+                }
+                {/* RGB点阵亮度 */}
+                {
+                  props.config.rgb_matrix_style !== "breathing" &&
+                  <SettingItemSlider
+                    title="Brightness"
+                    subtitle="Set the brightness level of the RGB Matrix"
+                    valueFormat={(value) => `${value}%`}
+                    onCommitted={(event) => handleRGBMatrixBrightness(event)}
+                    value={props.config.rgb_matrix_brightness}
+                    sx={{ marginTop: 2, }}
+                    min={0}
+                    max={100}
+                    upperLabel
+                  />
+                }
+                <Divider />
+              </>
+            }
+          />
         }
         {/* 关机百分比 */}
         {props.peripherals.includes("shutdown_percentage") &&
@@ -621,12 +867,45 @@ const SectionSystem = (props) => {
               Restart
             </Button>
           </ListItem>}
+
+        {/* Debug level */}
+        {
+          props.peripherals.includes("debug_level") &&
+          <SettingItemMenu
+            title="Debug level"
+            subtitle="Debug level"
+            onChange={(event) => handleDebugLevel(event.target.value)}
+            value={props.config.debug_level}
+            options={[
+              { value: "debug", label: "DEBUG" },
+              { value: "info", label: "INFO" },
+              { value: "warning", label: "WARNING" },
+              { value: "error", label: "ERROR" },
+              { value: "critical", label: "CRITICAL" },
+            ]}
+          />
+        }
+        {/* 重启服务 */}
+        {
+          props.peripherals.includes("restart_service") &&
+          <ListItem>
+            <Button
+              variant='outlined'
+              color="error"
+              onClick={() => {
+                props.restartService(
+                  'Restart service',
+                  'Do you want to restart service?',
+                  props.onCancel
+                );
+              }}
+              sx={{ width: '100%' }} >
+              Restart service
+            </Button>
+          </ListItem>
+        }
+
       </SectionFrame>
-      <PopupFrame title="ColorPicker" onClose={handleColorDiskPopup} open={colorDiskPopup} width="24rem">
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: "2rem" }}>
-          <ColorWheel onColorChange={handleColorChange} color={props.config.rgb_color}></ColorWheel>
-        </Box>
-      </PopupFrame>
       <PopupFrame title="Warning" onClose={handlePopup} open={popupStatus} width="30rem" >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Typography sx={{ margin: "0 1rem 1rem 1rem" }}> Are you sure to clear history data? All histories data will be lost. And this action cannot be undone.</Typography>
@@ -638,10 +917,30 @@ const SectionSystem = (props) => {
       {/* 电池 */}
       <PopupPowerFailureSimulation
         request={props.request}
-        batteryTest={batteryTest}
+        batteryTestPopup={batteryTestPopup}
+        batteryTestStatus={batteryTestStatus}
         sendData={props.sendData}
         handleBatteryTestPopup={handleBatteryTestPopup}
+        onBatteryTestStatus={handleBatteryTestStatus}
       />
+      {/* OLED弹窗 */}
+      <PopupFrame
+        title="OLED Layout"
+        onClose={handleOLEDLayoutPopup}
+        onConfirm={handleDragSave}
+        open={OLEDLayouPopup}
+        width="30rem"
+        button={true}
+        cancelText="Cancel"
+        confirmText="Save"
+      >
+        <DataGridPro
+          data={oledPages}
+          setOLEDPages={props.config.oled_pages}
+          onDrag={handleDrag}
+        />
+
+      </PopupFrame>
     </>
   )
 }

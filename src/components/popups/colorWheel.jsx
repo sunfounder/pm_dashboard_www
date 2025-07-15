@@ -11,9 +11,9 @@ function Demo({ onColorChange, color }) {
     onColorChange(hsvaToHex({ ...hsva, ...color.hsva }));
   };
   return (
-    <Fragment style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Wheel color={hsva} onChange={handleChange} />
-    </Fragment>
+    </div>
   );
 }
 

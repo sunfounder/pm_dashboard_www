@@ -7,6 +7,7 @@ import {
   Box,
   Stack,
   IconButton,
+  Button
 } from '@mui/material';
 import {
   Close,
@@ -61,6 +62,29 @@ const PopupFrame = (props) => {
               {props.actions}
             </Stack>
           </CardActions>}
+        {
+          props.button &&
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "1rem" }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              disabled={props.disabled}
+              sx={{ minWidth: "5rem", maxWidth: "8rem" }}
+              onClick={props.onClose}
+            >
+              {props.cancelText || 'Cancel'}
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ minWidth: "5rem", maxWidth: "8rem" }}
+              disabled={props.disabled}
+              onClick={props.onConfirm}
+            >
+              {props.confirmText || 'Confirm'}
+            </Button>
+          </Box>
+        }
       </Paper >
     </Modal >
   );

@@ -5,8 +5,9 @@ import SectionSystem from './sectionSystem.jsx';
 import SectionMQTT from './sectionMQTT.jsx';
 // import SectionAuto from './sectionAuto.jsx';
 import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
+import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.1.0"
+const VERSIONS = "1.1.1"
 
 const defaultConfigData = {
   "auto": {
@@ -55,6 +56,7 @@ const defaultConfigData = {
     "rgb_style": 'breathing',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
     "rgb_color": "#0a1aff",
     "rgb_speed": 50, //速度
+    "rgb_brightness": 50,
     "rgb_pwm_frequency": 1000, //频率
     "rgb_pin": 10,  // 10,12,21,
     "oled_enable": true,
@@ -63,6 +65,14 @@ const defaultConfigData = {
     "oled_rotation": 0,
     "oled_sleep_timeout": 0,
     "gpio_fan_led": "on",
+    "debug_level": "debug",
+    "rgb_matrix_enable": false,
+    "rgb_matrix_style": 'solid',
+    "rgb_matrix_color": "#0a1aff",
+    "rgb_matrix_color2": "#0a1aff",
+    "rgb_matrix_speed": 50,
+    "rgb_matrix_brightness": 50,
+    "oled_pages": [],
   }
 }
 
@@ -164,6 +174,7 @@ const PopupSettings = (props) => {
           config={config.mqtt}
           onChange={handleMQTTChanged}
         />}
+      <Divider />
       {/* System */}
       {(props.peripherals.includes("shutdown_percentage") ||
         props.peripherals.includes("power_off_percentage") ||
@@ -186,6 +197,7 @@ const PopupSettings = (props) => {
           restartPrompt={props.restartPrompt}
           latestData={props.latestData}
           onTemperatureUnitChanged={props.onTemperatureUnitChanged}
+          restartService={props.restartService}
         />}
     </PopupFrame >
   );

@@ -9,6 +9,7 @@ import ActionAlerts from './actionAlerts.jsx';
 import { Box } from '@mui/material';
 import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 import { HOST } from '../js/config.js';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const DEFAULT_PERIPHERALS = []
 
@@ -44,9 +45,12 @@ const Home = (props) => {
   // 是否显示横幅提示
   const [bannerShow, setBannerShow] = useState(false);
   // 横幅是否永久显示
-  const [bannerPermanent, setBannerPermanent] = useState(false);
+  const [bannerPermanent, setBannerPermanent] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-banner")) != null ? JSON.parse(window.localStorage.getItem("pm-dashboard-banner")) : true);
   const [bannerText, setBannerText] = useState("");
   const [bannerSeverity, setBannerSeverity] = useState("success");
+  window.onload = function () {
+    sessionStorage.clear();
+  };
 
   const request = async (url, method, payload, ignore) => {
     if (!connected && !ignore) {
@@ -150,7 +154,7 @@ const Home = (props) => {
 
   const handleBannerClose = () => {
     setBannerShow(false);
-    localStorage.setItem("pm-dashboard-bannerLastData", JSON.stringify(true));
+    sessionStorage.setItem("pm-dashboard-bannerLastData", JSON.stringify(true));
   }
 
   // 不再提示横幅
@@ -338,6 +342,34 @@ const Home = (props) => {
     );
   }
 
+  const restartService = async (title, message, onConfirm, onCancel) => {
+    let content = message;
+    // const result = await sendData('set-restart-service', { 'level': true });
+    showAlert(
+      title,
+      content,
+      () => {
+        sendData('set-restart-service', {});
+        setTimeout(() => showAlert(
+          "Restarting",
+          <Box sx={{ display: "flex", }}>
+            The device is restarting. Please wait for a moment.
+            <Box sx={{ marginLeft: "10px" }}>
+              <CircularProgress size="20px" />
+            </Box>
+          </Box>,
+          () => { }),
+          100);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+        onConfirm && onConfirm();
+      },
+      () => {
+        onCancel && onCancel();
+      }
+    );
+  }
   return (
     <Box id="home" sx={{
       width: "100%",
@@ -361,6 +393,7 @@ const Home = (props) => {
         open={settingPageDisplay}
         request={request}
         onCancel={handleCancel}
+        restartService={restartService}
         onMountSwitch={handleMountSwitch}
         onProcessorSwitch={handleProcessorChartChange}
         onCloseForever={handleBannerCloseForever}

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { useMediaQuery } from '@mui/material';
+import { Circle } from '@mui/icons-material';
+import PopupFrame from './popupFrame.jsx';
+import ColorWheel from "./colorWheel.jsx";
 
 import {
   ListItem,
@@ -23,7 +26,15 @@ import {
   MenuItem,
   CircularProgress,
   Button,
+  ListItemButton,
+  List,
+  Collapse,
+
 } from '@mui/material';
+import {
+  ExpandMore,
+  ExpandLess,
+} from '@mui/icons-material';
 
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -575,6 +586,75 @@ const SettingItemFileSelector = (props) => {
   />
 }
 
+const SettingItemColorPicker = (props) => {
+  const [colorDiskPopup, setColorDiskPopup] = useState(false);
+
+  const handleColorDiskPopup = () => {
+    setColorDiskPopup(!colorDiskPopup);
+  }
+
+  const handleColorChange = (newColor) => {
+    let pureColor = newColor.replace("#", "");
+    props.onRgbColor(pureColor);
+  }
+  return (
+    <>
+      <SettingItemText
+        title={props.title}
+        subtitle={props.subtitle}
+        value={props.value}
+        onBlur={(event) => props.onRgbColor(event.target.value)}
+        start="#"
+        children={
+          <IconButton aria-label="color-picker" onClick={handleColorDiskPopup}>
+            <Circle sx={{ color: props.color?.startsWith('#') ? props.color : `#${props.color}` }} />
+          </IconButton>
+        }
+      />
+      <PopupFrame title="ColorPicker" onClose={handleColorDiskPopup} open={colorDiskPopup} width="24rem">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: "2rem" }}>
+          <ColorWheel onColorChange={handleColorChange} color={props.color}></ColorWheel>
+        </Box>
+      </PopupFrame>
+    </>
+  )
+}
+
+const SettingItemList = (props) => {
+  const [ListShow, setListShow] = useState(false);
+  const handleListShow = () => {
+    setListShow(!ListShow);
+  }
+
+  return (
+    <List>
+      <ListItemButton onClick={handleListShow}>
+        <ListItemText primary={props.primary} />
+        {ListShow ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={ListShow} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding >
+          <div style={{ padding: "8px 16px" }}>
+            {
+              props.children
+            }
+          </div>
+        </List>
+      </Collapse>
+    </List>
+  )
+}
+
+const SettingItemMenuIcon = (props) => {
+  return (
+    <SettingItem {...props} >
+      <IconButton sx={{ width: 24, height: 24 }}>
+        {props.icon}
+      </IconButton>
+    </SettingItem>
+  )
+}
+
 export {
   SettingItem,
   SettingItemButton,
@@ -590,4 +670,7 @@ export {
   SettingItemSDCardUsage,
   SettingItemSSIDList,
   SettingItemFileSelector,
+  SettingItemColorPicker,
+  SettingItemList,
+  SettingItemMenuIcon
 }

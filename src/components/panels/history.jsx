@@ -161,7 +161,6 @@ const HistoryPanel = (props) => {
   }, [keys, selectedKeys, colors]);
 
   const handleKeyChange = (key, checked) => {
-    console.log(key, checked);
     let temp = [];
     let newColors = { ...colors };
     if (checked) {
