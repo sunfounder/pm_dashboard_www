@@ -195,6 +195,9 @@ const PopupPowerFailureSimulation = (props) => {
       if (data.inputStatus === "Plugged in" && data.battery_percentage > 80 && !props.batteryTestStatus) {
         setPowerFailureSimulationDisabled(false);
       }
+      if (data.inputStatus === "Unplugged") {
+        setPowerFailureSimulationDisabled(true);
+      }
       if (data.power_source === 1) {
         setTip(true);
       }

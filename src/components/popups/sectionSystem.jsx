@@ -487,8 +487,9 @@ const SectionSystem = (props) => {
                 <SettingItemMenuIcon
                   title="OLED Pages"
                   subtitle="Set OLED pages"
+                  onClick={handleOLEDLayoutPopup}
                   icon={
-                    <ArrowForwardIosIcon sx={{ width: 16 }} onClick={handleOLEDLayoutPopup} />
+                    <ArrowForwardIosIcon sx={{ width: 16 }} />
                   }
                 />
                 <Divider />
@@ -848,11 +849,11 @@ const SectionSystem = (props) => {
             onChange={(event) => handleDebugLevel(event.target.value)}
             value={props.config.debug_level}
             options={[
-              { value: "debug", label: "DEBUG" },
-              { value: "info", label: "INFO" },
-              { value: "warning", label: "WARNING" },
-              { value: "error", label: "ERROR" },
-              { value: "critical", label: "CRITICAL" },
+              { value: "DEBUG", label: "DEBUG" },
+              { value: "INFO", label: "INFO" },
+              { value: "WARNING", label: "WARNING" },
+              { value: "ERROR", label: "ERROR" },
+              { value: "CRITICAL", label: "CRITICAL" },
             ]}
           />
         }

@@ -7,7 +7,7 @@ import SectionMQTT from './sectionMQTT.jsx';
 import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.1.1"
+const VERSIONS = "1.2.1";
 
 const defaultConfigData = {
   "auto": {

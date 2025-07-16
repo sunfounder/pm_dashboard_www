@@ -115,12 +115,14 @@ const SettingItem = (props) => {
   if (props.wrap && isSmallScreen) flexDirection = 'column';
 
   return (<>
-    <ListItem sx={{ flexDirection: flexDirection }}>
+    <ListItem sx={{
+      flexDirection: flexDirection, "&:hover": { cursor: props.onClick && "pointer" }
+    }} onClick={props.onClick} >
       <ListItemText primary={props.title} secondary={props.subtitle} sx={{ width: '100%' }} />
       <Box sx={{ display: 'flex', flexFlow: 'right', justifyContent: 'flex-end', width: '100%' }}>
         {props.children}
       </Box>
-    </ListItem>
+    </ListItem >
   </>
   )
 }
