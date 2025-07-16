@@ -95,7 +95,16 @@ const PopupPowerFailureSimulation = (props) => {
     setTimeout(async () => {
       const intervalId = setInterval(async () => {
         let result = await props.request('get-ups-power-failure-simulation');
-        result["bat_consumption"] = batteryPercentage - result["battery_percentage"];
+        if (!result) {
+          props.showBanner("warning", "Test failed, please try again.");
+          setProgress(100);
+          setCancelDisabled(false);
+          setLinearProgress(false);
+          setTip(false);
+          clearInterval(intervalId);
+          return;
+        }
+        // result["bat_consumption"] = batteryPercentage - result["battery_percentage"];
         if (result) {
           let data_list = [
             { name: "Battery Voltage", field: "bat_voltage", unit: "V" },
@@ -111,7 +120,7 @@ const PopupPowerFailureSimulation = (props) => {
             { title: "Max", field: "max", align: "center" },
           ];
           const data_list2 = [
-            { name: "Battery Consumption", field: "bat_consumption", unit: "%" },
+            { name: "Battery Consumption", field: "bat_mah_used", unit: "mAh" },
             { name: "Average Battery Power", field: "bat_power_avg", unit: "W" },
             { name: "Available Time", field: "available_time_str", unit: "" },
             { name: "Battery Percentage", field: "battery_percentage", unit: "%" },

@@ -484,13 +484,10 @@ const SectionSystem = (props) => {
                   />
                 }
                 {/* oled 布局 */}
-                <SettingItemMenuIcon
+                <SettingItemButton
                   title="OLED Pages"
                   subtitle="Set OLED pages"
                   onClick={handleOLEDLayoutPopup}
-                  icon={
-                    <ArrowForwardIosIcon sx={{ width: 16 }} />
-                  }
                 />
                 <Divider />
               </>
@@ -791,10 +788,7 @@ const SectionSystem = (props) => {
           <SettingItemButton
             title="Clear All Data"
             subtitle="Clear all history data"
-            color="error"
-            variant="contained"
             onClick={handlePopup}
-            buttonText="Clear"
           />
         }
         {/* Mac地址 */}
@@ -815,30 +809,24 @@ const SectionSystem = (props) => {
           <SettingItemButton
             title="Power Failure Simulation"
             subtitle="Simulate a 1-minute power failure and get a UPS performance report."
-            color="primary"
-            variant="contained"
             onClick={handleBatteryTestPopup}
-            buttonText="Test"
           />
         }
         {/* 重启设备 */}
         {
           props.peripherals.includes("restart") &&
-          <ListItem>
-            <Button
-              variant='outlined'
-              color="error"
-              onClick={() => {
-                props.restartPrompt(
-                  'Restart Device',
-                  'Do you want to restart device?',
-                  props.onCancel
-                );
-              }}
-              sx={{ width: '100%' }} >
-              Restart
-            </Button>
-          </ListItem>}
+          <SettingItemButton
+            title="Restart Device"
+            subtitle="Simulate a 1-minute power failure and get a UPS performance report."
+            onClick={() => {
+              props.restartPrompt(
+                'Restart Device',
+                'Do you want to restart device?',
+                props.onCancel
+              );
+            }}
+          />
+        }
 
         {/* Debug level */}
         {
@@ -860,21 +848,17 @@ const SectionSystem = (props) => {
         {/* 重启服务 */}
         {
           props.peripherals.includes("restart_service") &&
-          <ListItem>
-            <Button
-              variant='outlined'
-              color="error"
-              onClick={() => {
-                props.restartService(
-                  'Restart service',
-                  'Do you want to restart service?',
-                  props.onCancel
-                );
-              }}
-              sx={{ width: '100%' }} >
-              Restart service
-            </Button>
-          </ListItem>
+          <SettingItemButton
+            title="Restart service"
+            subtitle="Restart service"
+            onClick={() => {
+              props.restartService(
+                'Restart service',
+                'Do you want to restart service?',
+                props.onCancel
+              );
+            }}
+          />
         }
 
       </SectionFrame>

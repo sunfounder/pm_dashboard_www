@@ -5,6 +5,7 @@ import { useMediaQuery } from '@mui/material';
 import { Circle } from '@mui/icons-material';
 import PopupFrame from './popupFrame.jsx';
 import ColorWheel from "./colorWheel.jsx";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import {
   ListItem,
@@ -108,6 +109,24 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
+const SettingItemButton = (props) => {
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
+  let flexDirection = 'row';
+
+  if (props.wrap && isSmallScreen) flexDirection = 'column';
+
+  return (<>
+    <ListItemButton sx={{ flexDirection: flexDirection }} onClick={props.onClick} >
+      <ListItemText primary={props.title} secondary={props.subtitle} sx={{ width: '100%' }} />
+      <Box sx={{ display: 'flex', flexFlow: 'right', justifyContent: 'flex-end', width: '100%' }}>
+        {props.loading && <CircularProgress size={30} />}
+        {props.children || <ArrowForwardIosIcon sx={{ width: 16 }} />}
+      </Box>
+    </ListItemButton >
+  </>
+  )
+}
+
 const SettingItem = (props) => {
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
   let flexDirection = 'row';
@@ -115,9 +134,7 @@ const SettingItem = (props) => {
   if (props.wrap && isSmallScreen) flexDirection = 'column';
 
   return (<>
-    <ListItem sx={{
-      flexDirection: flexDirection, "&:hover": { cursor: props.onClick && "pointer" }
-    }} onClick={props.onClick} >
+    <ListItem sx={{ flexDirection: flexDirection }} onClick={props.onClick} >
       <ListItemText primary={props.title} secondary={props.subtitle} sx={{ width: '100%' }} />
       <Box sx={{ display: 'flex', flexFlow: 'right', justifyContent: 'flex-end', width: '100%' }}>
         {props.children}
@@ -552,18 +569,18 @@ const SettingItemSSIDList = (props) => {
   );
 }
 
-const SettingItemButton = (props) => {
-  return <SettingItem {...props} >
-    <Button
-      onClick={props.onClick}
-      variant={props.variant}
-      color={props.color}
-      startIcon={props.loading && <CircularProgress size={30} />}
-    >
-      {props.buttonText}
-    </Button>
-  </SettingItem>
-}
+// const SettingItemButton = (props) => {
+//   return <SettingItem {...props} >
+//     <Button
+//       onClick={props.onClick}
+//       variant={props.variant}
+//       color={props.color}
+//       startIcon={props.loading && <CircularProgress size={30} />}
+//     >
+//       {props.buttonText}
+//     </Button>
+//   </SettingItem>
+// }
 
 const SettingItemFileSelector = (props) => {
   return <SettingItemText
