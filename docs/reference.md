@@ -90,6 +90,13 @@
     - [POST /set-oled-network-interface](#post-set-oled-network-interface)
     - [POST /set-oled-rotation](#post-set-oled-rotation)
     - [POST /set-oled-pages](#post-set-oled-pages)
+    - [POST /set-send-email-on](#post-set-send-email-on)
+    - [POST /set-send-email-to](#post-set-send-email-to)
+    - [POST /set-smtp-server](#post-set-smtp-server)
+    - [POST /set-smtp-port](#post-set-smtp-port)
+    - [POST /set-smtp-email](#post-set-smtp-email)
+    - [POST /set-smtp-password](#post-set-smtp-password)
+    - [POST /set-smtp-use-tls](#post-set-smtp-use-tls)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
@@ -441,54 +448,59 @@ AP 设置弹窗，打开弹窗获取AP信息
     - 条装图显示SD卡容量占用
   - Debug level
     - peripheral: debug_level
-    - config分类: system
-    - key: debug_level
-    - 下拉框选择：['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-  - RGB点阵开关
-    - peripheral: rgb_matrix
-    - config分类: system
-    - key: rgb_matrix_enable
-    - toggle 开关
-  - RGB点阵样式
-    - peripheral: rgb_matrix
-    - config分类: system
-    - key: rgb_matrix_style
-    - 下拉框选择：['solid', 'breathing', 'rainbow', 'rainbow_reverse', 'spin', 'dual_spin', 'rainbow_spin', 'shift_spin']
-  - RGB点阵颜色
-    - peripheral: rgb_matrix
-    - config分类: system
-    - key: rgb_matrix_color
-    - 颜色选择器
-  - RGB点阵颜色2
-    - peripheral: rgb_matrix
-    - config分类: system
-    - key: rgb_matrix_color2
-    - 颜色选择器
-    - 只有在dual_spin模式下会显示
-  - RGB点阵速度
-    - peripheral: rgb_matrix
-    - config分类: system
-    - key: rgb_matrix_speed
-    - 滑动条
-    - 最小值1
-    - 最大值100
-    - 在solid模式下不显示
-  - RGB点阵亮度
-    - peripheral: rgb_matrix
-    - config分类: system
-    - key: rgb_matrix_brightness
-    - 滑动条
-    - 最小值1
-    - 最大值100
-    - 在breathing 模式下不显示
+    - 下拉框选择：
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
+    - api: [`/set-debug-level`](#post-set-debug-level)
+  - RGB点阵分类
+    - RGB点阵开关
+      - peripheral: rgb_matrix
+      - toggle 开关
+      - api: [`/set-rgb-matrix-enable`](#post-set-rgb-matrix-enable)
+    - RGB点阵样式
+      - peripheral: rgb_matrix
+      - 下拉框选择：
+        - solid
+        - breathing
+        - rainbow
+        - rainbow_reverse
+        - spin
+        - dual_spin
+        - rainbow_spin
+        - shift_spin
+      - api: [`/set-rgb-matrix-style`](#post-set-rgb-matrix-style)
+    - RGB点阵颜色
+      - 颜色选择器
+      - api: [`/set-rgb-matrix-color`](#post-set-rgb-matrix-color)
+    - RGB点阵颜色2
+      - 颜色选择器
+      - 只有在dual_spin模式下会显示
+      - api: [`/set-rgb-matrix-color2`](#post-set-rgb-matrix-color2)
+    - RGB点阵速度
+      - 滑动条
+      - 最小值1
+      - 最大值100
+      - 在solid模式下不显示
+      - api: [`/set-rgb-matrix-speed`](#post-set-rgb-matrix-speed)
+    - RGB点阵亮度
+      - 滑动条
+      - 最小值1
+      - 最大值100
+      - 在breathing 模式下不显示
+      - api: [`/set-rgb-matrix-brightness`](#post-set-rgb-matrix-brightness)
   - OLED分类
     - peripheral: oled
     - OLED 开关
       - key: oled_enable
       - toggle 开关
+      - api: [`/set-oled-enable`](#post-set-oled-enable)
     - OLED 旋转
       - key: oled_rotation
       - button group: 0, 180
+      - api: [`/set-oled-rotation`](#post-set-oled-rotation)
     - OLED 页面
       - key: oled_pages
       - 弹窗编辑
@@ -498,7 +510,47 @@ AP 设置弹窗，打开弹窗获取AP信息
         - 每一项可以拖动切换位置
         - 点击保存按钮，发送api[`/set-oled-pages`](#post-set-oled-pages)
         - 点击取消按钮，关闭弹窗
-
+  - 邮件设置分类
+    - peripheral: send_email
+    - 在什么时候发送邮件
+      - key: send_email_on
+      - 弹窗选择开关
+        - 固定列表
+          - battery_activated
+          - low_battery
+          - power_disconnected
+          - power_restored
+          - power_insufficient
+          - battery_critical_shutdown
+          - battery_voltage_critical_shutdown
+        - 每一项都是toggle 开关
+        - 排序无关
+        - 点击保存按钮，发送api[`/set-send-email-on`](#post-set-send-email-on)
+        - 点击取消按钮，关闭弹窗
+    - 接收邮件邮箱
+      - key: send_email_to
+      - 邮箱输入框
+      - api: [`/set-send-email-to`](#post-set-send-email-to)
+    - SMTP服务器
+      - key: smtp_server
+      - 输入框
+      - api: [`/set-smtp-server`](#post-set-smtp-server)
+    - SMTP账号
+      - key: smtp_email
+      - 邮箱输入框
+      - api: [`/set-smtp-email`](#post-set-smtp-email)
+    - SMTP密码
+      - key: smtp_password
+      - 输入框
+      - api: [`/set-smtp-password`](#post-set-smtp-password)
+    - SMTP端口
+      - key: smtp_port
+      - 数字输入框
+      - api: [`/set-smtp-port`](#post-set-smtp-port)
+    - SMTP使用TLS
+      - key: smtp_tls
+      - toggle 开关
+      - api: [`/set-smtp-tls`](#post-set-smtp-tls)
 ## Peripherals
 
 ```python
@@ -1239,6 +1291,70 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
   - `{"status": false, "error": "[ERROR] page {page} not found, available values: {available_pages}"}`
+
+### POST /set-send-email-on
+
+设置在什么事件需要发送邮件
+
+- Data:
+  - `on` - 发送邮件的事件， ["battery_activated", "low_battery", "power_disconnected", "power_restored", "power_insufficient", "battery_critical_shutdown", "battery_voltage_critical_shutdown"]
+- Response:
+  - `{"status": true, "data": "OK"}`
+  - `{"status": false, "error": "[ERROR] on {on} not found, available values: ["battery_activated", "low_battery", "power_disconnected", "power_restored", "power_insufficient", "battery_critical_shutdown", "battery_voltage_critical_shutdown"]"}`
+
+### POST /set-send-email-to
+
+设置接受提醒邮件的邮箱
+
+- Data:
+  - `to` - 邮箱地址
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-smtp-server
+
+设置SMTP服务器
+
+- Data:
+  - `server` - SMTP服务器地址
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-smtp-port
+
+设置SMTP端口
+
+- Data:
+  - `port` - SMTP端口
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-smtp-email
+
+设置SMTP邮箱
+
+- Data:
+  - `email` - SMTP邮箱
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-smtp-password
+
+设置SMTP密码
+
+- Data:
+  - `password` - SMTP密码
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-smtp-use-tls
+
+设置SMTP是否使用TLS
+
+- Data:
+  - `use_tls` - SMTP是否使用TLS
+- Response:
+  - `{"status": true, "data": "OK"}`
 
 ### POST /start-ups-power-failure-simulation
 
