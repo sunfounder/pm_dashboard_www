@@ -513,6 +513,8 @@ AP 设置弹窗，打开弹窗获取AP信息
   - 邮件设置分类
     - peripheral: send_email
     - 在什么时候发送邮件
+      - 标题: Send email on
+      - 描述: Select events that trigger emails
       - key: send_email_on
       - 弹窗选择开关
         - 固定列表
@@ -528,29 +530,42 @@ AP 设置弹窗，打开弹窗获取AP信息
         - 点击保存按钮，发送api[`/set-send-email-on`](#post-set-send-email-on)
         - 点击取消按钮，关闭弹窗
     - 接收邮件邮箱
+      - 标题: Send email to
+      - 描述: Email address to send emails to
       - key: send_email_to
       - 邮箱输入框
       - api: [`/set-send-email-to`](#post-set-send-email-to)
     - SMTP服务器
+      - 标题: SMTP Server
+      - 描述: SMTP server address
       - key: smtp_server
       - 输入框
       - api: [`/set-smtp-server`](#post-set-smtp-server)
     - SMTP账号
+      - 标题: SMTP Account
+      - 描述: SMTP account email address
       - key: smtp_email
-      - 邮箱输入框
+      - 输入框
       - api: [`/set-smtp-email`](#post-set-smtp-email)
     - SMTP密码
+      - 标题: SMTP Password
+      - 描述: SMTP account password
       - key: smtp_password
       - 输入框
       - api: [`/set-smtp-password`](#post-set-smtp-password)
     - SMTP端口
+      - 标题: SMTP Port
+      - 描述: SMTP server port
       - key: smtp_port
       - 数字输入框
       - api: [`/set-smtp-port`](#post-set-smtp-port)
     - SMTP使用TLS
+      - 标题: Enable SMTP TLS Encryption
+      - 描述: Enable TLS (do not enable if using HTTPS)
       - key: smtp_tls
       - toggle 开关
       - api: [`/set-smtp-tls`](#post-set-smtp-tls)
+
 ## Peripherals
 
 ```python
