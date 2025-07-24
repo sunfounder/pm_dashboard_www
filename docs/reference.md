@@ -97,7 +97,7 @@
     - [POST /set-smtp-email](#post-set-smtp-email)
     - [POST /set-smtp-password](#post-set-smtp-password)
     - [POST /set-smtp-use-tls](#post-set-smtp-use-tls)
-    - [POST /test-smtp](#post-test-smtp)
+    - [GET /test-smtp](#get-test-smtp)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
@@ -561,7 +561,7 @@ AP 设置弹窗，打开弹窗获取AP信息
       - 描述: Test SMTP settings
       - key: smtp_test
       - button
-      - api: [`/test-smtp`](#post-test-smtp)
+      - api: [`/test-smtp`](#get-test-smtp)
 
 ## Peripherals
 
@@ -1367,7 +1367,7 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /test-smtp
+### GET /test-smtp
 
 测试SMTP设置
 
