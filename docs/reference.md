@@ -96,7 +96,7 @@
     - [POST /set-smtp-port](#post-set-smtp-port)
     - [POST /set-smtp-email](#post-set-smtp-email)
     - [POST /set-smtp-password](#post-set-smtp-password)
-    - [POST /set-smtp-use-tls](#post-set-smtp-use-tls)
+    - [POST /set-smtp-security](#post-set-smtp-security)
     - [GET /test-smtp](#get-test-smtp)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
@@ -543,7 +543,7 @@ AP 设置弹窗，打开弹窗获取AP信息
       - 输入框: http/https选项（默认https），地址输入框，冒号，端口号，使用TLS选项（http时显示）
       - 地址api: [`/set-smtp-server`](#post-set-smtp-server)
       - 端口api: [`/set-smtp-port`](#post-set-smtp-port)
-      - 使用TLS api: [`/set-smtp-tls`](#post-set-smtp-tls)
+      - 使用TLS api: [`/set-smtp-security`](#post-set-smtp-security)
     - SMTP账号
       - 标题: SMTP Account
       - 描述: SMTP account email address
@@ -1358,14 +1358,15 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
 
-### POST /set-smtp-use-tls
+### POST /set-smtp-security
 
 设置SMTP是否使用TLS
 
 - Data:
-  - `use_tls` - SMTP是否使用TLS
+  - `security` - SMTP的加密方式， 'none', 'ssl' or 'tls'
 - Response:
   - `{"status": true, "data": "OK"}`
+  - `{"status": false, "error": "[ERROR] security {security} not found, available values: 'none', 'ssl' or 'tls'"}`
 
 ### GET /test-smtp
 
