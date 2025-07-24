@@ -97,6 +97,7 @@
     - [POST /set-smtp-email](#post-set-smtp-email)
     - [POST /set-smtp-password](#post-set-smtp-password)
     - [POST /set-smtp-use-tls](#post-set-smtp-use-tls)
+    - [POST /test-smtp](#post-test-smtp)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
@@ -539,8 +540,10 @@ AP 设置弹窗，打开弹窗获取AP信息
       - 标题: SMTP Server
       - 描述: SMTP server address
       - key: smtp_server
-      - 输入框
-      - api: [`/set-smtp-server`](#post-set-smtp-server)
+      - 输入框: http/https选项（默认https），地址输入框，冒号，端口号，使用TLS选项（http时显示）
+      - 地址api: [`/set-smtp-server`](#post-set-smtp-server)
+      - 端口api: [`/set-smtp-port`](#post-set-smtp-port)
+      - 使用TLS api: [`/set-smtp-tls`](#post-set-smtp-tls)
     - SMTP账号
       - 标题: SMTP Account
       - 描述: SMTP account email address
@@ -553,18 +556,12 @@ AP 设置弹窗，打开弹窗获取AP信息
       - key: smtp_password
       - 输入框
       - api: [`/set-smtp-password`](#post-set-smtp-password)
-    - SMTP端口
-      - 标题: SMTP Port
-      - 描述: SMTP server port
-      - key: smtp_port
-      - 数字输入框
-      - api: [`/set-smtp-port`](#post-set-smtp-port)
-    - SMTP使用TLS
-      - 标题: Enable SMTP TLS Encryption
-      - 描述: Enable TLS (do not enable if using HTTPS)
-      - key: smtp_tls
-      - toggle 开关
-      - api: [`/set-smtp-tls`](#post-set-smtp-tls)
+    - 测试SMTP
+      - 标题: Test SMTP
+      - 描述: Test SMTP settings
+      - key: smtp_test
+      - button
+      - api: [`/test-smtp`](#post-test-smtp)
 
 ## Peripherals
 
@@ -1298,8 +1295,7 @@ OTA 更新
   - `{"status": false, "error": "[ERROR] rotation {rotation} not found, available values: 0 or 180"}`
 
 ### POST /set-oled-pages
-
-设置OLED显示页面
+设置 OLED的页面
 
 - Data:
   - `pages` - 页面列表
@@ -1370,6 +1366,14 @@ OTA 更新
   - `use_tls` - SMTP是否使用TLS
 - Response:
   - `{"status": true, "data": "OK"}`
+
+### POST /test-smtp
+
+测试SMTP设置
+
+- Response:
+  - `{"status": true, "data": "OK"}`
+  - `{"status": false, "error": "[ERROR] {error}"}`
 
 ### POST /start-ups-power-failure-simulation
 
