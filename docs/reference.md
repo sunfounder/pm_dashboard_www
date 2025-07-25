@@ -1,6 +1,7 @@
 # pm-dashboard-www 参考文档
 
 - [pm-dashboard-www 参考文档](#pm-dashboard-www-参考文档)
+- [- POST /set-restart-service](#--post-set-restart-service)
   - [页面](#页面)
     - [Drawer 抽屉](#drawer-抽屉)
       - [Dashboard](#dashboard)
@@ -24,6 +25,29 @@
       - [AP](#ap)
       - [Download History(暂缓)](#download-history暂缓)
       - [Settings](#settings)
+        - [主题设置](#主题设置)
+        - [储存卡片显示未挂载硬盘](#储存卡片显示未挂载硬盘)
+        - [处理器卡片显示多核信息](#处理器卡片显示多核信息)
+        - [电池输出警告：在切换到电池输出时，显示警告信息](#电池输出警告在切换到电池输出时显示警告信息)
+        - [System分类](#system分类)
+          - [温度单位设置](#温度单位设置)
+          - [Shutdown Percentage](#shutdown-percentage)
+          - [当前日期时间 Current Datetime](#当前日期时间-current-datetime)
+          - [数据间隔](#数据间隔)
+          - [时区选择 Timezone:](#时区选择-timezone)
+          - [自动设置时间 Auto Time Setting:](#自动设置时间-auto-time-setting)
+          - [NTP Server:](#ntp-server)
+          - [SD卡容量占用](#sd卡容量占用)
+          - [Debug level](#debug-level)
+          - [RGB点阵分类](#rgb点阵分类)
+          - [OLED分类](#oled分类)
+          - [邮件设置分类](#邮件设置分类)
+          - [Debug Level](#debug-level-1)
+          - [数据库保留时间](#数据库保留时间)
+          - [Mac地址](#mac地址)
+          - [IP地址](#ip地址)
+          - [清除历史数据](#清除历史数据)
+          - [重启服务](#重启服务)
   - [Peripherals](#peripherals)
   - [Config](#config)
   - [API](#api)
@@ -102,9 +126,10 @@
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
     - [POST /set-debug-level](#post-set-debug-level)
+    - [POST /set-database-retention-days](#post-set-database-retention-days)
     - [POST /set-restart-service](#post-set-restart-service)
-  - [Settings](#settings-1)
-    - [System](#system)
+  - [](#)
+#    - [POST /set-restart-service](#post-set-restart-service)
 
 ## 页面
 
@@ -366,88 +391,81 @@ AP 设置弹窗，打开弹窗获取AP信息
 设置弹窗，打开弹窗获取设置信息
 
 - 获取设置API: [`/get-config`](#get-get-config)
-- 主题设置
-  - toggle 开关
-  - 点击切换主题
-- 储存卡片显示未挂载硬盘
-  - toggle 开关
-  - 点击切换是否显示未挂载硬盘
-- 处理器卡片显示多核信息
-  - toggle 按键组：合并/多核
-  - 点击切换是否显示多核信息
-- 电池输出警告：在切换到电池输出时，显示警告信息
-  - toggle 开关
-  - 点击切换是否显示电池输出警告
-- System分类
-  - 温度单位设置
-    - peripheral判断: `temperature_unit`
-    - config分类: `system`
-    - key: `temperature_unit`
-    - toggle 开关
-  - Shutdown Percentage
-    - peripheral判断改为: `shutdown_percentage`
-    - config分类: `system`
-    - key: `shutdown_percentage`
-    - 滑动条
-    - 最小10%，最大100%
-    - 描述: Without external input and if the battery voltage is below the set value, the device will send a shutdown request via I2C to protect the device and data. Note: Set the value to 100% for high current output.
-  - Power Off Percentage
-    - peripheral判断: `power_off_percentage`
-    - config分类: `system`
-    - key: `power_off_percentage`
-    - 滑动条，类似Shutdown Percentage
-    - 最小5%，最大 100%
-    - 描述: If the battery voltage falls below the set value, the device will cut off the output to protect the battery.
-  - 当前日期时间 Current Datetime
-    - peripheral: `time`
-    - config分类: `system`
-    - key: `timestamp`
-    - 显示当前时间日期
-    - 手动设置时间按钮 Edit
-      - 如果`auto_time_enable`peripheral是false或者`auto_time_enable`的值是false,才可用,否则变灰,无法点击.
-      - 点击显示日期时间选择框
-    - 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
-  - 数据间隔
-    - peripheral: `data_interval`
-    - config分类: `system`
-    - key: `data_interval`
-    - 输入框
-    - 最小1秒，最大3600秒
-    - 描述: The interval between data uploads.
-  - 时区选择 Timezone: 
-    - peripheral: `timezone`
-    - config分类: `system`
-    - key: `timezone`
-    - 下拉框选择,使用UTC时区格式如`UTC+8:00`
-  - 自动设置时间 Auto Time Setting: 
-    - peripheral: `auto_time_enable`
-    - config分类: `system`
-    - key: `auto_time_enable`
-    - toggle 开关
-  - NTP Server: 
-    - 如果`auto_time_enable`的值是`true`才显示
-    - peripheral: `auto_time_enable`
-    - config分类: `system`
-    - 子标题按照用户所在地区格式显示当前时间
-    - 输入框加Sync Now按钮
-      - 输入框填写ntp_server地址
-      - 按键按下调api [`/set-time-sync`](#post-set-time-sync)
-  - Mac地址
-    - peripheral: mac_address
-    - config分类: system
-    - key: mac_address
-    - 显示Mac地址
-  - IP地址
-    - peripheral: ip_address
-    - config分类: system
-    - key: ip_address
-    - 显示IP地址
-  - SD卡容量占用
+
+##### 主题设置
+- toggle 开关
+- 点击切换主题
+
+##### 储存卡片显示未挂载硬盘
+- toggle 开关
+- 点击切换是否显示未挂载硬盘
+
+##### 处理器卡片显示多核信息
+- toggle 按键组：合并/多核
+- 点击切换是否显示多核信息
+
+##### 电池输出警告：在切换到电池输出时，显示警告信息
+- toggle 开关
+- 点击切换是否显示电池输出警告
+
+##### System分类
+
+###### 温度单位设置
+- peripheral判断: `temperature_unit`
+- config分类: `system`
+- key: `temperature_unit`
+- toggle 开关
+
+###### Shutdown Percentage
+- peripheral判断改为: `shutdown_percentage`
+- config分类: `system`
+- key: `shutdown_percentage`
+- 滑动条
+- 最小10%，最大100%
+- 描述: Without external input and if the battery voltage is below the set value, the device will send a shutdown request via I2C to protect the device and data. Note: Set the value to 100% for high current output.
+
+###### 当前日期时间 Current Datetime
+- peripheral: `time`
+- config分类: `system`
+- key: `timestamp`
+- 显示当前时间日期
+- 手动设置时间按钮 Edit
+  - 如果`auto_time_enable`peripheral是false或者`auto_time_enable`的值是false,才可用,否则变灰,无法点击.
+  - 点击显示日期时间选择框
+- 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
+
+###### 数据间隔
+- peripheral: `data_interval`
+- config分类: `system`
+- key: `data_interval`
+- 输入框
+- 最小1秒，最大3600秒
+- 描述: The interval between data uploads.
+###### 时区选择 Timezone: 
+- peripheral: `timezone`
+- config分类: `system`
+- key: `timezone`
+- 下拉框选择,使用UTC时区格式如`UTC+8:00`
+###### 自动设置时间 Auto Time Setting: 
+- peripheral: `auto_time_enable`
+- config分类: `system`
+- key: `auto_time_enable`
+- toggle 开关
+###### NTP Server: 
+- 如果`auto_time_enable`的值是`true`才显示
+- peripheral: `auto_time_enable`
+- config分类: `system`
+- 子标题按照用户所在地区格式显示当前时间
+- 输入框加Sync Now按钮
+  - 输入框填写ntp_server地址
+  - 按键按下调api [`/set-time-sync`](#post-set-time-sync)
+
+###### SD卡容量占用
     - peripheral: sd_card_usage
     - config分类: system
     - key: sd_card_usage
     - 条装图显示SD卡容量占用
-  - Debug level
+###### Debug level
     - peripheral: debug_level
     - 下拉框选择：
       - DEBUG
@@ -456,7 +474,7 @@ AP 设置弹窗，打开弹窗获取AP信息
       - ERROR
       - CRITICAL
     - api: [`/set-debug-level`](#post-set-debug-level)
-  - RGB点阵分类
+###### RGB点阵分类
     - RGB点阵开关
       - peripheral: rgb_matrix
       - toggle 开关
@@ -492,7 +510,7 @@ AP 设置弹窗，打开弹窗获取AP信息
       - 最大值100
       - 在breathing 模式下不显示
       - api: [`/set-rgb-matrix-brightness`](#post-set-rgb-matrix-brightness)
-  - OLED分类
+###### OLED分类
     - peripheral: oled
     - OLED 开关
       - key: oled_enable
@@ -511,57 +529,99 @@ AP 设置弹窗，打开弹窗获取AP信息
         - 每一项可以拖动切换位置
         - 点击保存按钮，发送api[`/set-oled-pages`](#post-set-oled-pages)
         - 点击取消按钮，关闭弹窗
-  - 邮件设置分类
-    - peripheral: send_email
-    - 在什么时候发送邮件
-      - 标题: Send email on
-      - 描述: Select events that trigger emails
-      - key: send_email_on
-      - 弹窗选择开关
-        - 固定列表
-          - battery_activated
-          - low_battery
-          - power_disconnected
-          - power_restored
-          - power_insufficient
-          - battery_critical_shutdown
-          - battery_voltage_critical_shutdown
-        - 每一项都是toggle 开关
-        - 排序无关
-        - 点击保存按钮，发送api[`/set-send-email-on`](#post-set-send-email-on)
-        - 点击取消按钮，关闭弹窗
-    - 接收邮件邮箱
-      - 标题: Send email to
-      - 描述: Email address to send emails to
-      - key: send_email_to
-      - 邮箱输入框
-      - api: [`/set-send-email-to`](#post-set-send-email-to)
-    - SMTP服务器
-      - 标题: SMTP Server
-      - 描述: SMTP server address
-      - key: smtp_server
-      - 输入框: http/https选项（默认https），地址输入框，冒号，端口号，使用TLS选项（http时显示）
-      - 地址api: [`/set-smtp-server`](#post-set-smtp-server)
-      - 端口api: [`/set-smtp-port`](#post-set-smtp-port)
-      - 使用TLS api: [`/set-smtp-security`](#post-set-smtp-security)
-    - SMTP账号
-      - 标题: SMTP Account
-      - 描述: SMTP account email address
-      - key: smtp_email
-      - 输入框
-      - api: [`/set-smtp-email`](#post-set-smtp-email)
-    - SMTP密码
-      - 标题: SMTP Password
-      - 描述: SMTP account password
-      - key: smtp_password
-      - 输入框
-      - api: [`/set-smtp-password`](#post-set-smtp-password)
-    - 测试SMTP
-      - 标题: Test SMTP
-      - 描述: Test SMTP settings
-      - key: smtp_test
-      - button
-      - api: [`/test-smtp`](#get-test-smtp)
+###### 邮件设置分类
+- peripheral: send_email
+- 在什么时候发送邮件
+  - 标题: Send email on
+  - 描述: Select events that trigger emails
+  - key: send_email_on
+  - 弹窗选择开关
+    - 固定列表
+      - battery_activated
+      - low_battery
+      - power_disconnected
+      - power_restored
+      - power_insufficient
+      - battery_critical_shutdown
+      - battery_voltage_critical_shutdown
+    - 每一项都是toggle 开关
+    - 排序无关
+    - 点击保存按钮，发送api[`/set-send-email-on`](#post-set-send-email-on)
+    - 点击取消按钮，关闭弹窗
+- 接收邮件邮箱
+  - 标题: Send email to
+  - 描述: Email address to send emails to
+  - key: send_email_to
+  - 邮箱输入框
+  - api: [`/set-send-email-to`](#post-set-send-email-to)
+- SMTP服务器
+  - 标题: SMTP Server
+  - 描述: SMTP server address
+  - key: smtp_server
+  - 输入框: http/https选项（默认https），地址输入框，冒号，端口号，使用TLS选项（http时显示）
+  - 地址api: [`/set-smtp-server`](#post-set-smtp-server)
+  - 端口api: [`/set-smtp-port`](#post-set-smtp-port)
+  - 使用TLS api: [`/set-smtp-security`](#post-set-smtp-security)
+- SMTP账号
+  - 标题: SMTP Account
+  - 描述: SMTP account email address
+  - key: smtp_email
+  - 输入框
+  - api: [`/set-smtp-email`](#post-set-smtp-email)
+- SMTP密码
+  - 标题: SMTP Password
+  - 描述: SMTP account password
+  - key: smtp_password
+  - 输入框
+  - api: [`/set-smtp-password`](#post-set-smtp-password)
+- 测试SMTP
+  - 标题: Test SMTP
+  - 描述: Test SMTP settings
+  - key: smtp_test
+  - button
+  - api: [`/test-smtp`](#get-test-smtp)
+###### Debug Level
+- 标题: Debug Level
+- 描述: Set debug level
+- key: debug_level
+- 下拉框选择：
+  - DEBUG
+  - INFO
+  - WARNING
+  - ERROR
+  - CRITICAL
+- api: [`/set-debug-level`](#post-set-debug-level)
+###### 数据库保留时间
+- 标题: History Retention
+- 描述: Set the duration to keep history data
+- key: database_retention_days
+- 输入框：结尾days
+- api: [`/set-database-retention-days`](#post-set-database-retention-days)
+###### Mac地址
+- peripheral: mac_address
+- config分类: system
+- key: mac_address
+- 显示Mac地址
+###### IP地址
+- peripheral: ip_address
+- config分类: system
+- key: ip_address
+- 显示IP地址
+###### 清除历史数据
+- 标题: Clear History
+- 描述: Clear all history data
+- key: clear_history
+- button，点击弹窗提醒
+- api: [`/clear-history`](#post-clear-history)
+- 弹窗：Are you sure you want to clear all history data?
+- 弹窗确认后，再发送API
+###### 重启服务
+- 标题: Restart Service
+- 描述: Restart the service
+- key: restart_service
+- button，点击弹窗确认
+- api: [`/restart-service`](#post-restart-service)
+- 弹窗：Are you sure you want to restart the service?    - 弹窗确认后，转圈2秒后刷新页面
 
 ## Peripherals
 
@@ -1435,6 +1495,15 @@ JSON数据格式如下：
 - Response:
   - `{"status": true, "data": "OK"}`
 
+### POST /set-database-retention-days
+
+设置数据库保留时间
+
+- Data:
+  - `days` - 数据库保留时间，单位天
+- Response:
+  - `{"status": true, "data": "OK"}`
+
 ### POST /set-restart-service
 
 重启服务
@@ -1444,122 +1513,4 @@ JSON数据格式如下：
 - Response:
   - `{"status": true, "data": "OK"}`
 
-## Settings
-
-### System
-
-- Dark Mode: true/false
-  - 控制UI的主题
-  - 存在localstorage里面，切换页面的主题
-- Show unmounted disks: true/false
-  - 控制是否显示未挂载的磁盘
-  - 存在localstorage里面，切换储存卡片的显示
-- Show all cores: true/false
-  - 控制是否显示所有的CPU核心
-  - 存在localstorage里面，切换CPU卡片的显示
-- Temperature unit: C/F
-  - Peripheral: temperature_unit
-  - API: [set-temperature-unit](#post-set-temperature-unit)
-- OLED 分组
-  - OLED Sleep Timeout: 0-3600s
-    - 控制OLED休眠时长
-    - Peripheral: oled_sleep
-    - API: [set-oled-sleep_timeout](#post-set-oled-sleep-timeout)
-  - OLED Enable: true/false
-    - 控制OLED是否开启
-    - Peripheral: oled
-    - API: [set-oled-enable](#post-set-oled-enable)
-  - OLED Disk: total/disk list
-    - 选择OLED显示的磁盘，是哪一个。
-    - Peripheral: oled
-    - API: [set-oled-disk](#post-set-oled-disk)
-    - API: [get-disk-list](#get-get-disk-list)
-  - OLED Network Interface: all/interface name
-    - 选择OLED上的IP显示，是哪一个网络接口的IP。
-    - Peripheral: oled
-    - API: [set-oled-network-interface](#post-set-oled-network-interface)
-    - API: [get-network-interface-list](#get-get-network-interface-list)
-  - OLED Rotation: 0/180
-    - 选择OLED显示方向
-    - Peripheral: oled
-    - API: [set-oled-rotation](#post-set-oled-rotation)
-  - OLED Pages: page list
-    - 选择OLED显示的页面
-    - Peripheral: oled
-    - API: [set-oled-pages](#post-set-oled-pages)
-- Fan分组
-  - Fan LED: on/off/follow
-    - Peripheral: gpio_fan_led
-    - API: [set-fan-led](#post-set-fan-led)
-  - Fan Power: 0-100
-    - Peripheral: spc_fan_power
-    - API: [set-fan-power](#post-set-fan-power)
-  - Fan Mode: 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
-    - Peripheral: gpio_fan_mode
-    - API: [set-fan-mode](#post-set-fan-mode)
-- RGB 分组
-  - RGB Enable: true/false
-    - Peripheral: ws2812
-    - API: [set-rgb-enable](#post-set-rgb-enable)
-  - RGB LED Count: 1-4
-    - Peripheral: ws2812
-    - API: [set-rgb-led-count](#post-set-rgb-led-count)
-  - RGB Color: #RRGGBB
-    - Peripheral: ws2812
-    - API: [set-rgb-color](#post-set-rgb-color)
-  - RGB Speed: 0-100
-    - Peripheral: ws2812
-    - API: [set-rgb-speed](#post-set-rgb-speed)
-  - RGB Style: solid/breathing/flow/flow_reverse/rainbow/rainbow_reverse/hue_cycle
-    - Peripheral: ws2812
-    - API: [set-rgb-style](#post-set-rgb-style)
-- RGB Matrix 分组
-  - RGB Matrix Enable: true/false
-    - Peripheral: rgb_matrix
-    - API: [set-rgb-matrix-enable](#post-set-rgb-matrix-enable)
-  - RGB Matrix Style: solid/breathing/rainbow/rainbow_reverse/spin/dual_spin/rainbow_spin/shift_spin
-    - Peripheral: rgb_matrix
-    - API: [set-rgb-matrix-style](#post-set-rgb-matrix-style)
-  - RGB Matrix Color: #RRGGBB
-    - Peripheral: rgb_matrix
-    - API: [set-rgb-matrix-color](#post-set-rgb-matrix-color)
-  - RGB Matrix Color2: #RRGGBB
-    - Peripheral: rgb_matrix
-    - 其他条件：
-      - 只有在style为dual_spin时，才会生效
-    - API: [set-rgb-matrix-color2](#post-set-rgb-matrix-color2)
-  - RGB Matrix Brightness: 0-100
-    - Peripheral: rgb_matrix
-    - 其他条件：
-      - 模式是breathing时隐藏
-    - API: [set-rgb-matrix-brightness](#post-set-rgb-matrix-brightness)
-  - RGB Matrix Speed: 0-100
-    - Peripheral: rgb_matrix
-    - 其他条件：
-      - 模式是solid时隐藏
-    - API: [set-rgb-matrix-speed](#post-set-rgb-matrix-speed)
-- SD卡分组
-  - SD Card Data Interval: 60-3600
-    - Peripheral: sd_card_usage
-    - API: [set-sd-data-interval](#post-set-sd-data-interval)
-  - SD Card Data Retain: 1-7
-    - Peripheral: sd_card_usage
-    - API: [set-sd-data-retain](#post-set-sd-data-retain)
-  - SD Card Usage:
-    - Peripheral: sd_card_usage
-    - API: [get-sd-usage](#get-sd-usage)
-- Shutdown Percentage: 0-100
-  - Peripheral: shutdown_percentage
-  - API: [set-shutdown-percentage](#post-set-shutdown-percentage)
-- Mac Address
-  - Peripheral: mac_address
-- IP Address
-  - Peripheral: ip_address
-- Clear History 清除历史及数据
-  - Peripheral: clear_history
-  - API: [clear-history](#post-clear-history)
-  - 弹窗警告确认： Are you sure to clear history and data? All histories and data will be lost. And this action cannot be undone.
-- Restart Service
-  - Peripheral: restart_service
-  - API: [set-restart-service](#post-set-restart-service)
-  - 弹窗警告确认： Are you sure to restart Pironman5 service?
+##
