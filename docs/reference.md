@@ -18,27 +18,19 @@
       - [选项区域](#选项区域)
         - [Log 文件条目](#log-文件条目)
     - [右上角菜单键](#右上角菜单键)
-      - [OTA](#ota)
-        - [自动升级](#自动升级)
-        - [手动升级](#手动升级)
-      - [Wi-Fi](#wi-fi)
-      - [AP](#ap)
-      - [Download History(暂缓)](#download-history暂缓)
+  - [OTA](#ota)
+    - [自动升级](#自动升级)
+    - [手动升级](#手动升级)
+  - [Wi-Fi](#wi-fi)
+  - [AP](#ap)
   - [Settings](#settings)
     - [主题设置](#主题设置)
     - [储存卡片显示未挂载硬盘](#储存卡片显示未挂载硬盘)
     - [处理器卡片显示多核信息](#处理器卡片显示多核信息)
     - [电池输出警告：在切换到电池输出时，显示警告信息](#电池输出警告在切换到电池输出时显示警告信息)
+    - [Web 页面版本号](#web-页面版本号)
     - [System分类](#system分类)
       - [温度单位设置](#温度单位设置)
-      - [Shutdown Percentage](#shutdown-percentage)
-      - [当前日期时间 Current Datetime](#当前日期时间-current-datetime)
-      - [数据间隔](#数据间隔)
-      - [时区选择 Timezone:](#时区选择-timezone)
-      - [自动设置时间 Auto Time Setting:](#自动设置时间-auto-time-setting)
-      - [NTP Server:](#ntp-server)
-      - [SD卡容量占用](#sd卡容量占用)
-      - [Debug level](#debug-level)
       - [RGB点阵分类](#rgb点阵分类)
         - [RGB点阵开关](#rgb点阵开关)
         - [RGB点阵样式](#rgb点阵样式)
@@ -57,10 +49,18 @@
         - [SMTP账号](#smtp账号)
         - [SMTP密码](#smtp密码)
         - [测试SMTP](#测试smtp)
-      - [Debug Level](#debug-level-1)
-      - [数据库保留时间](#数据库保留时间)
+      - [关机策略](#关机策略)
+      - [断电模拟](#断电模拟)
+      - [当前日期时间 Current Datetime](#当前日期时间-current-datetime)
+      - [数据间隔](#数据间隔)
+      - [时区选择 Timezone:](#时区选择-timezone)
+      - [自动设置时间 Auto Time Setting:](#自动设置时间-auto-time-setting)
+      - [NTP Server:](#ntp-server)
+      - [SD卡容量占用](#sd卡容量占用)
+      - [Debug Level](#debug-level)
       - [Mac地址](#mac地址)
       - [IP地址](#ip地址)
+      - [数据库保留时间](#数据库保留时间)
       - [清除历史数据](#清除历史数据)
       - [重启服务](#重启服务)
   - [Peripherals](#peripherals)
@@ -143,7 +143,6 @@
     - [POST /set-debug-level](#post-set-debug-level)
     - [POST /set-database-retention-days](#post-set-database-retention-days)
     - [POST /set-restart-service](#post-set-restart-service)
-  - [](#)
 #    - [POST /set-restart-service](#post-set-restart-service)
 
 ## 页面
@@ -349,24 +348,29 @@ Log文件条目列表，显示log名称和所属模块。右边有删除按钮�
 
 ### 右上角菜单键
 
-#### OTA
+- [OTA](#ota)
+- [Wi-Fi](#wifi)
+- [AP](#ap)
+- [Settings](#settings)
+
+## OTA
 
 点击打开OTA升级弹窗。根据`peripheral`判断显示自动升级和手动升级标签页。`ota_auto`和`ota_manual`。如果都没有则不显示OTA选项，如果有其中一个，则直接显示相应OTA页面。如果都有，则显示tab切换。
 
-##### 自动升级
+### 自动升级
 
 - 从API[`/get_version`](#get-get-version)获取当前版本号
 - 显示当前版本号
 - 从[github](https://api.github.com/repos/sunfounder/pironman-u1-firmware/releases/latest)返回的`tag_name`获取最新版本号，判断是否需要升级。如果有则显示立即升级按钮。没有则显示当前已是最新版。
 - 升级按钮点击后，从上面返回的信息中用`assets[0].browser_download_url`下载最新文件后，发送[`/ota-update`](#post-ota-update)请求，显示进度条，进度条走完后显示升级完成和版本号。
 
-##### 手动升级
+### 手动升级
 
 - 选择文件输入框
 - 立即升级按钮
 - 点击后上传文件，发送[`/ota-update`](#post-ota-update)请求，显示进度条，进度条走完后显示升级完成和版本号。
 
-#### Wi-Fi
+## Wi-Fi
 
 Wi-Fi 设置弹窗，打开弹窗获取WiFi信息
 
@@ -381,7 +385,7 @@ Wi-Fi 设置弹窗，打开弹窗获取WiFi信息
 - 请求API [`get-wifi-state`](#get-get-wifi-state) 获取链接状态，如果成功则显示连接成功，否则显示连接失败
 - 前端发送数据格式: `"STA": {"sta_ssid": "sta_ssid", "sta_psk": "sta_psk","sta_switch":"true"}`
 
-#### AP
+## AP
 
 AP 设置弹窗，打开弹窗获取AP信息
 
@@ -393,14 +397,6 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 确认按钮点击后发送API [`/set-ap-config`](#post-set-ap-config)
 - 前端发送数据格式: `"AP": {"ap_ssid": "ap_ssid", "ap_psk": "ap_psk""}`
 
-#### Download History(暂缓)
-
-下载历史数据，打开历史数据选择页面.
-
-- peripheral: `download_history_file`
-- 选择日期范围
-- 点击下载按钮，循环发送API [`/get-history-file`](#get-get-history-file)下载文件,并打包成zip文件下载,文件名为`<device_id>-history-<start-date>-<end-date>.zip`, 例如`pironman-u1-history-2021-01-01-2021-01-31.zip`
-
 ## Settings
 
 设置弹窗，打开弹窗获取设置信息
@@ -408,87 +404,45 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 获取设置API: [`/get-config`](#get-get-config)
 
 ### 主题设置
+- 标题：Dark mode
+- 描述：Whether to enable Dark Theme mode
 - toggle 开关
 - 点击切换主题
 
 ### 储存卡片显示未挂载硬盘
+- peripheral判断: `storage`
+- 标题：Show unmounted disk
+- 描述：Show unmounted disks on Storage card
 - toggle 开关
 - 点击切换是否显示未挂载硬盘
 
 ### 处理器卡片显示多核信息
+- peripheral判断: `cpu`
+- 标题：Show all cores
+- 描述：Show all cores on Processor card
 - toggle 按键组：合并/多核
 - 点击切换是否显示多核信息
 
 ### 电池输出警告：在切换到电池输出时，显示警告信息
+- peripheral判断: `battery`
+- 标题：Show battery warning
+- 描述：Whether to display battery warning
 - toggle 开关
 - 点击切换是否显示电池输出警告
+
+### Web 页面版本号
+- 标题: Web UI Version
+- 描述: 版本号
 
 ### System分类
 
 #### 温度单位设置
-- peripheral判断: `temperature_unit`
-- config分类: `system`
+- peripheral: `temperature_unit`
+- 标题: Temperature unit
+- 描述: Set prefer temperature unit
 - key: `temperature_unit`
-- toggle 开关
+- 控件：切换按钮，CELIUS/FAHRENHEIT
 
-#### Shutdown Percentage
-- peripheral判断改为: `shutdown_percentage`
-- config分类: `system`
-- key: `shutdown_percentage`
-- 滑动条
-- 最小10%，最大100%
-- 描述: Without external input and if the battery voltage is below the set value, the device will send a shutdown request via I2C to protect the device and data. Note: Set the value to 100% for high current output.
-
-#### 当前日期时间 Current Datetime
-- peripheral: `time`
-- config分类: `system`
-- key: `timestamp`
-- 显示当前时间日期
-- 手动设置时间按钮 Edit
-  - 如果`auto_time_enable`peripheral是false或者`auto_time_enable`的值是false,才可用,否则变灰,无法点击.
-  - 点击显示日期时间选择框
-- 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
-
-#### 数据间隔
-- peripheral: `data_interval`
-- config分类: `system`
-- key: `data_interval`
-- 输入框
-- 最小1秒，最大3600秒
-- 描述: The interval between data uploads.
-#### 时区选择 Timezone: 
-- peripheral: `timezone`
-- config分类: `system`
-- key: `timezone`
-- 下拉框选择,使用UTC时区格式如`UTC+8:00`
-#### 自动设置时间 Auto Time Setting: 
-- peripheral: `auto_time_enable`
-- config分类: `system`
-- key: `auto_time_enable`
-- toggle 开关
-#### NTP Server: 
-- 如果`auto_time_enable`的值是`true`才显示
-- peripheral: `auto_time_enable`
-- config分类: `system`
-- 子标题按照用户所在地区格式显示当前时间
-- 输入框加Sync Now按钮
-  - 输入框填写ntp_server地址
-  - 按键按下调api [`/set-time-sync`](#post-set-time-sync)
-
-#### SD卡容量占用
-    - peripheral: sd_card_usage
-    - config分类: system
-    - key: sd_card_usage
-    - 条装图显示SD卡容量占用
-#### Debug level
-    - peripheral: debug_level
-    - 下拉框选择：
-      - DEBUG
-      - INFO
-      - WARNING
-      - ERROR
-      - CRITICAL
-    - api: [`/set-debug-level`](#post-set-debug-level)
 #### RGB点阵分类
 peripheral: rgb_matrix
 ##### RGB点阵开关
@@ -595,7 +549,58 @@ peripheral: send_email
 - button
 - api: [`/test-smtp`](#get-test-smtp)
 - 点击后转圈，完成打勾，随后恢复。
+#### 关机策略
+- peripheral: `shutdown_percentage`
+- 标题: Shutdown Stratagy
+- 描述: Shutdown, if no input and battery percentage falls below this.
+- key: `shutdown_percentage`
+- 控件：滑动条，最小10%，最大100%
+#### 断电模拟
+- peripheral: `power-failure-simulation`
+- 标题: Power Failure Simulation
+- 描述: Simulate a 1-minute power failure and get a UPS performance report.
+- 控件：按钮，点击弹窗进入断电模拟测试
+#### 当前日期时间 Current Datetime
+- peripheral: `time`
+- config分类: `system`
+- key: `timestamp`
+- 显示当前时间日期
+- 手动设置时间按钮 Edit
+  - 如果`auto_time_enable`peripheral是false或者`auto_time_enable`的值是false,才可用,否则变灰,无法点击.
+  - 点击显示日期时间选择框
+- 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
+#### 数据间隔
+- peripheral: `data_interval`
+- config分类: `system`
+- key: `data_interval`
+- 输入框
+- 最小1秒，最大3600秒
+- 描述: The interval between data uploads.
+#### 时区选择 Timezone: 
+- peripheral: `timezone`
+- config分类: `system`
+- key: `timezone`
+- 下拉框选择,使用UTC时区格式如`UTC+8:00`
+#### 自动设置时间 Auto Time Setting: 
+- peripheral: `auto_time_enable`
+- config分类: `system`
+- key: `auto_time_enable`
+- toggle 开关
+#### NTP Server: 
+- 如果`auto_time_enable`的值是`true`才显示
+- peripheral: `auto_time_enable`
+- config分类: `system`
+- 子标题按照用户所在地区格式显示当前时间
+- 输入框加Sync Now按钮
+  - 输入框填写ntp_server地址
+  - 按键按下调api [`/set-time-sync`](#post-set-time-sync)
+#### SD卡容量占用
+    - peripheral: sd_card_usage
+    - config分类: system
+    - key: sd_card_usage
+    - 条装图显示SD卡容量占用
 #### Debug Level
+- peripheral: debug_level
 - 标题: Debug Level
 - 描述: Set debug level
 - key: debug_level
@@ -606,12 +611,6 @@ peripheral: send_email
   - ERROR
   - CRITICAL
 - api: [`/set-debug-level`](#post-set-debug-level)
-#### 数据库保留时间
-- 标题: History Retention
-- 描述: Set the duration to keep history data
-- key: database_retention_days
-- 输入框：结尾days
-- api: [`/set-database-retention-days`](#post-set-database-retention-days)
 #### Mac地址
 - peripheral: mac_address
 - config分类: system
@@ -622,7 +621,15 @@ peripheral: send_email
 - config分类: system
 - key: ip_address
 - 显示IP地址
+#### 数据库保留时间
+- peripheral: history
+- 标题: History Retention
+- 描述: Set the duration to keep history data
+- key: database_retention_days
+- 输入框：结尾days
+- api: [`/set-database-retention-days`](#post-set-database-retention-days)
 #### 清除历史数据
+- peripheral: history
 - 标题: Clear History
 - 描述: Clear all history data
 - key: clear_history
@@ -631,12 +638,14 @@ peripheral: send_email
 - 弹窗：Are you sure you want to clear all history data?
 - 弹窗确认后，再发送API
 #### 重启服务
+- peripheral: restart_service
 - 标题: Restart Service
 - 描述: Restart the service
 - key: restart_service
 - button，点击弹窗确认
 - api: [`/restart-service`](#post-restart-service)
-- 弹窗：Are you sure you want to restart the service?    - 弹窗确认后，转圈2秒后刷新页面
+- 弹窗：Are you sure you want to restart the service?
+- 弹窗确认后，转圈2秒后刷新页面
 
 ## Peripherals
 
@@ -1527,5 +1536,3 @@ JSON数据格式如下：
   - `restart` - 重启Pironman5服务，true
 - Response:
   - `{"status": true, "data": "OK"}`
-
-##
