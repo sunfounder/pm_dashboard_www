@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-import { useMediaQuery } from '@mui/material';
+import { InputLabel, useMediaQuery } from '@mui/material';
 import { Circle } from '@mui/icons-material';
 import PopupFrame from './popupFrame.jsx';
 import ColorWheel from "./colorWheel.jsx";
@@ -119,8 +119,9 @@ const SettingItemButton = (props) => {
     <ListItemButton sx={{ flexDirection: flexDirection }} onClick={props.onClick} >
       <ListItemText primary={props.title} secondary={props.subtitle} sx={{ width: '100%' }} />
       <Box sx={{ display: 'flex', flexFlow: 'right', justifyContent: 'flex-end', width: '100%' }}>
-        {props.loading && <CircularProgress size={30} />}
-        {props.children || <ArrowForwardIosIcon sx={{ width: 16 }} />}
+        {
+          props.loading ? <CircularProgress size={30} /> : props.children || <ArrowForwardIosIcon sx={{ width: 16 }} />
+        }
       </Box>
     </ListItemButton >
   </>
@@ -674,6 +675,75 @@ const SettingItemMenuIcon = (props) => {
   )
 }
 
+const SMTPServer = (props) => {
+  const [addressCalue, setAddressCalue] = useState(props.addressCalue);
+  const [portValue, setPortValue] = useState(props.portValue);
+  const [selectValue, setSelectValue] = useState(props.selectValue || "none");
+  const handleAddressCalue = (event) => {
+    setAddressCalue(event.target.value);
+    if (props.handleAddressCalue) props.handleAddressCalue(event.target.value);
+  }
+  const handlePortValue = (event) => {
+    setPortValue(event.target.value);
+    if (props.handlePortValue) props.handlePortValue(event.target.value);
+  }
+  const handleSelectChange = (event) => {
+    setSelectValue(event.target.value);
+    if (props.handleSelectChange) props.handleSelectChange(event.target.value);
+  }
+  return (
+    <SettingItem
+      title="SMTP Server"
+      subtitle="SMTP server address"
+    >
+      <FormControl variant="standard" sx={{ width: "20%", marginRight: "10px" }}>
+        <InputLabel id="demo-simple-select-standard-label">Security</InputLabel>
+        <Select
+          value={selectValue}
+          onChange={handleSelectChange}
+        >
+          <MenuItem value="none">None</MenuItem>
+          <MenuItem value="ssl">SSL</MenuItem>
+          <MenuItem value="tls">TLS</MenuItem>
+        </Select>
+      </FormControl>
+      <TextField
+        sx={{ width: "60%", alignSelf: "end" }}
+        error={props.error || false}
+        variant={props.variant || "standard"}
+        value={addressCalue}
+        onChange={handleAddressCalue}
+        type={props.type || "text"}
+        autoComplete={props.autoComplete || "off"}
+        name={props.name}
+        disabled={props.disabled}
+        helperText={props.helperText}
+        placeholder={props.placeholder}
+        onBlur={props.onBlur}
+      />
+      <TextField
+        sx={{ width: "20%", alignSelf: "end" }}
+        error={props.error || false}
+        variant={props.variant || "standard"}
+        value={portValue}
+        onChange={handlePortValue}
+        type={'number'}
+        autoComplete={props.autoComplete || "off"}
+        name={props.name}
+        disabled={props.disabled}
+        helperText={props.helperText}
+        placeholder={props.placeholder}
+        onBlur={props.onBlur}
+        slotProps={{
+          input: {
+            startAdornment: <InputAdornment position="start">:</InputAdornment>,
+          },
+        }}
+      />
+    </SettingItem >
+  )
+}
+
 export {
   SettingItem,
   SettingItemButton,
@@ -691,5 +761,6 @@ export {
   SettingItemFileSelector,
   SettingItemColorPicker,
   SettingItemList,
-  SettingItemMenuIcon
+  SettingItemMenuIcon,
+  SMTPServer
 }

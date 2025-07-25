@@ -7,7 +7,7 @@ import SectionMQTT from './sectionMQTT.jsx';
 import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.2";
+const VERSIONS = "1.2.3";
 
 const defaultConfigData = {
   "auto": {
@@ -73,6 +73,15 @@ const defaultConfigData = {
     "rgb_matrix_speed": 50,
     "rgb_matrix_brightness": 50,
     "oled_pages": [],
+    "send_email_on": ["battery_activated"],
+    "send_email_to": "",
+    "smtp_server": "asdasd",
+    "smtp_email": "",
+    "smtp_password": "a",
+    "smtp_port": "456",
+    "smtp_use_tls": true,
+    "smtp_security": 'tls',
+    "database_retention_days": 30
   }
 }
 

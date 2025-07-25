@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  ListItem,
   Button,
   Box,
   Typography,
-  Divider
+  Divider,
 } from '@mui/material';
 import {
   SettingItemToggleButton,
@@ -20,13 +19,12 @@ import {
   SettingItemButton,
   SettingItemColorPicker,
   SettingItemList,
-  SettingItemMenuIcon
 } from "./settingItems.jsx";
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import PopupFrame from './popupFrame.jsx';
 import SectionFrame from "./sectionFrame.jsx";
 import PopupPowerFailureSimulation from "./popupPowerFailureSimulation.jsx";
 import DataGridPro from "./dataGridPro.jsx"
+import PopupEmail from "./popupEmail.jsx";
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const GPIO_FAN_MODES = [
   { value: 4, label: 'Quiet' },
@@ -77,6 +75,18 @@ const SectionSystem = (props) => {
     }
   };
 
+  const ipData = {};
+  const macData = {};
+  Object.keys(props.latestData).forEach(key => {
+    if (key.startsWith('ip_')) {
+      // 删除 'ip_' 前缀并存入 ipData
+      ipData[key.replace('ip_', '')] = props.latestData[key];
+    } else if (key.startsWith('mac_')) {
+      // 删除 'mac_' 前缀并存入 macData
+      macData[key.replace('mac_', '')] = props.latestData[key];
+    }
+  });
+
   // 映射成对应的标题和描述
   oledPages = oledPages.map(page => ({
     id: descriptions[page].id,
@@ -100,7 +110,6 @@ const SectionSystem = (props) => {
   // const [rgbMatrixListShow, setRgbMatrixListShow] = useState(false);
   const [OLEDLayouPopup, setOLEDLayouPopup] = useState(false);
   const [sendOLEDPages, setSendOLEDPages] = useState([]);
-
 
   const handleOLEDLayoutPopup = () => {
     setOLEDLayouPopup(!OLEDLayouPopup);
@@ -408,6 +417,14 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleDatabaseRetention = async (event) => {
+    const days = event.target.value;
+    let result = await props.sendData('set-database-retention-days', { 'days': days });
+    if (result === "OK") {
+      props.onChange('system', 'database_retention_days', days);
+    }
+  }
+
   useEffect(() => {
     if (props.peripherals.includes("time")) {
       getCurrentTime();
@@ -653,19 +670,6 @@ const SectionSystem = (props) => {
             }
           />
         }
-        {/* 关机百分比 */}
-        {props.peripherals.includes("shutdown_percentage") &&
-          <SettingItemSlider
-            title="Shutdown Stratagy"
-            subtitle="Shutdown, if no input and battery percentage falls below this."
-            valueFormat={(value) => `${value}%`}
-            onCommitted={handleShutdownPercentageCommitted}
-            value={props.config.shutdown_percentage}
-            sx={{ marginTop: 2, }}
-            min={10}
-            max={100}
-            upperLabel
-          />}
         {/* 风扇 led */}
         {
           props.peripherals.includes("gpio_fan_led") &&
@@ -782,27 +786,30 @@ const SectionSystem = (props) => {
             />
           </>
         }
-        {/* 清除所有数据 */}
+        {/* 邮件设置 */}
         {
-          props.peripherals.includes("clear_history") &&
-          <SettingItemButton
-            title="Clear All Data"
-            subtitle="Clear all history data"
-            onClick={handlePopup}
+          props.peripherals.includes("send_email") &&
+          < PopupEmail
+            config={props.config}
+            sendData={props.sendData}
+            onChange={props.onChange}
+            showSnackBar={props.showSnackBar}
           />
         }
-        {/* Mac地址 */}
-        {props.peripherals.includes("mac_address") &&
-          <SettingItem
-            title="Mac Address"
-            subtitle={props.config.mac_address}
+        {/* 关机百分比 */}
+        {props.peripherals.includes("shutdown_percentage") &&
+          <SettingItemSlider
+            title="Shutdown Stratagy"
+            subtitle="Shutdown, if no input and battery percentage falls below this."
+            valueFormat={(value) => `${value}%`}
+            onCommitted={handleShutdownPercentageCommitted}
+            value={props.config.shutdown_percentage}
+            sx={{ marginTop: 2, }}
+            min={10}
+            max={100}
+            upperLabel
           />}
-        {/* IP地址 */}
-        {props.peripherals.includes("ip_address") &&
-          <SettingItem
-            title="IP Address"
-            subtitle={props.config.ip_address}
-          />}
+
         {/* 电池测试 */}
         {
           props.peripherals.includes("power-failure-simulation") &&
@@ -815,52 +822,113 @@ const SectionSystem = (props) => {
         {/* 重启设备 */}
         {
           props.peripherals.includes("restart") &&
-          <SettingItemButton
-            title="Restart Device"
-            subtitle="Simulate a 1-minute power failure and get a UPS performance report."
-            onClick={() => {
-              props.restartPrompt(
-                'Restart Device',
-                'Do you want to restart device?',
-                props.onCancel
-              );
-            }}
-          />
+          <>
+            <SettingItemButton
+              title="Restart Device"
+              subtitle="Simulate a 1-minute power failure and get a UPS performance report."
+              onClick={() => {
+                props.restartPrompt(
+                  'Restart Device',
+                  'Do you want to restart device?',
+                  props.onCancel
+                );
+              }}
+            />
+          </>
         }
 
         {/* Debug level */}
         {
           props.peripherals.includes("debug_level") &&
-          <SettingItemMenu
-            title="Debug level"
-            subtitle="Debug level"
-            onChange={(event) => handleDebugLevel(event.target.value)}
-            value={props.config.debug_level}
-            options={[
-              { value: "DEBUG", label: "DEBUG" },
-              { value: "INFO", label: "INFO" },
-              { value: "WARNING", label: "WARNING" },
-              { value: "ERROR", label: "ERROR" },
-              { value: "CRITICAL", label: "CRITICAL" },
-            ]}
+          <>
+            <Divider />
+            <SettingItemMenu
+              title="Debug level"
+              subtitle="Debug level"
+              onChange={(event) => handleDebugLevel(event.target.value)}
+              value={props.config.debug_level}
+              options={[
+                { value: "DEBUG", label: "DEBUG" },
+                { value: "INFO", label: "INFO" },
+                { value: "WARNING", label: "WARNING" },
+                { value: "ERROR", label: "ERROR" },
+                { value: "CRITICAL", label: "CRITICAL" },
+              ]}
+            />
+          </>
+        }
+        {/* Mac地址 */}
+        {props.peripherals.includes("mac_address") &&
+          <SettingItem
+            title="Mac Address"
+            // subtitle={props.config.mac_address}
+            children={
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                {Object.keys(macData).map((key) => (
+                  <Typography key={key}>
+                    {key}: {macData[key]}
+                  </Typography>
+                ))}
+              </Box>
+            }
+          />}
+        {/* IP地址 */}
+        {props.peripherals.includes("ip_address") &&
+          <SettingItem
+            title="IP Address"
+            // subtitle={props.config.ip_address}
+            children={
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                {Object.keys(ipData).map((key) => (
+                  <Typography key={key}>
+                    {key}: {ipData[key]}
+                  </Typography>
+                ))}
+              </Box>
+            }
+          />}
+        {/* 数据库保留时间 */}
+        {
+          props.peripherals.includes("history") &&
+          <SettingItemText
+            title="History Retention"
+            subtitle="Set the duration to keep history data"
+            type="number"
+            end="days"
+            width="30%"
+            value={props.config.database_retention_days}
+            onBlur={handleDatabaseRetention}
           />
+        }
+
+        {/* 清除所有数据 */}
+        {
+          props.peripherals.includes("history") &&
+          <>
+            <SettingItemButton
+              title="Clear All Data"
+              subtitle="Clear all history data"
+              onClick={handlePopup}
+            />
+          </>
         }
         {/* 重启服务 */}
         {
           props.peripherals.includes("restart_service") &&
-          <SettingItemButton
-            title="Restart service"
-            subtitle="Restart service"
-            onClick={() => {
-              props.restartService(
-                'Restart service',
-                'Do you want to restart service?',
-                props.onCancel
-              );
-            }}
-          />
+          <>
+            <SettingItemButton
+              title="Restart service"
+              subtitle="Restart service"
+              onClick={() => {
+                props.restartService(
+                  'Restart service',
+                  'Do you want to restart service?',
+                  props.onCancel
+                );
+              }}
+            />
+          </>
         }
-
       </SectionFrame>
       <PopupFrame title="Warning" onClose={handlePopup} open={popupStatus} width="30rem" >
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
