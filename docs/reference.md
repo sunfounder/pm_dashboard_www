@@ -24,30 +24,45 @@
       - [Wi-Fi](#wi-fi)
       - [AP](#ap)
       - [Download History(暂缓)](#download-history暂缓)
-      - [Settings](#settings)
-        - [主题设置](#主题设置)
-        - [储存卡片显示未挂载硬盘](#储存卡片显示未挂载硬盘)
-        - [处理器卡片显示多核信息](#处理器卡片显示多核信息)
-        - [电池输出警告：在切换到电池输出时，显示警告信息](#电池输出警告在切换到电池输出时显示警告信息)
-        - [System分类](#system分类)
-          - [温度单位设置](#温度单位设置)
-          - [Shutdown Percentage](#shutdown-percentage)
-          - [当前日期时间 Current Datetime](#当前日期时间-current-datetime)
-          - [数据间隔](#数据间隔)
-          - [时区选择 Timezone:](#时区选择-timezone)
-          - [自动设置时间 Auto Time Setting:](#自动设置时间-auto-time-setting)
-          - [NTP Server:](#ntp-server)
-          - [SD卡容量占用](#sd卡容量占用)
-          - [Debug level](#debug-level)
-          - [RGB点阵分类](#rgb点阵分类)
-          - [OLED分类](#oled分类)
-          - [邮件设置分类](#邮件设置分类)
-          - [Debug Level](#debug-level-1)
-          - [数据库保留时间](#数据库保留时间)
-          - [Mac地址](#mac地址)
-          - [IP地址](#ip地址)
-          - [清除历史数据](#清除历史数据)
-          - [重启服务](#重启服务)
+  - [Settings](#settings)
+    - [主题设置](#主题设置)
+    - [储存卡片显示未挂载硬盘](#储存卡片显示未挂载硬盘)
+    - [处理器卡片显示多核信息](#处理器卡片显示多核信息)
+    - [电池输出警告：在切换到电池输出时，显示警告信息](#电池输出警告在切换到电池输出时显示警告信息)
+    - [System分类](#system分类)
+      - [温度单位设置](#温度单位设置)
+      - [Shutdown Percentage](#shutdown-percentage)
+      - [当前日期时间 Current Datetime](#当前日期时间-current-datetime)
+      - [数据间隔](#数据间隔)
+      - [时区选择 Timezone:](#时区选择-timezone)
+      - [自动设置时间 Auto Time Setting:](#自动设置时间-auto-time-setting)
+      - [NTP Server:](#ntp-server)
+      - [SD卡容量占用](#sd卡容量占用)
+      - [Debug level](#debug-level)
+      - [RGB点阵分类](#rgb点阵分类)
+        - [RGB点阵开关](#rgb点阵开关)
+        - [RGB点阵样式](#rgb点阵样式)
+        - [RGB点阵颜色](#rgb点阵颜色)
+        - [RGB点阵颜色2](#rgb点阵颜色2)
+        - [RGB点阵速度](#rgb点阵速度)
+        - [RGB点阵亮度](#rgb点阵亮度)
+      - [OLED分类](#oled分类)
+        - [OLED 开关](#oled-开关)
+        - [OLED 旋转](#oled-旋转)
+        - [OLED 页面](#oled-页面)
+      - [邮件设置分类](#邮件设置分类)
+        - [在什么时候发送邮件](#在什么时候发送邮件)
+        - [接收邮件邮箱](#接收邮件邮箱)
+        - [SMTP服务器](#smtp服务器)
+        - [SMTP账号](#smtp账号)
+        - [SMTP密码](#smtp密码)
+        - [测试SMTP](#测试smtp)
+      - [Debug Level](#debug-level-1)
+      - [数据库保留时间](#数据库保留时间)
+      - [Mac地址](#mac地址)
+      - [IP地址](#ip地址)
+      - [清除历史数据](#清除历史数据)
+      - [重启服务](#重启服务)
   - [Peripherals](#peripherals)
   - [Config](#config)
   - [API](#api)
@@ -386,37 +401,37 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 选择日期范围
 - 点击下载按钮，循环发送API [`/get-history-file`](#get-get-history-file)下载文件,并打包成zip文件下载,文件名为`<device_id>-history-<start-date>-<end-date>.zip`, 例如`pironman-u1-history-2021-01-01-2021-01-31.zip`
 
-#### Settings
+## Settings
 
 设置弹窗，打开弹窗获取设置信息
 
 - 获取设置API: [`/get-config`](#get-get-config)
 
-##### 主题设置
+### 主题设置
 - toggle 开关
 - 点击切换主题
 
-##### 储存卡片显示未挂载硬盘
+### 储存卡片显示未挂载硬盘
 - toggle 开关
 - 点击切换是否显示未挂载硬盘
 
-##### 处理器卡片显示多核信息
+### 处理器卡片显示多核信息
 - toggle 按键组：合并/多核
 - 点击切换是否显示多核信息
 
-##### 电池输出警告：在切换到电池输出时，显示警告信息
+### 电池输出警告：在切换到电池输出时，显示警告信息
 - toggle 开关
 - 点击切换是否显示电池输出警告
 
-##### System分类
+### System分类
 
-###### 温度单位设置
+#### 温度单位设置
 - peripheral判断: `temperature_unit`
 - config分类: `system`
 - key: `temperature_unit`
 - toggle 开关
 
-###### Shutdown Percentage
+#### Shutdown Percentage
 - peripheral判断改为: `shutdown_percentage`
 - config分类: `system`
 - key: `shutdown_percentage`
@@ -424,7 +439,7 @@ AP 设置弹窗，打开弹窗获取AP信息
 - 最小10%，最大100%
 - 描述: Without external input and if the battery voltage is below the set value, the device will send a shutdown request via I2C to protect the device and data. Note: Set the value to 100% for high current output.
 
-###### 当前日期时间 Current Datetime
+#### 当前日期时间 Current Datetime
 - peripheral: `time`
 - config分类: `system`
 - key: `timestamp`
@@ -434,24 +449,24 @@ AP 设置弹窗，打开弹窗获取AP信息
   - 点击显示日期时间选择框
 - 通过API[`/get-timestamp`](#get-get-timestamp)获取当前时间, 需要不停的获取时间以更新时间.如果手动修改时间,则不再获取时间.
 
-###### 数据间隔
+#### 数据间隔
 - peripheral: `data_interval`
 - config分类: `system`
 - key: `data_interval`
 - 输入框
 - 最小1秒，最大3600秒
 - 描述: The interval between data uploads.
-###### 时区选择 Timezone: 
+#### 时区选择 Timezone: 
 - peripheral: `timezone`
 - config分类: `system`
 - key: `timezone`
 - 下拉框选择,使用UTC时区格式如`UTC+8:00`
-###### 自动设置时间 Auto Time Setting: 
+#### 自动设置时间 Auto Time Setting: 
 - peripheral: `auto_time_enable`
 - config分类: `system`
 - key: `auto_time_enable`
 - toggle 开关
-###### NTP Server: 
+#### NTP Server: 
 - 如果`auto_time_enable`的值是`true`才显示
 - peripheral: `auto_time_enable`
 - config分类: `system`
@@ -460,12 +475,12 @@ AP 设置弹窗，打开弹窗获取AP信息
   - 输入框填写ntp_server地址
   - 按键按下调api [`/set-time-sync`](#post-set-time-sync)
 
-###### SD卡容量占用
+#### SD卡容量占用
     - peripheral: sd_card_usage
     - config分类: system
     - key: sd_card_usage
     - 条装图显示SD卡容量占用
-###### Debug level
+#### Debug level
     - peripheral: debug_level
     - 下拉框选择：
       - DEBUG
@@ -474,113 +489,113 @@ AP 设置弹窗，打开弹窗获取AP信息
       - ERROR
       - CRITICAL
     - api: [`/set-debug-level`](#post-set-debug-level)
-###### RGB点阵分类
-    - RGB点阵开关
-      - peripheral: rgb_matrix
-      - toggle 开关
-      - api: [`/set-rgb-matrix-enable`](#post-set-rgb-matrix-enable)
-    - RGB点阵样式
-      - peripheral: rgb_matrix
-      - 下拉框选择：
-        - solid
-        - breathing
-        - rainbow
-        - rainbow_reverse
-        - spin
-        - dual_spin
-        - rainbow_spin
-        - shift_spin
-      - api: [`/set-rgb-matrix-style`](#post-set-rgb-matrix-style)
-    - RGB点阵颜色
-      - 颜色选择器
-      - api: [`/set-rgb-matrix-color`](#post-set-rgb-matrix-color)
-    - RGB点阵颜色2
-      - 颜色选择器
-      - 只有在dual_spin模式下会显示
-      - api: [`/set-rgb-matrix-color2`](#post-set-rgb-matrix-color2)
-    - RGB点阵速度
-      - 滑动条
-      - 最小值1
-      - 最大值100
-      - 在solid模式下不显示
-      - api: [`/set-rgb-matrix-speed`](#post-set-rgb-matrix-speed)
-    - RGB点阵亮度
-      - 滑动条
-      - 最小值1
-      - 最大值100
-      - 在breathing 模式下不显示
-      - api: [`/set-rgb-matrix-brightness`](#post-set-rgb-matrix-brightness)
-###### OLED分类
-    - peripheral: oled
-    - OLED 开关
-      - key: oled_enable
-      - toggle 开关
-      - api: [`/set-oled-enable`](#post-set-oled-enable)
-    - OLED 旋转
-      - key: oled_rotation
-      - button group: 0, 180
-      - api: [`/set-oled-rotation`](#post-set-oled-rotation)
-    - OLED 页面
-      - key: oled_pages
-      - 弹窗编辑
-        - 从peripheral获取可用页面， oled_pages开头的都是页面
-        - 列表列出所有可用页面
-        - 每一项可以打勾开关，表示是否显示，取消勾后显示浅灰色，自动弹到下方
-        - 每一项可以拖动切换位置
-        - 点击保存按钮，发送api[`/set-oled-pages`](#post-set-oled-pages)
-        - 点击取消按钮，关闭弹窗
-###### 邮件设置分类
-- peripheral: send_email
-- 在什么时候发送邮件
-  - 标题: Send email on
-  - 描述: Select events that trigger emails
-  - key: send_email_on
-  - 弹窗选择开关
-    - 固定列表
-      - battery_activated
-      - low_battery
-      - power_disconnected
-      - power_restored
-      - power_insufficient
-      - battery_critical_shutdown
-      - battery_voltage_critical_shutdown
-    - 每一项都是toggle 开关
-    - 排序无关
-    - 点击保存按钮，发送api[`/set-send-email-on`](#post-set-send-email-on)
-    - 点击取消按钮，关闭弹窗
-- 接收邮件邮箱
-  - 标题: Send email to
-  - 描述: Email address to send emails to
-  - key: send_email_to
-  - 邮箱输入框
-  - api: [`/set-send-email-to`](#post-set-send-email-to)
-- SMTP服务器
-  - 标题: SMTP Server
-  - 描述: SMTP server address
-  - key: smtp_server
-  - 输入框: http/https选项（默认https），地址输入框，冒号，端口号，使用TLS选项（http时显示）
-  - 地址api: [`/set-smtp-server`](#post-set-smtp-server)
-  - 端口api: [`/set-smtp-port`](#post-set-smtp-port)
-  - 使用TLS api: [`/set-smtp-security`](#post-set-smtp-security)
-- SMTP账号
-  - 标题: SMTP Account
-  - 描述: SMTP account email address
-  - key: smtp_email
-  - 输入框
-  - api: [`/set-smtp-email`](#post-set-smtp-email)
-- SMTP密码
-  - 标题: SMTP Password
-  - 描述: SMTP account password
-  - key: smtp_password
-  - 输入框
-  - api: [`/set-smtp-password`](#post-set-smtp-password)
-- 测试SMTP
-  - 标题: Test SMTP
-  - 描述: Test SMTP settings
-  - key: smtp_test
-  - button
-  - api: [`/test-smtp`](#get-test-smtp)
-###### Debug Level
+#### RGB点阵分类
+peripheral: rgb_matrix
+##### RGB点阵开关
+- toggle 开关
+- api: [`/set-rgb-matrix-enable`](#post-set-rgb-matrix-enable)
+##### RGB点阵样式
+- 下拉框选择：
+  - solid
+  - breathing
+  - rainbow
+  - rainbow_reverse
+  - spin
+  - dual_spin
+  - rainbow_spin
+  - shift_spin
+- api: [`/set-rgb-matrix-style`](#post-set-rgb-matrix-style)
+##### RGB点阵颜色
+- 颜色选择器
+- api: [`/set-rgb-matrix-color`](#post-set-rgb-matrix-color)
+##### RGB点阵颜色2
+- 颜色选择器
+- 只有在dual_spin模式下会显示
+- api: [`/set-rgb-matrix-color2`](#post-set-rgb-matrix-color2)
+##### RGB点阵速度
+- 滑动条
+- 最小值1
+- 最大值100
+- 在solid模式下不显示
+- api: [`/set-rgb-matrix-speed`](#post-set-rgb-matrix-speed)
+##### RGB点阵亮度
+- 滑动条
+- 最小值1
+- 最大值100
+- 在breathing 模式下不显示
+- api: [`/set-rgb-matrix-brightness`](#post-set-rgb-matrix-brightness)
+#### OLED分类
+peripheral: oled
+##### OLED 开关
+- key: oled_enable
+- toggle 开关
+- api: [`/set-oled-enable`](#post-set-oled-enable)
+##### OLED 旋转
+- key: oled_rotation
+- button group: 0, 180
+- api: [`/set-oled-rotation`](#post-set-oled-rotation)
+##### OLED 页面
+- key: oled_pages
+- 弹窗编辑
+  - 从peripheral获取可用页面， oled_pages开头的都是页面
+  - 列表列出所有可用页面
+  - 每一项可以打勾开关，表示是否显示，取消勾后显示浅灰色，自动弹到下方
+  - 每一项可以拖动切换位置
+  - 点击保存按钮，发送api[`/set-oled-pages`](#post-set-oled-pages)
+  - 点击取消按钮，关闭弹窗
+#### 邮件设置分类
+peripheral: send_email
+##### 在什么时候发送邮件
+- 标题: Send email on
+- 描述: Select events that trigger emails
+- key: send_email_on
+- 弹窗选择开关
+  - 固定列表
+    - battery_activated
+    - low_battery
+    - power_disconnected
+    - power_restored
+    - power_insufficient
+    - battery_critical_shutdown
+    - battery_voltage_critical_shutdown
+  - 每一项都是toggle 开关
+  - 排序无关
+  - 点击保存按钮，发送api[`/set-send-email-on`](#post-set-send-email-on)
+  - 点击取消按钮，关闭弹窗
+##### 接收邮件邮箱
+- 标题: Send email to
+- 描述: Email address to send emails to
+- key: send_email_to
+- 邮箱输入框
+- api: [`/set-send-email-to`](#post-set-send-email-to)
+##### SMTP服务器
+- 标题: SMTP Server
+- 描述: SMTP server address
+- key: smtp_server
+- 输入框: http/https选项（默认https），地址输入框，冒号，端口号，使用TLS选项（http时显示）
+- 地址api: [`/set-smtp-server`](#post-set-smtp-server)
+- 端口api: [`/set-smtp-port`](#post-set-smtp-port)
+- 使用TLS api: [`/set-smtp-security`](#post-set-smtp-security)
+##### SMTP账号
+- 标题: SMTP Account
+- 描述: SMTP account email address
+- key: smtp_email
+- 输入框
+- api: [`/set-smtp-email`](#post-set-smtp-email)
+##### SMTP密码
+- 标题: SMTP Password
+- 描述: SMTP account password
+- key: smtp_password
+- 输入框
+- api: [`/set-smtp-password`](#post-set-smtp-password)
+##### 测试SMTP
+- 标题: Test SMTP
+- 描述: Test SMTP settings
+- key: smtp_test
+- button
+- api: [`/test-smtp`](#get-test-smtp)
+- 点击后转圈，完成打勾，随后恢复。
+#### Debug Level
 - 标题: Debug Level
 - 描述: Set debug level
 - key: debug_level
@@ -591,23 +606,23 @@ AP 设置弹窗，打开弹窗获取AP信息
   - ERROR
   - CRITICAL
 - api: [`/set-debug-level`](#post-set-debug-level)
-###### 数据库保留时间
+#### 数据库保留时间
 - 标题: History Retention
 - 描述: Set the duration to keep history data
 - key: database_retention_days
 - 输入框：结尾days
 - api: [`/set-database-retention-days`](#post-set-database-retention-days)
-###### Mac地址
+#### Mac地址
 - peripheral: mac_address
 - config分类: system
 - key: mac_address
 - 显示Mac地址
-###### IP地址
+#### IP地址
 - peripheral: ip_address
 - config分类: system
 - key: ip_address
 - 显示IP地址
-###### 清除历史数据
+#### 清除历史数据
 - 标题: Clear History
 - 描述: Clear all history data
 - key: clear_history
@@ -615,7 +630,7 @@ AP 设置弹窗，打开弹窗获取AP信息
 - api: [`/clear-history`](#post-clear-history)
 - 弹窗：Are you sure you want to clear all history data?
 - 弹窗确认后，再发送API
-###### 重启服务
+#### 重启服务
 - 标题: Restart Service
 - 描述: Restart the service
 - key: restart_service
