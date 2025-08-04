@@ -80,8 +80,31 @@ const DashboardPanel = (props) => {
   }, [updateDataInterval, props.connected, data, props.peripherals]);
 
   useEffect(() => {
+    // if (data.length > 0) {
+    //   props.onDataChange(data[data.length - 1])
+    // }
     if (data.length > 0) {
-      props.onDataChange(data[data.length - 1])
+      // 从最后一个元素开始查找
+      let index = data.length - 1;
+      let targetData;
+
+      // 循环查找，直到找到不只有time属性的对象或遍历完所有元素
+      while (index >= 0) {
+        const current = data[index];
+        // 检查当前对象的键数量是否大于1（不只time一个属性）
+        if (Object.keys(current).length > 1) {
+          targetData = current;
+          break;
+        }
+        index--;
+      }
+
+      // 如果找到符合条件的对象则传递，否则使用最后一个（即使只有time）
+      if (targetData) {
+        props.onDataChange(targetData);
+      } else {
+        props.onDataChange(data[data.length - 1]);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);

@@ -358,7 +358,7 @@ const Home = (props) => {
               <CircularProgress size="20px" />
             </Box>
           </Box>,
-          () => { }),
+          null, null),
           100);
         setTimeout(() => {
           window.location.reload();

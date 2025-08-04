@@ -110,6 +110,7 @@ const SectionSystem = (props) => {
   // const [rgbMatrixListShow, setRgbMatrixListShow] = useState(false);
   const [OLEDLayouPopup, setOLEDLayouPopup] = useState(false);
   const [sendOLEDPages, setSendOLEDPages] = useState([]);
+  const [currentOLEDPage, setCurrentOLEDPage] = useState([]);
 
   const handleOLEDLayoutPopup = () => {
     setOLEDLayouPopup(!OLEDLayouPopup);
@@ -184,13 +185,23 @@ const SectionSystem = (props) => {
 
   const handleDrag = (data) => {
     console.log("handleDrag", data);
-    setSendOLEDPages(data);
+    setCurrentOLEDPage(data);
   }
 
   const handleDragSave = async () => {
-    console.log("handleDragSave", sendOLEDPages);
-    let result = await props.sendData('set-oled-pages', { 'pages': sendOLEDPages });
+    // if (sendOLEDPages.length === 0) {
+    if (currentOLEDPage.length === 0) {
+      props.showAlert(
+        "Error",
+        "Please select at least one page",
+        () => () => console.log("取消"), null
+      );
+      return;
+    }
+    // let result = await props.sendData('set-oled-pages', { 'pages': sendOLEDPages });
+    let result = await props.sendData('set-oled-pages', { 'pages': currentOLEDPage });
     if (result === "OK") {
+      setSendOLEDPages(currentOLEDPage);
       props.showSnackBar("success", "Pages saved successfully.");
       handleOLEDLayoutPopup();
     }
@@ -440,6 +451,11 @@ const SectionSystem = (props) => {
     getOledDiiskList();
     getOledNetworkInterfaceList();
   }, []);
+
+  useEffect(() => {
+    setSendOLEDPages(props.config.oled_pages);
+    setCurrentOLEDPage(props.config.oled_pages);
+  }, [props.config.oled_pages]);
 
   useEffect(() => {
     setGpioFanModeIndex(4 - props.config.gpio_fan_mode);
@@ -799,7 +815,7 @@ const SectionSystem = (props) => {
         {/* 关机百分比 */}
         {props.peripherals.includes("shutdown_percentage") &&
           <SettingItemSlider
-            title="Shutdown Stratagy"
+            title="Shutdown Strategy"
             subtitle="Shutdown, if no input and battery percentage falls below this."
             valueFormat={(value) => `${value}%`}
             onCommitted={handleShutdownPercentageCommitted}
@@ -960,7 +976,7 @@ const SectionSystem = (props) => {
       >
         <DataGridPro
           data={oledPages}
-          setOLEDPages={props.config.oled_pages}
+          setOLEDPages={sendOLEDPages}
           onDrag={handleDrag}
         />
       </PopupFrame>
