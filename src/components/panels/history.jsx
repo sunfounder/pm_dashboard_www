@@ -329,8 +329,14 @@ const DateTimeRangePicker = (props) => {
 
   useEffect(() => {
     let interval = setInterval(() => {
+      let time = window.localStorage.getItem("pm-dashboard-history-quick-select");
       if (quickSelect !== "custom") {
         let [start, end] = getTimeRange(quickSelect);
+        // 由于today的时间范围是固定的，导致数据没有更新，所以需要随机增加一个时间偏移量
+        if (time === "today") {
+          const randomOffset = Math.floor(Math.random() * 100); // 随机增量，单位为毫秒，范围为 0 到 100
+          start += randomOffset;
+        }
         setStart(start);
         setEnd(end);
         props.onChange({ start: start, end: end });
