@@ -49,6 +49,9 @@
         - [SMTP账号](#smtp账号)
         - [SMTP密码](#smtp密码)
         - [测试SMTP](#测试smtp)
+      - [蜂鸣器分类](#蜂鸣器分类)
+        - [蜂鸣器什么时候叫](#蜂鸣器什么时候叫)
+        - [蜂鸣器音量](#蜂鸣器音量)
       - [关机策略](#关机策略)
       - [断电模拟](#断电模拟)
       - [当前日期时间 Current Datetime](#当前日期时间-current-datetime)
@@ -137,6 +140,8 @@
     - [POST /set-smtp-password](#post-set-smtp-password)
     - [POST /set-smtp-security](#post-set-smtp-security)
     - [GET /test-smtp](#get-test-smtp)
+    - [POST /play-pipower5-buzzer](#post-play-pipower5-buzzer)
+    - [POST /set-pipower5-buzz-on](#post-set-pipower5-buzz-on)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
@@ -549,6 +554,32 @@ peripheral: send_email
 - button
 - api: [`/test-smtp`](#get-test-smtp)
 - 点击后转圈，完成打勾，随后恢复。
+#### 蜂鸣器分类
+- peripheral: `pipower5_buzzer`
+##### 蜂鸣器什么时候叫
+- 标题: Buzz on
+- 描述: Select events that trigger buzzer
+- key: `pipower5_buzz_on`
+- 弹窗选择开关
+  - 固定列表
+    - battery_activated
+    - low_battery
+    - power_disconnected
+    - power_restored
+    - power_insufficient
+    - battery_critical_shutdown
+    - battery_voltage_critical_shutdown
+  - 每一项都是toggle 开关
+  - 每一项最后都有一个播放按钮，可以播放这个事件的警告音，点击发送api[`/play-pipower5-buzzer`](#post-play-pipower5-buzzer)
+  - 排序无关
+  - 点击保存按钮，发送api[`/set-pipower5-buzz-on`](#post-set-pipower5-buzz-on)
+  - 点击取消按钮，关闭弹窗
+##### 蜂鸣器音量
+- 标题: Buzz Volume
+- 描述: Set buzzer volume
+- key: `pipower5_buzzer_volume`
+- 控件：滑动条，最小0%，最大100%
+- api: [`/set-pipower5-buzzer-volume`](#post-set-pipower5-buzzer-volume)
 #### 关机策略
 - peripheral: `shutdown_percentage`
 - 标题: Shutdown Stratagy
@@ -672,6 +703,8 @@ PERIPHERALS = [
     "is_battery_plugged_in",
     "is_charging",
     "power-failure-simulation",
+    "pipower5_buzzer",
+    "send_email",
 
     "spc_fan_power",
     "pwm_fan_speed",
@@ -1459,6 +1492,24 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
   - `{"status": false, "error": "[ERROR] {error}"}`
+
+### POST /play-pipower5-buzzer
+
+播放蜂鸣器
+
+- Data:
+  - `event` - 播放事件，"battery_activated", "low_battery", "power_disconnected", "power_restored", "power_insufficient", "battery_critical_shutdown", "battery_voltage_critical_shutdown"
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-pipower5-buzz-on
+
+设置蜂鸣器什么时候叫
+
+- Data:
+  - `on` - 列表，蜂鸣器什么时候叫，"battery_activated", "low_battery", "power_disconnected", "power_restored", "power_insufficient", "battery_critical_shutdown", "battery_voltage_critical_shutdown"
+- Response:
+  - `{"status": true, "data": "OK"}`
 
 ### POST /start-ups-power-failure-simulation
 
