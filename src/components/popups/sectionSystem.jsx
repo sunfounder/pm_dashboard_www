@@ -241,7 +241,7 @@ const SectionSystem = (props) => {
     let value = Number(event.target.value);
     // 限制输入的类型
     if (isNaN(value) || !Number.isInteger(parseFloat(value))) return;
-    if (value < 1 || value > 3600) return;
+    if (value < 0 || value > 3600) return;
     let result = await props.sendData('set-oled-sleep-timeout', { 'timeout': parseInt(value) });
     if (result === "OK") {
       props.onChange('system', 'oled_sleep_timeout', parseInt(value));
@@ -359,7 +359,7 @@ const SectionSystem = (props) => {
                 subtitle="Set OLED sleep timeout"
                 value={props.config ? props.config.oled_sleep_timeout : ""}
                 // disabled={props.config.oled_sleep_timeout === 0}
-                min={1}
+                min={0}
                 max={600}
                 end="S"
                 onBlur={handleOLEDSleepTimeoutBlur}
