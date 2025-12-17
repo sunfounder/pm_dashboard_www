@@ -288,6 +288,9 @@ const SettingItemSwitch = (props) => {
   return (
     <SettingItem {...props} >
       {loading && <CircularProgress size={20} />}
+      <Box>
+        {props.children && props.children}
+      </Box>
       <Switch onChange={handleChange} checked={props.value || false} disabled={loading} />
     </SettingItem>
   )

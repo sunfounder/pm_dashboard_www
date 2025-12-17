@@ -25,6 +25,7 @@ import SectionFrame from "./sectionFrame.jsx";
 import PopupPowerFailureSimulation from "./popupPowerFailureSimulation.jsx";
 import DataGridPro from "./dataGridPro.jsx"
 import PopupEmail from "./popupEmail.jsx";
+import PopupBuzz from "./popupBuzz .jsx";
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const GPIO_FAN_MODES = [
   { value: 4, label: 'Quiet' },
@@ -810,6 +811,13 @@ const SectionSystem = (props) => {
             sendData={props.sendData}
             onChange={props.onChange}
             showSnackBar={props.showSnackBar}
+          />
+        }
+        {
+          <PopupBuzz
+            config={props.config}
+            sendData={props.sendData}
+            onChange={props.onChange}
           />
         }
         {/* 关机百分比 */}

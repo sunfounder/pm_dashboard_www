@@ -95,6 +95,19 @@ const Colors = [
   deepOrange,
 ]
 
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp * 1000); // 将时间戳转换为毫秒
+
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份从0开始，所以加1
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // 返回格式化字符串
+}
+
 const HistoryPanel = (props) => {
   const [keys, setKeys] = useState([]);
   const [data, setData] = useState([]);
@@ -212,6 +225,11 @@ const HistoryPanel = (props) => {
     link.click();
   }
 
+  useEffect(() => {
+    window.sessionStorage.setItem("pm-dashboard-history-start-quick-select", JSON.stringify({ status: false, time: null }));
+    window.sessionStorage.setItem("pm-dashboard-history-end-quick-select", JSON.stringify({ status: false, time: null }));
+  }, []);
+
   return (
     <Panel title="History" {...props} sx={{ height: "100%", overflow: "hidden" }} navActions={
       <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -254,6 +272,8 @@ const DateTimeRangePicker = (props) => {
 
   const handleQuickSelect = (value) => {
     window.localStorage.setItem("pm-dashboard-history-quick-select", value);
+    window.sessionStorage.setItem("pm-dashboard-history-start-quick-select", JSON.stringify({ status: false, time: null }));
+    window.sessionStorage.setItem("pm-dashboard-history-end-quick-select", JSON.stringify({ status: false, time: null }));
     setQuickSelect(value);
     setLabel(QuickSelect[value]);
     // handleMenuClose();
@@ -305,7 +325,8 @@ const DateTimeRangePicker = (props) => {
     let endLabel = dayjs.unix(end).format("YYYY-MM-DD HH:mm:ss");
     setLabel(`${startLabel} - ${endLabel}`);
     setStart(datetime.unix());
-    setQuickSelect("custom");
+    window.sessionStorage.setItem("pm-dashboard-history-start-quick-select", JSON.stringify({ status: true, time: datetime.unix() }));
+    // setQuickSelect("custom");
     props.onChange({ start: datetime.unix() });
   }
 
@@ -323,23 +344,50 @@ const DateTimeRangePicker = (props) => {
     let endLabel = dayjs.unix(datetime.unix()).format("YYYY-MM-DD HH:mm:ss");
     setLabel(`${startLabel} - ${endLabel}`);
     setEnd(datetime.unix());
-    setQuickSelect("custom");
+    window.sessionStorage.setItem("pm-dashboard-history-end-quick-select", JSON.stringify({ status: true, time: datetime.unix() }));
+    // setQuickSelect("custom");
     props.onChange({ end: datetime.unix() });
   }
 
   useEffect(() => {
     let interval = setInterval(() => {
       let time = window.localStorage.getItem("pm-dashboard-history-quick-select");
-      if (quickSelect !== "custom") {
-        let [start, end] = getTimeRange(quickSelect);
-        // 由于today的时间范围是固定的，导致数据没有更新，所以需要随机增加一个时间偏移量
-        if (time === "today") {
-          const randomOffset = Math.floor(Math.random() * 100); // 随机增量，单位为毫秒，范围为 0 到 100
-          start += randomOffset;
-        }
+      // if (quickSelect !== "custom") {
+      //   let [start, end] = getTimeRange(quickSelect);
+      //   // 由于today的时间范围是固定的，导致数据没有更新，所以需要随机增加一个时间偏移量
+      //   if (time === "today") {
+      //     const randomOffset = Math.floor(Math.random() * 100); // 随机增量，单位为毫秒，范围为 0 到 100
+      //     start += randomOffset;
+      //   }
+      //   setStart(start);
+      //   setEnd(end);
+      //   props.onChange({ start: start, end: end });
+      // }
+
+      let startQuickSelect = JSON.parse(window.sessionStorage.getItem("pm-dashboard-history-start-quick-select")) || { status: false, time: null };
+      let endQuickSelect = JSON.parse(window.sessionStorage.getItem("pm-dashboard-history-end-quick-select")) || { status: false, time: null };
+      let [start, end] = getTimeRange(quickSelect);
+      if (time === "today") {
+        // const randomOffset = Math.floor(Math.random() * 100); // 随机增量，单位为毫秒，范围为 0 到 100
+        end = dayjs().unix();
+      }
+      if (!startQuickSelect.status) {
         setStart(start);
+      };
+      if (startQuickSelect.time) {
+        setStart(startQuickSelect.time);
+        start = startQuickSelect.time;
+      };
+      if (!endQuickSelect.status) {
         setEnd(end);
-        props.onChange({ start: start, end: end });
+      };
+      if (endQuickSelect.time) {
+        setEnd(endQuickSelect.time);
+        end = endQuickSelect.time;
+      };
+      props.onChange({ start: start, end: end });
+      if (startQuickSelect.time || endQuickSelect.time) {
+        setLabel(`${formatTimestamp(start)} - ${formatTimestamp(end)}`);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -409,7 +457,8 @@ const DateTimeRangePicker = (props) => {
                   <DateTimeField
                     label="To"
                     value={dayjs.unix(end)}
-                    onChange={(date) => setEnd(date.unix())}
+                    // onChange={(date) => setEnd(date.unix())}
+                    onChange={handleEndChange}
                     onClick={handleEndMenuShow}
                     format="YYYY-MM-DD HH:mm:ss"
                     sx={{ margin: "auto", width: "100%" }}
@@ -436,7 +485,8 @@ const DateTimeRangePicker = (props) => {
                 <DateTimeField
                   label="To"
                   value={dayjs.unix(end)}
-                  onChange={(date) => setEnd(date.unix())}
+                  // onChange={(date) => setEnd(date.unix())}
+                  onChange={handleEndChange}
                   format="YYYY-MM-DD HH:mm:ss"
                   sx={{ margin: "auto", width: "100%" }}
                 />

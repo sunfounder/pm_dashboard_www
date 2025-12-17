@@ -7,7 +7,7 @@ import SectionMQTT from './sectionMQTT.jsx';
 import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.4";
+const VERSIONS = "1.2.5";
 
 const defaultConfigData = {
   "auto": {
@@ -81,7 +81,9 @@ const defaultConfigData = {
     "smtp_port": "456",
     "smtp_use_tls": true,
     "smtp_security": 'tls',
-    "database_retention_days": 30
+    "database_retention_days": 30,
+    "pipower5_buzz_on": ["battery_activated"],
+    "pipower5_buzzer_volume": 10,
   }
 }
 
