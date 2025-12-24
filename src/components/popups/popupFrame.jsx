@@ -37,6 +37,11 @@ const PopupFrame = (props) => {
           flexDirection: "column",
           '@media (max-width: 768px)': {
             width: '90vw',
+            maxHeight: '90vh',
+          },
+          '@media (max-width: 800px)': {
+            width: '90vw',
+            maxHeight: '90vh',
           },
         }}
       >

@@ -30,6 +30,8 @@ import WifiTetheringOutlinedIcon from '@mui/icons-material/WifiTetheringOutlined
 import DashboardPanel from './panels/dashboard.jsx';
 import HistoryPanel from './panels/history.jsx';
 import LogPanel from './panels/log.jsx';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 const drawerWidth = 240;
 
@@ -84,6 +86,7 @@ const PersistentDrawerLeft = (props) => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-tabIndex")) || { text: "Dashboard", index: 0 });
   const [settingButton, setSettingButton] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleOpenUserMenu = (event) => {
     let dropdown = [
@@ -160,11 +163,30 @@ const PersistentDrawerLeft = (props) => {
     setDownloadElement(downloadElement)
   }
 
+  // 处理退出全屏
+  const handleExitFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        console.log("全屏模式已启用。");
+        setIsFullscreen(true);
+      }).catch(err => {
+        console.log(`启用全屏模式时出错: ${err.message} (${err.name})`);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        console.log("已退出全屏模式。");
+        setIsFullscreen(false);
+      }).catch(err => {
+        console.log(`退出全屏模式时出错: ${err.message} (${err.name})`);
+      });
+    }
+  }
+
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
       <CssBaseline />
       <AppBar position="fixed" open={false} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Toolbar variant="dense" sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {
               (props.peripherals.includes('history') || props.peripherals.includes('log')) &&
@@ -184,8 +206,14 @@ const PersistentDrawerLeft = (props) => {
             {/* {props.tabIndex !== 0 && downloadElement} */}
           </Box>
 
-
           <Box sx={{ flexGrow: 0 }}>
+            {/* <Tooltip title="Fullscreen"> */}
+            <IconButton onClick={handleExitFullscreen} color="inherit">
+              {
+                isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />
+              }
+            </IconButton>
+            {/* </Tooltip> */}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} color="inherit">
                 <WidgetsOutlinedIcon />
@@ -267,8 +295,7 @@ const PersistentDrawerLeft = (props) => {
         open={open}
         onClose={handleDrawerClose}
       >
-        <DrawerHeader>
-        </DrawerHeader>
+        <DrawerHeader sx={{ minHeight: '48px !important' }} />
         <Divider />
         <List>
           {title.map((item, index) => (
@@ -286,8 +313,8 @@ const PersistentDrawerLeft = (props) => {
 
       </Drawer>
       <Main className='main' open={open} sx={{ padding: 0, width: "100vw", marginLeft: "0px" }}>
-        <DrawerHeader />
-        <Box sx={{ height: '95%', paddingBottom: '40px' }}>
+        <DrawerHeader sx={{ minHeight: '48px !important' }} />
+        <Box sx={{ height: '95%', paddingBottom: window.innerWidth === 800 ? "10px" : "40px" }}>
           {props.tabIndex.text === "Dashboard" && <DashboardPanel {...props} temperatureUnit={props.temperatureUnit} />}
           {
             props.tabIndex.text === 'History' &&

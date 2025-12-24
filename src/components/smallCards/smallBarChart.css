@@ -1,0 +1,62 @@
+.barChartBox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.barChart {
+  width: 95%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.barData {
+  width: 100%;
+  height: 2rem;
+  max-height: 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.barUsed {
+  height: 100%;
+  border-radius: 0.3rem;
+}
+
+.barFree {
+  height: 100%;
+  border-radius: 0.3rem;
+}
+
+.hovered {
+  transition: transform 0.3s ease;
+  transform: scale(1.04);
+}
+
+.barChartTip {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.barChartTip>span {
+  margin: 10px 10px 0 10px;
+}
+
+.blanks {
+  width: 2%;
+  height: 100%;
+  background-color: red;
+}
+
+.barChartTipText {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}

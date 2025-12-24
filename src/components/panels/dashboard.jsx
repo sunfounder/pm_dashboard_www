@@ -13,6 +13,15 @@ import MemoryCard from '../cards/memoryCard.jsx';
 import ProcessorCard from '../cards/processorCard.jsx';
 import NetworkCard from '../cards/networkCard.jsx';
 
+import SmallExternalInputCard from '../smallCards/smallExternalInputCard.jsx';
+import SmallTemperatureCard from '../smallCards/smallTemperatureCard.jsx';
+import SmallBatteryCard from '../smallCards/smallBatteryCard.jsx';
+import SmallRaspberryPiPowerCard from '../smallCards/smallRaspberryPiPowerCard.jsx';
+import SmallStorageCard from '../smallCards/smallStorageCard.jsx';
+import SmallMemoryCard from '../smallCards/smallMemoryCard.jsx';
+import SmallNetworkCard from '../smallCards/smallNetworkCard.jsx';
+import SmallProcessorCard from '../smallCards/smallProcessorCard.jsx';
+
 const TEST_DATA = [
   { time: new Date().getTime() },
   { time: new Date().getTime() },
@@ -39,6 +48,8 @@ const TEST_DATA = [
 const DashboardPanel = (props) => {
   const [data, setData] = useState(TEST_DATA);
   const [updateDataInterval, setUpdateDataInterval] = useState(1000);
+  const screenWidth = window.innerWidth;
+  console.log("屏幕宽度:", screenWidth);
 
   const updateData = async () => {
     let _data;
@@ -123,41 +134,81 @@ const DashboardPanel = (props) => {
 
   return (<Box sx={{ width: "100%", height: "100%", overflowY: "scroll", overflowX: "hidden" }}>
     <Panel title={props.deviceName} {...props}>
-      <Box sx={{ display: "flex", flexFlow: "wrap", gap: "70px 40px" }}>
-        {
-          (props.peripherals.includes('external_input') ||
-            props.peripherals.includes("input_voltage") ||
-            props.peripherals.includes("input_current") ||
-            props.peripherals.includes("is_input_plugged_in")) &&
-          <ExternalInputCard data={data} bytesFormatter={bytesFormatter} switchShow={props.peripherals.includes('output_switch')} />
-        }
-        {
-          // (props.peripherals.includes('pwm_fan')) &&
-          (
-            props.peripherals.includes('pwm_fan_speed') ||
-            props.peripherals.includes('cpu_temperature') ||
-            props.peripherals.includes('gpu_temperature') ||
-            props.peripherals.includes('temperature')) &&
-          <TemperatureCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
-        {
-          (props.peripherals.includes('is_battery_plugged_in') ||
-            props.peripherals.includes('battery_percentage') ||
-            props.peripherals.includes('battery_capacity') ||
-            props.peripherals.includes('battery_voltage') ||
-            props.peripherals.includes('battery') ||
-            props.peripherals.includes('battery_current')) &&
-          <BatteryCard data={data} />}
-        {(props.peripherals.includes('raspberry_pi_power') ||
-          props.peripherals.includes('output_voltage') ||
-          props.peripherals.includes('output_current') ||
-          props.peripherals.includes('output_switch')) &&
-          <RaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} showBanner={props.showBanner} />}
+      {
+        screenWidth === 800 ?
+          // <Box sx={{ display: "grid", flexFlow: "wrap", gap: "20px", gridTemplateColumns: "repeat(3, 1fr)" }}>
+          <Box sx={{ display: "flex", flexFlow: "wrap", gap: "15px 10px", justifyContent: 'space-around' }}>
+            {/* {
+              (props.peripherals.includes('external_input') ||
+                props.peripherals.includes("input_voltage") ||
+                props.peripherals.includes("input_current") ||
+                props.peripherals.includes("is_input_plugged_in")) &&
+              <SmallExternalInputCard data={data} bytesFormatter={bytesFormatter} switchShow={props.peripherals.includes('output_switch')} />
+            } */}
 
-        {props.peripherals.includes('storage') && <StorageCard data={data} mountSwitchChecked={props.mountSwitchChecked} />}
-        {props.peripherals.includes('memory') && <MemoryCard data={data} />}
-        {props.peripherals.includes('network') && <NetworkCard data={data} />}
-        {props.peripherals.includes('cpu') && <ProcessorCard data={data} processorChartAmount={props.processorChartAmount} />}
-      </Box >
+            {
+              (
+                props.peripherals.includes('pwm_fan_speed') ||
+                props.peripherals.includes('cpu_temperature') ||
+                props.peripherals.includes('gpu_temperature') ||
+                props.peripherals.includes('temperature')) &&
+              <SmallTemperatureCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />
+            }
+            {/* {
+              (props.peripherals.includes('is_battery_plugged_in') ||
+                props.peripherals.includes('battery_percentage') ||
+                props.peripherals.includes('battery_capacity') ||
+                props.peripherals.includes('battery_voltage') ||
+                props.peripherals.includes('battery') ||
+                props.peripherals.includes('battery_current')) &&
+              <SmallBatteryCard data={data} />} */}
+            {/* {(props.peripherals.includes('raspberry_pi_power') ||
+              props.peripherals.includes('output_voltage') ||
+              props.peripherals.includes('output_current') ||
+              props.peripherals.includes('output_switch')) &&
+              <SmallRaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} showBanner={props.showBanner} />} */}
+            {props.peripherals.includes('storage') && <SmallStorageCard data={data} mountSwitchChecked={props.mountSwitchChecked} />}
+            {props.peripherals.includes('memory') && <SmallMemoryCard data={data} />}
+            {props.peripherals.includes('network') && <SmallNetworkCard data={data} />}
+            {props.peripherals.includes('cpu') && <SmallProcessorCard data={data} processorChartAmount={props.processorChartAmount} />}
+          </Box>
+          :
+          <Box sx={{ display: "flex", flexFlow: "wrap", gap: "70px 40px" }}>
+            {
+              (props.peripherals.includes('external_input') ||
+                props.peripherals.includes("input_voltage") ||
+                props.peripherals.includes("input_current") ||
+                props.peripherals.includes("is_input_plugged_in")) &&
+              <ExternalInputCard data={data} bytesFormatter={bytesFormatter} switchShow={props.peripherals.includes('output_switch')} />
+            }
+            {
+              // (props.peripherals.includes('pwm_fan')) &&
+              (
+                props.peripherals.includes('pwm_fan_speed') ||
+                props.peripherals.includes('cpu_temperature') ||
+                props.peripherals.includes('gpu_temperature') ||
+                props.peripherals.includes('temperature')) &&
+              <TemperatureCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />}
+            {
+              (props.peripherals.includes('is_battery_plugged_in') ||
+                props.peripherals.includes('battery_percentage') ||
+                props.peripherals.includes('battery_capacity') ||
+                props.peripherals.includes('battery_voltage') ||
+                props.peripherals.includes('battery') ||
+                props.peripherals.includes('battery_current')) &&
+              <BatteryCard data={data} />}
+            {(props.peripherals.includes('raspberry_pi_power') ||
+              props.peripherals.includes('output_voltage') ||
+              props.peripherals.includes('output_current') ||
+              props.peripherals.includes('output_switch')) &&
+              <RaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} showBanner={props.showBanner} />}
+
+            {props.peripherals.includes('storage') && <StorageCard data={data} mountSwitchChecked={props.mountSwitchChecked} />}
+            {props.peripherals.includes('memory') && <MemoryCard data={data} />}
+            {props.peripherals.includes('network') && <NetworkCard data={data} />}
+            {props.peripherals.includes('cpu') && <ProcessorCard data={data} processorChartAmount={props.processorChartAmount} />}
+          </Box >
+      }
     </Panel >
   </Box>
   );
