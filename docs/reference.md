@@ -66,6 +66,8 @@
       - [数据库保留时间](#数据库保留时间)
       - [清除历史数据](#清除历史数据)
       - [重启服务](#重启服务)
+      - [重启设备](#重启设备)
+      - [关机设备](#关机设备)
   - [Peripherals](#peripherals)
   - [Config](#config)
   - [API](#api)
@@ -142,6 +144,7 @@
     - [GET /test-smtp](#get-test-smtp)
     - [POST /play-pipower5-buzzer](#post-play-pipower5-buzzer)
     - [POST /set-pipower5-buzz-on](#post-set-pipower5-buzz-on)
+    - [POST /set-pipower5-buzzer-volume](#post-set-pipower5-buzzer-volume)
     - [POST /start-ups-power-failure-simulation](#post-start-ups-power-failure-simulation)
     - [GET /get-ups-power-failure-simulation](#get-get-ups-power-failure-simulation)
     - [GET /get-disk-list](#get-get-disk-list-1)
@@ -677,6 +680,25 @@ peripheral: send_email
 - api: [`/restart-service`](#post-restart-service)
 - 弹窗：Are you sure you want to restart the service?
 - 弹窗确认后，转圈2秒后刷新页面
+#### 重启设备
+- peripheral: reboot
+- 标题: Reboot
+- 描述: Reboot the device
+- key: reboot
+- button，点击弹窗确认
+- api: [`/reboot`](#post-reboot)
+- 弹窗：Are you sure you want to reboot the device?
+- 弹窗确认后，转圈2秒后刷新页面
+#### 关机设备
+- peripheral: shutdown
+- 标题: Shutdown
+- 描述: Shutdown the device
+- key: shutdown
+- button，点击弹窗确认
+- api: [`/shutdown`](#post-shutdown)
+- 弹窗：Are you sure you want to shutdown the device?
+- 弹窗确认后，转圈2秒后刷新页面
+
 
 ## Peripherals
 
@@ -1508,6 +1530,15 @@ OTA 更新
 
 - Data:
   - `on` - 列表，蜂鸣器什么时候叫，"battery_activated", "low_battery", "power_disconnected", "power_restored", "power_insufficient", "battery_critical_shutdown", "battery_voltage_critical_shutdown"
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-pipower5-buzzer-volume
+
+设置蜂鸣器音量
+
+- Data:
+  - `volume` - 音量，1-10
 - Response:
   - `{"status": true, "data": "OK"}`
 
