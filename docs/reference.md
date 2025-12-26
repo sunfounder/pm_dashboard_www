@@ -677,7 +677,7 @@ peripheral: send_email
 - 描述: Restart the service
 - key: restart_service
 - button，点击弹窗确认
-- api: [`/restart-service`](#post-restart-service)
+- api: [`/set-restart-service`](#post-set-restart-service)
 - 弹窗：Are you sure you want to restart the service?
 - 弹窗确认后，转圈2秒后刷新页面
 #### 重启设备
@@ -686,7 +686,7 @@ peripheral: send_email
 - 描述: Reboot the device
 - key: reboot
 - button，点击弹窗确认
-- api: [`/reboot`](#post-reboot)
+- api: [`/set-reboot`](#post-set-reboot)
 - 弹窗：Are you sure you want to reboot the device?
 - 弹窗确认后，转圈2秒后刷新页面
 #### 关机设备
@@ -695,7 +695,7 @@ peripheral: send_email
 - 描述: Shutdown the device
 - key: shutdown
 - button，点击弹窗确认
-- api: [`/shutdown`](#post-shutdown)
+- api: [`/set-shutdown`](#post-set-shutdown)
 - 弹窗：Are you sure you want to shutdown the device?
 - 弹窗确认后，转圈2秒后刷新页面
 
