@@ -26,6 +26,7 @@ import PopupPowerFailureSimulation from "./popupPowerFailureSimulation.jsx";
 import DataGridPro from "./dataGridPro.jsx"
 import PopupEmail from "./popupEmail.jsx";
 import PopupBuzz from "./popupBuzz .jsx";
+import CircularProgress from '@mui/material/CircularProgress';
 // const GPIO_FAN_MODES = ['Always On', 'Performance', 'Balanced', 'Quiet', 'OFF'];
 const GPIO_FAN_MODES = [
   { value: 4, label: 'Quiet' },
@@ -437,6 +438,61 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleRebootDevice = async () => {
+    props.showAlert(
+      "Reboot",
+      "Are you sure you want to reboot the device?",
+      async () => {
+        let result = await props.sendData('set-reboot');
+        setTimeout(() => props.showAlert(
+          "Reboot",
+          <Box sx={{ display: "flex", }}>
+            Are you sure you want to reboot the device?
+            <Box sx={{ marginLeft: "10px" }}>
+              <CircularProgress size="20px" />
+            </Box>
+          </Box>,
+          null, null),
+          10);
+        if (result === "OK") {
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        };
+      },
+      () => console.log("取消")
+    );
+  }
+
+
+  const handleShutdownDevice = async () => {
+    props.showAlert(
+      "Shutdown",
+      "Are you sure you want to shutdown the device?",
+      async () => {
+        let result = await props.sendData('set-shutdown');
+        setTimeout(() => props.showAlert(
+          "Shutdown",
+          <Box sx={{ display: "flex", }}>
+            Are you sure you want to shutdown the device?
+            <Box sx={{ marginLeft: "10px" }}>
+              <CircularProgress size="20px" />
+            </Box>
+          </Box>,
+          null, null),
+          10);
+        if (result === "OK") {
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        };
+      },
+      () => console.log("取消")
+    );
+  }
+
+
+
   useEffect(() => {
     if (props.peripherals.includes("time")) {
       getCurrentTime();
@@ -814,6 +870,7 @@ const SectionSystem = (props) => {
           />
         }
         {
+          props.peripherals.includes("pipower5_buzzer") &&
           <PopupBuzz
             config={props.config}
             sendData={props.sendData}
@@ -933,6 +990,28 @@ const SectionSystem = (props) => {
               title="Clear All Data"
               subtitle="Clear all history data"
               onClick={handlePopup}
+            />
+          </>
+        }
+        {/* 重启设备 */}
+        {
+          props.peripherals.includes("reboot") &&
+          <>
+            <SettingItemButton
+              title="Reboot"
+              subtitle="Reboot the device"
+              onClick={handleRebootDevice}
+            />
+          </>
+        }
+        {/* 关机设备 */}
+        {
+          props.peripherals.includes("shutdown") &&
+          <>
+            <SettingItemButton
+              title="Shutdown"
+              subtitle="Shutdown the device"
+              onClick={handleShutdownDevice}
             />
           </>
         }

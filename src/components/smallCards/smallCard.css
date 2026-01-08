@@ -1,16 +1,12 @@
 .smallCard {
   min-width: 252px;
   max-width: 382px;
-  /* height: 221px; */
-  /* padding: 12px; */
-  /* width: 190px;
-  height: 198px; */
   height: 198px;
   padding: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex-grow: 4;
+  flex: 1 1 calc(33.333% - 10px);
 }
 
 .smallHeader {

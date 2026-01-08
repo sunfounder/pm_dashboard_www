@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router } from 'react-router-dom';
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Home from "./components/home";
@@ -247,9 +248,11 @@ const App = () => {
   return (
     <ThemeProvider theme={theme || lightTheme}>
       <CssBaseline enableColorScheme />
-      <div className='app'>
-        <Home onModeChange={changeTheme} />
-      </div>
+      <Router>
+        <div className='app'>
+          <Home onModeChange={changeTheme} />
+        </div>
+      </Router>
     </ThemeProvider>
   );
 }

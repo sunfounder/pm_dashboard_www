@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'; // 引入路由钩子
 import { Box } from '@mui/material';
 
 import { formatBytes } from '../../js/utils';
@@ -44,12 +45,14 @@ const TEST_DATA = [
   { time: new Date().getTime() },
   { time: new Date().getTime() },
 ];
-
 const DashboardPanel = (props) => {
   const [data, setData] = useState(TEST_DATA);
   const [updateDataInterval, setUpdateDataInterval] = useState(1000);
-  const screenWidth = window.innerWidth;
-  console.log("屏幕宽度:", screenWidth);
+  // const screenWidth = window.innerWidth;
+  // console.log("屏幕宽度:", screenWidth);
+
+  const location = useLocation();
+  const isDashboardRoute = location.pathname.endsWith('/small');
 
   const updateData = async () => {
     let _data;
@@ -135,17 +138,9 @@ const DashboardPanel = (props) => {
   return (<Box sx={{ width: "100%", height: "100%", overflowY: "scroll", overflowX: "hidden" }}>
     <Panel title={props.deviceName} {...props}>
       {
-        screenWidth === 800 ?
-          // <Box sx={{ display: "grid", flexFlow: "wrap", gap: "20px", gridTemplateColumns: "repeat(3, 1fr)" }}>
-          <Box sx={{ display: "flex", flexFlow: "wrap", gap: "15px 10px", justifyContent: 'space-around' }}>
-            {/* {
-              (props.peripherals.includes('external_input') ||
-                props.peripherals.includes("input_voltage") ||
-                props.peripherals.includes("input_current") ||
-                props.peripherals.includes("is_input_plugged_in")) &&
-              <SmallExternalInputCard data={data} bytesFormatter={bytesFormatter} switchShow={props.peripherals.includes('output_switch')} />
-            } */}
-
+        // screenWidth === 800 ?
+        isDashboardRoute ?
+          <Box Box sx={{ display: "flex", flexFlow: "wrap", gap: "4px", justifyContent: 'flex-start' }}>
             {
               (
                 props.peripherals.includes('pwm_fan_speed') ||
@@ -154,19 +149,6 @@ const DashboardPanel = (props) => {
                 props.peripherals.includes('temperature')) &&
               <SmallTemperatureCard data={data} request={props.request} unit={props.temperatureUnit || "C"} />
             }
-            {/* {
-              (props.peripherals.includes('is_battery_plugged_in') ||
-                props.peripherals.includes('battery_percentage') ||
-                props.peripherals.includes('battery_capacity') ||
-                props.peripherals.includes('battery_voltage') ||
-                props.peripherals.includes('battery') ||
-                props.peripherals.includes('battery_current')) &&
-              <SmallBatteryCard data={data} />} */}
-            {/* {(props.peripherals.includes('raspberry_pi_power') ||
-              props.peripherals.includes('output_voltage') ||
-              props.peripherals.includes('output_current') ||
-              props.peripherals.includes('output_switch')) &&
-              <SmallRaspberryPiPowerCard data={data} sendData={props.sendData} peripherals={props.peripherals} showAlert={props.showAlert} showBanner={props.showBanner} />} */}
             {props.peripherals.includes('storage') && <SmallStorageCard data={data} mountSwitchChecked={props.mountSwitchChecked} />}
             {props.peripherals.includes('memory') && <SmallMemoryCard data={data} />}
             {props.peripherals.includes('network') && <SmallNetworkCard data={data} />}
@@ -210,7 +192,7 @@ const DashboardPanel = (props) => {
           </Box >
       }
     </Panel >
-  </Box>
+  </Box >
   );
 };
 

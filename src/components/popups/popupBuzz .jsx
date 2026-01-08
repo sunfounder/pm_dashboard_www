@@ -24,14 +24,16 @@ const PopupBuzz = (props) => {
   const [buzzVolume, setbuzzVolume] = useState(5);
 
   useEffect(() => {
-    const updatedbuzzList = { ...buzzList };
-    props.config.pipower5_buzz_on.forEach((setting) => {
-      if (updatedbuzzList.hasOwnProperty(setting)) {
-        updatedbuzzList[setting] = true;
-      }
-    });
-    setbuzzList(updatedbuzzList);
-    setbuzzVolume(props.config.pipower5_buzzer_volume);
+    if (props.config.pipower5_buzz_on) {
+      const updatedbuzzList = { ...buzzList };
+      props.config.pipower5_buzz_on.forEach((setting) => {
+        if (updatedbuzzList.hasOwnProperty(setting)) {
+          updatedbuzzList[setting] = true;
+        }
+      });
+      setbuzzList(updatedbuzzList);
+      setbuzzVolume(props.config.pipower5_buzzer_volume);
+    }
   }, [props.config.pipower5_buzz_on]);
 
 
