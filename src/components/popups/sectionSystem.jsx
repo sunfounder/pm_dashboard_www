@@ -447,7 +447,7 @@ const SectionSystem = (props) => {
         setTimeout(() => props.showAlert(
           "Reboot",
           <Box sx={{ display: "flex", }}>
-            Are you sure you want to reboot the device?
+            The device is now rebooting. Please wait a moment while it restarts.
             <Box sx={{ marginLeft: "10px" }}>
               <CircularProgress size="20px" />
             </Box>
@@ -474,7 +474,7 @@ const SectionSystem = (props) => {
         setTimeout(() => props.showAlert(
           "Shutdown",
           <Box sx={{ display: "flex", }}>
-            Are you sure you want to shutdown the device?
+            The device is shutting down. Please wait.
             <Box sx={{ marginLeft: "10px" }}>
               <CircularProgress size="20px" />
             </Box>
