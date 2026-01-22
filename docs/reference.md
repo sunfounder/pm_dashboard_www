@@ -1,7 +1,6 @@
 # pm-dashboard-www 参考文档
 
 - [pm-dashboard-www 参考文档](#pm-dashboard-www-参考文档)
-- [- POST /set-restart-service](#--post-set-restart-service)
   - [页面](#页面)
     - [Drawer 抽屉](#drawer-抽屉)
       - [Dashboard](#dashboard)
@@ -31,6 +30,12 @@
     - [Web 页面版本号](#web-页面版本号)
     - [System分类](#system分类)
       - [温度单位设置](#温度单位设置)
+      - [RGB分类](#rgb分类)
+        - [RGB开关](#rgb开关)
+        - [RGB样式](#rgb样式)
+        - [RGB颜色](#rgb颜色)
+        - [RGB速度](#rgb速度)
+        - [RGB亮度](#rgb亮度)
       - [RGB点阵分类](#rgb点阵分类)
         - [RGB点阵开关](#rgb点阵开关)
         - [RGB点阵样式](#rgb点阵样式)
@@ -151,7 +156,6 @@
     - [POST /set-debug-level](#post-set-debug-level)
     - [POST /set-database-retention-days](#post-set-database-retention-days)
     - [POST /set-restart-service](#post-set-restart-service)
-#    - [POST /set-restart-service](#post-set-restart-service)
 
 ## 页面
 
@@ -451,6 +455,36 @@ AP 设置弹窗，打开弹窗获取AP信息
 - key: `temperature_unit`
 - 控件：切换按钮，CELIUS/FAHRENHEIT
 
+#### RGB分类
+peripheral: sf_rgb_led 或 ws2812
+##### RGB开关
+- toggle 开关
+- api: [`/set-rgb-enable`](#post-set-rgb-enable)
+##### RGB样式
+- 下拉框选择：
+  - solid
+  - breathing
+  - flow
+  - flow_reverse
+  - rainbow
+  - rainbow_reverse
+  - hue_cycle
+- api: [`/set-rgb-style`](#post-set-rgb-style)
+##### RGB颜色
+- 颜色选择器
+- api: [`/set-rgb-color`](#post-set-rgb-color)
+##### RGB速度
+- 滑动条
+- 最小值1
+- 最大值100
+- 在solid模式下不显示
+- api: [`/set-rgb-speed`](#post-set-rgb-speed)
+##### RGB亮度
+- 滑动条
+- 最小值1
+- 最大值100
+- 在breathing 模式下不显示
+- api: [`/set-rgb-brightness`](#post-set-rgb-brightness)
 #### RGB点阵分类
 peripheral: rgb_matrix
 ##### RGB点阵开关
@@ -736,6 +770,7 @@ PERIPHERALS = [
     "oled_ip",
     "oled_sleep",
     "rgb_matrix",
+    "sf_rgb_led",
 
     "shutdown_percentage",
     "power_off_percentage",
@@ -808,6 +843,8 @@ PERIPHERALS = [
 44. cpu_temperature: CPU温度
 45. gpu_temperature: GPU温度
 46. temperature_unit: 温度单位
+47. sf_rgb_led: SunFounder RGB LED
+48. rgb_matrix: RGB点阵
 
 ## Config
 
