@@ -256,6 +256,15 @@ const SectionSystem = (props) => {
     }
   }
 
+  const handleRGBLedCount = async (event) => {
+    const count = parseInt(event.target.value);
+    let result = await props.sendData('set-rgb-led-count', { 'led_count': count });
+    if (result === "OK") {
+      props.onChange('system', 'rgb_led_count', count);
+    }
+  }
+
+
   const handleRGBAnimation = async (event) => {
     let result = await props.sendData('set-rgb-style', { 'style': event });
     if (result === "OK") {
@@ -586,68 +595,82 @@ const SectionSystem = (props) => {
         }
         {/* RGB */}
         {
-          props.peripherals.includes("ws2812") &&
-          <>
-            {/* RGB 开关 */}
-            <SettingItemSwitch
-              title="RGB Enable"
-              subtitle="Whether to enable RGB"
-              // onChange={(event) => props.onChange('rgb_enable', event)}
-              onChange={(event) => handleToggleRGBEnabled(event)}
-              value={props.config.rgb_enable} />
-            {/* RGB 颜色 */}
-            <SettingItemColorPicker
-              title="RGB Color"
-              subtitle="Set RGB color"
-              color={props.config.rgb_color}
-              value={props.config.rgb_color.replace("#", "")}
-              onRgbColor={handleRgbColor}
-            />
-            {/* RGB 亮度 */}
-            <SettingItemSlider
-              title="RGB Brightness"
-              subtitle="Set RGB brightness."
-              valueFormat={(value) => `${value}%`}
-              // onChange={(event) => props.onChange('rgb_brightness', event)}
-              onCommitted={(event) => handleRgbBrightness(event)}
-              value={props.config.rgb_brightness}
-              sx={{ marginTop: 2, }}
-              min={0}
-              max={100}
-              upperLabel
-            />
-            {/* RGB 模式*/}
-            <SettingItemMenu
-              title="RGB Style"
-              subtitle="Set RGB animation style"
-              // onChange={(event) => props.onChange('system', 'rgb_style', event.target.value)}
-              onChange={(event) => handleRGBAnimation(event.target.value)}
-              value={props.config.rgb_style}
-              options={[
-                { value: "", label: "None" },
-                { value: "solid", label: "Solid" },
-                { value: "breathing", label: "Breathing" },
-                { value: "flow", label: "Flow" },
-                { value: "flow_reverse", label: "Flow Reverse" },
-                { value: "rainbow", label: "Rainbow" },
-                { value: "rainbow_reverse", label: "Rainbow Reverse" },
-                { value: "hue_cycle", label: "Hue Cycle" },
-              ]}
-            />
-            {/* RGB 速度 */}
-            <SettingItemSlider
-              title="RGB Speed"
-              subtitle="Set RGB animation speed"
-              valueFormat={(value) => `${value}%`}
-              // onChange={(event) => props.onChange('rgb_speed', event)}
-              onCommitted={(event) => handleRgbSpeed(event)}
-              value={props.config.rgb_speed}
-              sx={{ marginTop: 2, }}
-              min={0}
-              max={100}
-              upperLabel
-            />
-          </>
+          (props.peripherals.includes("ws2812") || props.peripherals.includes("sf_rgb_led")) &&
+          <SettingItemList
+            primary="RGB"
+            children={
+              <>
+                {/* RGB 开关 */}
+                <SettingItemSwitch
+                  title="RGB Enable"
+                  subtitle="Whether to enable RGB"
+                  // onChange={(event) => props.onChange('rgb_enable', event)}
+                  onChange={(event) => handleToggleRGBEnabled(event)}
+                  value={props.config.rgb_enable} />
+                {/* RGB 颜色 */}
+                <SettingItemColorPicker
+                  title="RGB Color"
+                  subtitle="Set RGB color"
+                  color={props.config.rgb_color}
+                  value={props.config.rgb_color.replace("#", "")}
+                  onRgbColor={handleRgbColor}
+                />
+                {/* RGB 亮度 */}
+                <SettingItemSlider
+                  title="RGB Brightness"
+                  subtitle="Set RGB brightness."
+                  valueFormat={(value) => `${value}%`}
+                  // onChange={(event) => props.onChange('rgb_brightness', event)}
+                  onCommitted={(event) => handleRgbBrightness(event)}
+                  value={props.config.rgb_brightness}
+                  sx={{ marginTop: 2, }}
+                  min={0}
+                  max={100}
+                  upperLabel
+                />
+                {/* RGB 模式*/}
+                <SettingItemMenu
+                  title="RGB Style"
+                  subtitle="Set RGB animation style"
+                  // onChange={(event) => props.onChange('system', 'rgb_style', event.target.value)}
+                  onChange={(event) => handleRGBAnimation(event.target.value)}
+                  value={props.config.rgb_style}
+                  options={[
+                    { value: "", label: "None" },
+                    { value: "solid", label: "Solid" },
+                    { value: "breathing", label: "Breathing" },
+                    { value: "flow", label: "Flow" },
+                    { value: "flow_reverse", label: "Flow Reverse" },
+                    { value: "rainbow", label: "Rainbow" },
+                    { value: "rainbow_reverse", label: "Rainbow Reverse" },
+                    { value: "hue_cycle", label: "Hue Cycle" },
+                  ]}
+                />
+                {/* RGB 速度 */}
+                <SettingItemSlider
+                  title="RGB Speed"
+                  subtitle="Set RGB animation speed"
+                  valueFormat={(value) => `${value}%`}
+                  // onChange={(event) => props.onChange('rgb_speed', event)}
+                  onCommitted={(event) => handleRgbSpeed(event)}
+                  value={props.config.rgb_speed}
+                  sx={{ marginTop: 2, }}
+                  min={0}
+                  max={100}
+                  upperLabel
+                />
+                {/* RGB 数量 */}
+                <SettingItemText
+                  title="RGB Led"
+                  subtitle="Set the number of RGB LEDs"
+                  type="number"
+                  width="30%"
+                  value={props.config.rgb_led_count}
+                  onBlur={handleRGBLedCount}
+                />
+              </>
+            }
+          />
         }
         {/* RGB点阵 */}
         {

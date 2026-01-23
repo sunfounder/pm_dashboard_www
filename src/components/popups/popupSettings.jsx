@@ -7,7 +7,7 @@ import SectionMQTT from './sectionMQTT.jsx';
 import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.10";
+const VERSIONS = "1.2.11";
 
 const defaultConfigData = {
   "auto": {
@@ -21,6 +21,7 @@ const defaultConfigData = {
     "rgb_style": 'breath',  // 'breath', 'leap', 'flow', 'raise_up', 'colorful'
     "rgb_color": "#0a1aff",
     "rgb_speed": 50, //速度
+    "rgb_led_count": 1, //数量
     "rgb_pwm_frequency": 1000, //频率
     "rgb_pin": 10,  // 10,12,21,
   },
