@@ -36,6 +36,7 @@
         - [RGB颜色](#rgb颜色)
         - [RGB速度](#rgb速度)
         - [RGB亮度](#rgb亮度)
+        - [RGB LED 数量](#rgb-led-数量)
       - [RGB点阵分类](#rgb点阵分类)
         - [RGB点阵开关](#rgb点阵开关)
         - [RGB点阵样式](#rgb点阵样式)
@@ -485,6 +486,9 @@ peripheral: sf_rgb_led 或 ws2812
 - 最大值100
 - 在breathing 模式下不显示
 - api: [`/set-rgb-brightness`](#post-set-rgb-brightness)
+##### RGB LED 数量
+- 数字输入框, 只允许大于0的整数
+- api: [`/set-rgb-led-count`](#post-set-rgb-led-count)
 #### RGB点阵分类
 peripheral: rgb_matrix
 ##### RGB点阵开关
