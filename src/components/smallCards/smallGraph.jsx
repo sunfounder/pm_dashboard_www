@@ -14,7 +14,6 @@ const Graph = (props) => {
         minWidth: "100px",
         minHeight: "80px",
         boxShadow: "0",
-        background: "#f5f5f5",
       }}
     >
       {props.children}

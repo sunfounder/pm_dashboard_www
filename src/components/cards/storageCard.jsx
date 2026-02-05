@@ -11,7 +11,8 @@ const StorageCard = (props) => {
   let diskData = [];
   if (props.data.length >= 2) {
     // 由于选择最后一个对象有时数据是null
-    storageCardData = props.data[props.data.length - 2];
+    // storageCardData = props.data[props.data.length - 2];
+    storageCardData = props.data[0];
     if (Object.keys(storageCardData).length === 1) {
       storageCardData = props.data[0];
     }

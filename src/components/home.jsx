@@ -11,7 +11,7 @@ import PersistentDrawerLeft from './persistentDrawerLeft.jsx';
 import { HOST } from '../js/config.js';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const DEFAULT_PERIPHERALS = []
+const DEFAULT_PERIPHERALS = [];
 
 const Home = (props) => {
   const [deviceName, setDeviceName] = useState("");
@@ -48,6 +48,18 @@ const Home = (props) => {
   const [bannerPermanent, setBannerPermanent] = useState(JSON.parse(window.localStorage.getItem("pm-dashboard-banner")) != null ? JSON.parse(window.localStorage.getItem("pm-dashboard-banner")) : true);
   const [bannerText, setBannerText] = useState("");
   const [bannerSeverity, setBannerSeverity] = useState("success");
+  // 卡片显示
+  const cardLayoutsObj = [
+    { id: "input", title: "Input", description: "Input card layout" },
+    { id: "temperature", title: "Temperature", description: "Temperature card layout" },
+    { id: "battery", title: "Battery", description: "Battery card layout" },
+    { id: "pipower", title: "PiPower", description: "PiPower card layout" },
+    { id: "storage", title: "Storage", description: "Storage card layout" },
+    { id: "memory", title: "Memory", description: "Memory card layout" },
+    { id: "network", title: "Network", description: "Network card layout" },
+    { id: "processor", title: "Processor", description: "Processor card layout" }
+  ];
+  const [cardLayout, setCardLayout] = useState(["input", "temperature", "battery", "pipower", "storage", "memory", "network", "processor"]);
   window.onload = function () {
     sessionStorage.clear();
   };
@@ -382,6 +394,7 @@ const Home = (props) => {
         connected={connected}
         mountSwitchChecked={mountSwitchChecked}
         processorChartAmount={processorChartAmount}
+        cardLayout={cardLayout}
         sendData={sendData}
         showAlert={showAlert}
         onPopupWiFi={handlePopupWiFi}
@@ -410,6 +423,9 @@ const Home = (props) => {
         restartPrompt={restartPrompt}
         showAlert={showAlert}
         latestData={latestData}
+        setCardLayout={setCardLayout}
+        cardLayoutsObj={cardLayoutsObj}
+        cardLayout={cardLayout}
       />
       <PopupOTA
         open={PopupOTADisplay}

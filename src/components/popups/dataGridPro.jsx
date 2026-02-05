@@ -5,6 +5,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  TouchSensor,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -37,7 +38,6 @@ function SortableItem({ id, title, secondary, checked, onToggle, isDragging }) {
     userSelect: 'none',
     transform: CSS.Transform.toString(transform),
     transition,
-    backgroundColor: '#fff',
     border: '1px solid #ddd',
     borderRadius: '4px',
     display: 'flex',
@@ -72,7 +72,7 @@ function SortableItem({ id, title, secondary, checked, onToggle, isDragging }) {
         primary={` ${title}`}
         secondary={` ${secondary}`}
       />
-      <Box sx={{ cursor: 'grab' }} {...listeners}>
+      <Box sx={{ cursor: 'grab', touchAction: 'none' }} {...listeners}>
         <DragIndicatorIcon />
 
       </Box>
@@ -86,28 +86,36 @@ const CheckboxList = (props) => {
   const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
-    // console.log('🚀 ~ 获取的所有页面', props.setOLEDPages);
-    if (!Array.isArray(props.setOLEDPages)) return;
+    // console.log('🚀 ~ 获取的所有页面', props.currentArray);
+    if (!Array.isArray(props.currentArray)) return;
 
     // 获取已勾选项（按传入顺序保留）
-    const selected = props.setOLEDPages
+    const selected = props.currentArray
       .map(id => items.find(item => item.id === id))
       .filter(Boolean); // 过滤掉找不到的
 
     // 获取未勾选项（保持 items 原顺序）
-    const selectedIds = new Set(props.setOLEDPages);
+    const selectedIds = new Set(props.currentArray);
     const unselected = items.filter(item => !selectedIds.has(item.id));
 
     // 合并：已选项 + 未选项
     const newItems = [...selected, ...unselected];
 
     // 更新状态
-    setChecked(props.setOLEDPages);
+    setChecked(props.currentArray);
     setItems(newItems);
   }, []);
 
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  // const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    })
+  );
 
   const handleToggle = (id) => {
     const isChecked = checked.includes(id);

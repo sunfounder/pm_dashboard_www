@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 import PopupFrame from './popupFrame.jsx';
 import SectionSystem from './sectionSystem.jsx';
 import SectionMQTT from './sectionMQTT.jsx';
+import DataGridPro from "./dataGridPro.jsx"
 // import SectionAuto from './sectionAuto.jsx';
-import { SettingItemSwitch, SettingItem } from './settingItems.jsx';
+import { SettingItemSwitch, SettingItem, SettingItemButton } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.11";
+const VERSIONS = "1.2.12";
 
 const defaultConfigData = {
   "auto": {
@@ -92,6 +93,9 @@ const PopupSettings = (props) => {
   const [config, setConfig] = useState(defaultConfigData);
   const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("pm-dashboard-theme") === "dark" ? true : false);
 
+  const [cardLayoutPopup, setCardLayoutPopup] = useState(false);
+  const [newCardLayout, setNewCardLayout] = useState(props.cardLayout);
+
   const themeSwitching = (isDark) => {
     let theme;
     if (isDark) {
@@ -136,6 +140,20 @@ const PopupSettings = (props) => {
     setConfig(newConfig);
   }
 
+  const handleCardLayoutPopup = () => {
+    setCardLayoutPopup(!cardLayoutPopup);
+  }
+
+  const handleDrag = (data) => {
+    console.log("handleDrag", data);
+    setNewCardLayout(data);
+  }
+
+  const handleDragSave = () => {
+    props.setCardLayout(newCardLayout);
+    handleCardLayoutPopup();
+  }
+
   useEffect(() => {
     getConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,6 +184,11 @@ const PopupSettings = (props) => {
           onChange={props.onCloseForever}
           value={props.bannerPermanent} />
       }
+      <SettingItemButton
+        title="Card layout"
+        subtitle="Set Card layout"
+        onClick={handleCardLayoutPopup}
+      />
       {/* 版本号versions */}
       <SettingItem
         title="Web UI Version"
@@ -211,6 +234,24 @@ const PopupSettings = (props) => {
           onTemperatureUnitChanged={props.onTemperatureUnitChanged}
           restartService={props.restartService}
         />}
+
+      <PopupFrame
+        title="Card Layout"
+        onClose={handleCardLayoutPopup}
+        onConfirm={handleDragSave}
+        open={cardLayoutPopup}
+        width="30rem"
+        button={true}
+        cancelText="Cancel"
+        confirmText="Save"
+      >
+        <DataGridPro
+          data={props.cardLayoutsObj}
+          currentArray={props.cardLayout}
+          onDrag={handleDrag}
+        />
+      </PopupFrame>
+
     </PopupFrame >
   );
 };

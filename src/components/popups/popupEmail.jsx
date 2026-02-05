@@ -43,8 +43,9 @@ const PopupEmail = (props) => {
       }
     });
     setSendEmail(updatedSendEmail);
+    setSmtpPassword(props.config.smtp_password);
 
-  }, []);
+  }, [props.config.send_email_on, props.config.smtp_password]);
 
   const handleSelectTlsChange = async (value) => {
     console.log("handleSelectChange", value);

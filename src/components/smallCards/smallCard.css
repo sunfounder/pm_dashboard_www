@@ -1,6 +1,7 @@
 .smallCard {
-  min-width: 252px;
-  max-width: 382px;
+  min-width: 238px;
+  /* min-width: 252px; */
+  /* max-width: 382px; */
   height: 198px;
   padding: 8px;
   display: flex;

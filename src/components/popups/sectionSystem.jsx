@@ -95,9 +95,7 @@ const SectionSystem = (props) => {
     title: descriptions[page].title,
     description: descriptions[page].description
   }));
-  // console.log("SectionSystem", props);
-  // const [colorDiskPopup, setColorDiskPopup] = useState(false);
-  // const [colorDisk, setColorDisk] = useState("000000");
+
   const [gpioFanModeIndex, setGpioFanModeIndex] = useState(4 - props.config.gpio_fan_mode);
   const [popupStatus, setPopupStatus] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -113,18 +111,10 @@ const SectionSystem = (props) => {
   const [OLEDLayouPopup, setOLEDLayouPopup] = useState(false);
   const [sendOLEDPages, setSendOLEDPages] = useState([]);
   const [currentOLEDPage, setCurrentOLEDPage] = useState([]);
-
+  const [databaseRetentionDays, setDatabaseRetentionDays] = useState(props.config.database_retention_days);
   const handleOLEDLayoutPopup = () => {
     setOLEDLayouPopup(!OLEDLayouPopup);
   }
-  // const handleColorDiskPopup = (color) => {
-  //   setColorDiskPopup(!colorDiskPopup);
-  //   setColorDisk(color ? color : "#0a1aff");
-  // }
-
-  // const handRgbMatrixList = () => {
-  //   setRgbMatrixListShow(!rgbMatrixListShow);
-  // }
 
   const handlePopup = () => {
     setPopupStatus(!popupStatus);
@@ -439,11 +429,34 @@ const SectionSystem = (props) => {
     }
   }
 
-  const handleDatabaseRetention = async (event) => {
-    const days = event.target.value;
+  const handleHistoryRetentionChange = (value) => {
+    setDatabaseRetentionDays(value);
+  }
+
+  const handleHistoryRetentionBlur = () => {
+    let days = databaseRetentionDays;
+    if (days === "" || days < 1) {
+      days = 1;
+      setDatabaseRetentionDays(days);
+    };
+    if (days < props.config.database_retention_days) {
+      props.showAlert(
+        "Attention",
+        `You have entered a number of days that is less than the current default setting (${props.config.database_retention_days} days). Please note that this will result in saving data only for the number of days you have input, and earlier data will not be preserved.`,
+        () => handleDatabaseRetention(days), () => setDatabaseRetentionDays(props.config.database_retention_days)
+      );
+    } else {
+      handleDatabaseRetention(days);
+    }
+  }
+
+  const handleDatabaseRetention = async (days) => {
+    console.log("days", days);
     let result = await props.sendData('set-database-retention-days', { 'days': days });
     if (result === "OK") {
       props.onChange('system', 'database_retention_days', days);
+    } else {
+      setDatabaseRetentionDays(props.config.database_retention_days);
     }
   }
 
@@ -526,6 +539,10 @@ const SectionSystem = (props) => {
   useEffect(() => {
     setGpioFanModeIndex(4 - props.config.gpio_fan_mode);
   }, [props.config.gpio_fan_mode]);
+
+  useEffect(() => {
+    setDatabaseRetentionDays(props.config.database_retention_days);
+  }, [props.config]);
 
   return (
     <>
@@ -1000,8 +1017,10 @@ const SectionSystem = (props) => {
             type="number"
             end="days"
             width="30%"
-            value={props.config.database_retention_days}
-            onBlur={handleDatabaseRetention}
+            // value={props.config.database_retention_days}
+            value={databaseRetentionDays}
+            onChange={(event) => handleHistoryRetentionChange(event)}
+            onBlur={handleHistoryRetentionBlur}
           />
         }
 
@@ -1086,7 +1105,7 @@ const SectionSystem = (props) => {
       >
         <DataGridPro
           data={oledPages}
-          setOLEDPages={sendOLEDPages}
+          currentArray={sendOLEDPages}
           onDrag={handleDrag}
         />
       </PopupFrame>
