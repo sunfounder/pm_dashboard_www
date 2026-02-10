@@ -85,9 +85,14 @@ const Home = (props) => {
     });
 
     const filteredCardIds = filteredCardConfigs.map(card => card.id);
-    setCardLayoutsObj(filteredCardConfigs);
-    setCardLayout(filteredCardIds);
+    const cardLayouts = JSON.parse(localStorage.getItem("cardLayout"));
 
+    if (cardLayouts) {
+      setCardLayout(cardLayouts);
+    } else {
+      setCardLayout(filteredCardIds);
+    }
+    setCardLayoutsObj(filteredCardConfigs);
   }, [peripherals]);
 
   const request = async (url, method, payload, ignore) => {

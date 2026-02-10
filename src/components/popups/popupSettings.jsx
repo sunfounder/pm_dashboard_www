@@ -8,7 +8,7 @@ import DataGridPro from "./dataGridPro.jsx"
 import { SettingItemSwitch, SettingItem, SettingItemButton } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.13";
+const VERSIONS = "1.2.14";
 
 const defaultConfigData = {
   "auto": {
@@ -152,6 +152,7 @@ const PopupSettings = (props) => {
   const handleDragSave = () => {
     props.setCardLayout(newCardLayout);
     handleCardLayoutPopup();
+    localStorage.setItem("cardLayout", JSON.stringify(newCardLayout));
   }
 
   useEffect(() => {
