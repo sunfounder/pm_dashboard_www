@@ -248,6 +248,12 @@ const SectionSystem = (props) => {
 
   const handleRGBLedCount = async (event) => {
     const count = parseInt(event.target.value);
+    if (props.config.rgb_led_count_min) {
+      if (count < props.config.rgb_led_count_min) {
+        props.showSnackBar("error", "The minimum number of RGB LEDs is " + props.config.rgb_led_count_min);
+        return;
+      };
+    };
     let result = await props.sendData('set-rgb-led-count', { 'led_count': count });
     if (result === "OK") {
       props.onChange('system', 'rgb_led_count', count);

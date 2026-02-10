@@ -49,7 +49,7 @@ const Home = (props) => {
   const [bannerText, setBannerText] = useState("");
   const [bannerSeverity, setBannerSeverity] = useState("success");
   // 卡片显示
-  const cardLayoutsObj = [
+  const ORIGINAL_CARD_LAYOUTS = [
     { id: "input", title: "Input", description: "Input card layout" },
     { id: "temperature", title: "Temperature", description: "Temperature card layout" },
     { id: "battery", title: "Battery", description: "Battery card layout" },
@@ -59,10 +59,36 @@ const Home = (props) => {
     { id: "network", title: "Network", description: "Network card layout" },
     { id: "processor", title: "Processor", description: "Processor card layout" }
   ];
-  const [cardLayout, setCardLayout] = useState(["input", "temperature", "battery", "pipower", "storage", "memory", "network", "processor"]);
+  const [cardLayoutsObj, setCardLayoutsObj] = useState(ORIGINAL_CARD_LAYOUTS);
+  const [cardLayout, setCardLayout] = useState(ORIGINAL_CARD_LAYOUTS.map(card => card.id));
   window.onload = function () {
     sessionStorage.clear();
   };
+
+  useEffect(() => {
+    const cardTriggerKeywords = {
+      input: ['external_input', 'input_voltage', 'input_current', 'is_input_plugged_in'],
+      temperature: ['pwm_fan_speed', 'cpu_temperature', 'gpu_temperature', 'temperature'],
+      battery: ['is_battery_plugged_in', 'battery_percentage', 'battery_capacity', 'battery_voltage', 'battery', 'battery_current'],
+      pipower: ['raspberry_pi_power', 'output_voltage', 'output_current', 'output_switch'],
+      storage: ['storage'],
+      memory: ['memory'],
+      network: ['network'],
+      processor: ['cpu']
+    };
+
+    const newPeripherals = Array.isArray(peripherals) ? peripherals : [];
+
+    const filteredCardConfigs = ORIGINAL_CARD_LAYOUTS.filter(card => {
+      const triggerKeys = cardTriggerKeywords[card.id] || [];
+      return triggerKeys.some(key => newPeripherals.includes(key));
+    });
+
+    const filteredCardIds = filteredCardConfigs.map(card => card.id);
+    setCardLayoutsObj(filteredCardConfigs);
+    setCardLayout(filteredCardIds);
+
+  }, [peripherals]);
 
   const request = async (url, method, payload, ignore) => {
     if (!connected && !ignore) {
@@ -345,7 +371,7 @@ const Home = (props) => {
       content,
       () => {
         sendData('set-restart', {});
-        setTimeout(() => showAlert("Restarting", "The device is restarting. Please wait for a moment.", () => { }), 100);
+        setTimeout(() => showAlert("Restarting", "Service is currently restarting. Please wait for a moment.", () => { }), 100);
         onConfirm && onConfirm();
       },
       () => {
@@ -365,7 +391,7 @@ const Home = (props) => {
         setTimeout(() => showAlert(
           "Restarting",
           <Box sx={{ display: "flex", }}>
-            The device is restarting. Please wait for a moment.
+            Service is currently restarting. Please wait for a moment.
             <Box sx={{ marginLeft: "10px" }}>
               <CircularProgress size="20px" />
             </Box>
