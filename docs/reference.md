@@ -489,6 +489,7 @@ peripheral: sf_rgb_led 或 ws2812
 ##### RGB LED 数量
 - 数字输入框, 只允许大于0的整数
 - api: [`/set-rgb-led-count`](#post-set-rgb-led-count)
+- 限制：最小值为`rgb_led_count_min`
 #### RGB点阵分类
 peripheral: rgb_matrix
 ##### RGB点阵开关
