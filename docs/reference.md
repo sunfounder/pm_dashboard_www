@@ -688,11 +688,13 @@ peripheral: send_email
 - peripheral: mac_address
 - config分类: system
 - key: mac_address
+- 数据来源: [`/get-ips`](#get-get-ips) (不再从 `/get-data` 获取)
 - 显示Mac地址
 #### IP地址
 - peripheral: ip_address
 - config分类: system
 - key: ip_address
+- 数据来源: [`/get-ips`](#get-get-ips) (不再从 `/get-data` 获取)
 - 显示IP地址
 #### 数据库保留时间
 - peripheral: history
@@ -936,6 +938,7 @@ api地址: `http://ip:34001/api/v1.0`
   - `n` - 获取最新的多少个数据，默认是1
 - Response:
   - `{"status": true, "data": []}`
+  - 注意: `ip_*`, `mac_*`, `ips`, `network_type` 已从返回数据中移除，请使用 [`/get-ips`](#get-get-ips) 获取
 
 ### GET /get-history DEPRECATED
 
@@ -1123,6 +1126,25 @@ api地址: `http://ip:34001/api/v1.0`
 
 - Response:
   - `{"status": true, "data": ["eth0", "wlan0"]}`
+
+### GET /get-ips
+
+获取IP和MAC地址信息（按需）
+
+- Response:
+  ```json
+  {
+    "status": true,
+    "data": {
+      "ips": {"eth0": "192.168.1.100", "wlan0": "10.0.0.5"},
+      "ip_eth0": "192.168.1.100",
+      "ip_wlan0": "10.0.0.5",
+      "mac_eth0": "aa:bb:cc:dd:ee:ff",
+      "mac_wlan0": "11:22:33:44:55:66",
+      "network_type": "Wired&Wireless"
+    }
+  }
+  ```
 
 ### POST /clear-history
 
