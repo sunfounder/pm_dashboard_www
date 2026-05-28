@@ -79,15 +79,21 @@ const SectionSystem = (props) => {
 
   const ipData = {};
   const macData = {};
-  Object.keys(props.latestData).forEach(key => {
-    if (key.startsWith('ip_')) {
-      // 删除 'ip_' 前缀并存入 ipData
-      ipData[key.replace('ip_', '')] = props.latestData[key];
-    } else if (key.startsWith('mac_')) {
-      // 删除 'mac_' 前缀并存入 macData
-      macData[key.replace('mac_', '')] = props.latestData[key];
-    }
-  });
+  if (props.ips && typeof props.ips === "object") {
+    let data = props.ips;
+    Object.keys(data).forEach((key) => {
+      // 处理 ip_
+      if (key.startsWith("ip_")) {
+        const newKey = key.replace("ip_", "");
+        ipData[newKey] = data[key];
+      }
+      // 处理 mac_
+      if (key.startsWith("mac_")) {
+        const newKey = key.replace("mac_", "");
+        macData[newKey] = data[key];
+      }
+    });
+  }
 
   // 映射成对应的标题和描述
   oledPages = oledPages.map(page => ({

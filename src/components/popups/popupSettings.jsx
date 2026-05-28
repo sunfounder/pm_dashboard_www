@@ -8,7 +8,7 @@ import DataGridPro from "./dataGridPro.jsx"
 import { SettingItemSwitch, SettingItem, SettingItemButton } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.14";
+const VERSIONS = "1.2.15";
 
 const defaultConfigData = {
   "auto": {
@@ -91,6 +91,7 @@ const defaultConfigData = {
 
 const PopupSettings = (props) => {
   const [config, setConfig] = useState(defaultConfigData);
+  const [ips, setIps] = useState("");
   const [themeSwitchChecked, setThemeSwitchChecked] = useState(window.localStorage.getItem("pm-dashboard-theme") === "dark" ? true : false);
 
   const [cardLayoutPopup, setCardLayoutPopup] = useState(false);
@@ -140,6 +141,14 @@ const PopupSettings = (props) => {
     setConfig(newConfig);
   }
 
+  const getIps = async () => {
+    const result = await props.request('get-ips');
+    if (result) {
+      let data = result;
+      setIps(data);
+    }
+  }
+
   const handleCardLayoutPopup = () => {
     setCardLayoutPopup(!cardLayoutPopup);
   }
@@ -157,6 +166,7 @@ const PopupSettings = (props) => {
 
   useEffect(() => {
     getConfig();
+    getIps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.open])
 
@@ -232,6 +242,7 @@ const PopupSettings = (props) => {
           peripherals={props.peripherals}
           restartPrompt={props.restartPrompt}
           latestData={props.latestData}
+          ips={ips}
           onTemperatureUnitChanged={props.onTemperatureUnitChanged}
           restartService={props.restartService}
         />}
