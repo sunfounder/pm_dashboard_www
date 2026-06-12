@@ -70,6 +70,9 @@
     - [POST /set-fan-led](#post-set-fan-led)
     - [POST /set-fan-power](#post-set-fan-power)
     - [POST /set-fan-mode](#post-set-fan-mode)
+    - [POST /set-pipower5-buzz-on](#post-set-pipower5-buzz-on)
+    - [POST /set-pipower5-buzzer-volume](#post-set-pipower5-buzzer-volume)
+    - [POST /play-pipower5-buzzer](#post-play-pipower5-buzzer)
     - [POST /set-sd-data-interval](#post-set-sd-data-interval)
     - [POST /set-sd-data-retain](#post-set-sd-data-retain)
     - [POST /set-rgb-brightness](#post-set-rgb-brightness)
@@ -487,6 +490,7 @@ PERIPHERALS = [
     "temperature_unit",
     "cpu_temperature",
     "gpu_temperature",
+    "pipower5_buzzer",
 ]
 ```
 1. storage: 系统储存
@@ -535,6 +539,7 @@ PERIPHERALS = [
 44. cpu_temperature: CPU温度
 45. gpu_temperature: GPU温度
 46. temperature_unit: 温度单位
+47. pipower5_buzzer: 蜂鸣器
 
 ## Config
 
@@ -551,7 +556,9 @@ PERIPHERALS = [
         "gpio_fan_mode": 2,
         "gpio_fan_pin": 6,
         "oled_disk": "total",
-        "oled_network_interface": "all"
+        "oled_network_interface": "all",
+        "pipower5_buzz_on": ["battery_activated", "low_battery"],
+        "pipower5_buzzer_volume": 5
     }
 }
 ```
@@ -988,6 +995,33 @@ OTA 更新
 - Response:
   - `{"status": true, "data": "OK"}`
 
+### POST /set-pipower5-buzz-on
+
+设置蜂鸣器触发事件
+
+- Data:
+  - `on` - 触发事件列表，可选值: `battery_activated`, `low_battery`, `power_disconnected`, `power_restored`, `power_insufficient`, `battery_critical_shutdown`, `battery_voltage_critical_shutdown`
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /set-pipower5-buzzer-volume
+
+设置蜂鸣器音量
+
+- Data:
+  - `volume` - 音量，0-10
+- Response:
+  - `{"status": true, "data": "OK"}`
+
+### POST /play-pipower5-buzzer
+
+测试播放蜂鸣器
+
+- Data:
+  - `event` - 事件名称，可选值: `battery_activated`, `low_battery`, `power_disconnected`, `power_restored`, `power_insufficient`, `battery_critical_shutdown`, `battery_voltage_critical_shutdown`
+- Response:
+  - `{"status": true, "data": "OK"}`
+
 ### POST /set-sd-data-interval
 
 设置SD卡数据间隔
@@ -1204,6 +1238,21 @@ JSON数据格式如下：
 - Fan Mode: 0/1/2/3/4 Always On/Performance/Cool/Balanced/Quiet
   - Peripheral: gpio_fan_mode
   - API: [set-fan-mode](#post-set-fan-mode)
+- Buzzer on:
+  - Peripheral: pipower5_buzzer
+  - API: [set-pipower5-buzz-on](#post-set-pipower5-buzz-on)
+  - 子选项（多选开关）:
+    - Battery Activated: on battery is activated
+    - Low Battery: on battery level is low
+    - Power Disconnected: on external power supply is disconnected
+    - Power Restored: on external power supply is restored
+    - Power Insufficient: on the external power supply is insufficient
+    - Battery Critical Shutdown: on device shutdown due to critically low battery
+    - Battery Voltage Critical Shutdown: on device shutdown due to critically low battery voltage
+  - 每个事件旁边有播放按钮，API: [play-pipower5-buzzer](#post-play-pipower5-buzzer)
+- Buzzer Volume: 0-10
+  - Peripheral: pipower5_buzzer
+  - API: [set-pipower5-buzzer-volume](#post-set-pipower5-buzzer-volume)
 - RGB Enable: true/false
   - Peripheral: ws2812
   - API: [set-rgb-enable](#post-set-rgb-enable)
