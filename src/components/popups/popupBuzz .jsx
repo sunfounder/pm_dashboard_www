@@ -97,7 +97,7 @@ const PopupBuzz = (props) => {
             <SettingItemSlider
               title="Buzzer Volume"
               subtitle="Set buzzer volume"
-              valueFormat={(value) => `${value}%`}
+              valueFormat={(value) => `${value}`}
               onCommitted={handleBuzzVolumeChange}
               // value={props.config.pipower5_buzzer_volume}
               value={buzzVolume}
