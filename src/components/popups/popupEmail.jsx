@@ -22,7 +22,7 @@ let smtpPortTimer = null;
 const PopupEmail = (props) => {
   const [emailPopup, setEmailPopup] = useState(false);
   const [sendEmail, setSendEmail] = useState({
-    // battery_activated: false,
+    battery_activated: false,
     low_battery: false,
     power_disconnected: false,
     power_restored: false,
@@ -91,11 +91,8 @@ const PopupEmail = (props) => {
     handleEmailPopup();
   }
   const handleEmailChange = (value) => {
-    if (value === '') {
-      setEmailError(false);
-      return;
-    }
-    if (!value.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)) {
+    console.log(value)
+    if (value !== '' && !value.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)) {
       setEmailError(true);
       return;
     } else {

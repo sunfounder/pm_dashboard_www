@@ -8,7 +8,7 @@ import DataGridPro from "./dataGridPro.jsx"
 import { SettingItemSwitch, SettingItem, SettingItemButton } from './settingItems.jsx';
 import Divider from '@mui/material/Divider';
 
-const VERSIONS = "1.2.17";
+const VERSIONS = "1.2.18";
 
 const defaultConfigData = {
   "auto": {
@@ -75,7 +75,7 @@ const defaultConfigData = {
     "rgb_matrix_speed": 50,
     "rgb_matrix_brightness": 50,
     "oled_pages": [],
-    "send_email_on": ["battery_activated"],
+    "send_email_on": [],
     "send_email_to": "",
     "smtp_server": "asdasd",
     "smtp_email": "",
