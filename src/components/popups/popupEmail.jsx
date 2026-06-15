@@ -282,11 +282,11 @@ const PopupEmail = (props) => {
         cancelText="Cancel"
         confirmText="Save"
       >
-        {/* <SettingItemSwitch
+        <SettingItemSwitch
           title="Battery Activated"
           subtitle="on switching from external power to battery power"
           onChange={() => handleToggle('battery_activated')}
-          value={sendEmail.battery_activated} /> */}
+          value={sendEmail.battery_activated} />
         <SettingItemSwitch
           title="Low Battery"
           subtitle="on battery level is low"
